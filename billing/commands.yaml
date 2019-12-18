@@ -1,0 +1,24 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/billing/src
+commands:
+  awsbill:
+    sourcePath: /awsbill.js
+    description: Shows your AWS bill
+    parameters:
+      - name: month_year
+        optional: true
+  datadogbill:
+    sourcePath: /datadogbill.js
+    description: Shows your Datadog bill
+    options:
+      - name: detail
+  test:
+    sourcePath: /test.js
+    description: Test command
+    parameters:
+      - name: hostname
+      - name: ip_address
+        optional: true
+    options:
+      - name: ttl
+        value: seconds
+      - name: just_a_flag

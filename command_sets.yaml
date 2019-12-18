@@ -1,0 +1,19 @@
+command_sets:
+  billing:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/billing/commands.yaml
+    description: commands to show cloud service bills
+  gcloud:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/commands.yaml
+    description: Google Cloud commands (right now, just billing)
+  route53:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/route53/commands.yaml
+    description: Commands to interact with Amazon AWS Route53 DNS
+  npm-example:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/npm-example/commands.yaml
+    description: Example that installs a package and that lists installed packages
+  echo:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/echo/commands.yaml
+    description: simple echo test
+  missing_set:
+    sourcePath: https://nimbella.com/missing_file.yaml
+    description: this command set is a test, the yaml file is missing

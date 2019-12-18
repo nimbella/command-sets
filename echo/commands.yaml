@@ -1,0 +1,7 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/echo/src
+commands:
+  echo:
+    sourcePath: /echo.js
+    description: simple echo test
+    parameters:
+      - name: msg
