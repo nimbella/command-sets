@@ -13,3 +13,11 @@ A dig clone for Nimbella Commander.
 ```
 /devops dig <hostname> [<type>]
 ```
+
+Supported record types:
+
+- `A` (default)
+- `AAAA`
+- `TXT`
+- `MX`
+- `NS`
