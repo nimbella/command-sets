@@ -1,0 +1,9 @@
+sourceBasePath: https://raw.githubusercontent.com/satyarohith/dig_nimbella/master/src
+commands:
+  dig:
+    sourcePath: /dig.js
+    description: Perform DNS queries.
+    parameters:
+      - name: hostname
+      - name: type
+        optional: true
