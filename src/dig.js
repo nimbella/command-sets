@@ -108,7 +108,13 @@ const formatTXTRecords = (records, hostname) => {
   return output;
 };
 
-const formattedNSRecords = (records, hostname) => {
+/**
+ * Format 'NS' records into slack blocks.
+ * @param {array} records - Array returned by the resolve func.
+ * @param {string} hostname - The hostname to which the request is made.
+ * @returns {array} - An array of formatted slack blocks.
+ */
+const formatNSRecords = (records, hostname) => {
   const output = [];
   for (const record of records) {
     output.push({
@@ -166,7 +172,7 @@ async function _command(params) {
       case 'NS': {
         const resolveNSAsync = promisify(dns.resolveNs);
         const records = await resolveNSAsync(hostname);
-        result.push(...formattedNSRecords(records, hostname));
+        result.push(...formatNSRecords(records, hostname));
         break;
       }
 
