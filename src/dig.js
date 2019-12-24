@@ -171,6 +171,16 @@ async function _command(params) {
           }
         ]
       });
+    } else if (error.code === 'ENOTFOUND') {
+      result.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `Domain ${hostname} not found.`
+          }
+        ]
+      });
     } else {
       result.push({
         type: 'section',
