@@ -164,7 +164,7 @@ async function _command(params) {
       case 'TXT': {
         const resolveTXTAsync = promisify(dns.resolveTxt);
         const records = await resolveTXTAsync(hostname);
-        result.push(...formatTXTRecords(records));
+        result.push(...formatTXTRecords(records, hostname));
         break;
       }
 
