@@ -1,6 +1,12 @@
 'use strict';
 
-const formattedARecords = (records, hostname) => {
+/**
+ * Formats 'A' records into slack blocks.
+ * @param {array} records - Array returned by the resolve func.
+ * @param {string} hostname - The hostname for which the request is made.
+ * @returns {array} - An array of formatted slack blocks.
+ */
+const formatARecords = (records, hostname) => {
   const output = [];
   for (const record of records) {
     output.push({
@@ -156,7 +162,7 @@ async function _command(params) {
       default: {
         const resolve4Async = promisify(dns.resolve4);
         const records = await resolve4Async(hostname, {ttl: true});
-        result.push(...formattedARecords(records, hostname));
+        result.push(...formatARecords(records, hostname));
         break;
       }
     }
