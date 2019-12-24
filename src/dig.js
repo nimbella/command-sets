@@ -1,5 +1,111 @@
 'use strict';
 
+const formattedARecords = (records, hostname) => {
+  const output = [];
+  for (const record of records) {
+    output.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `${hostname}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `Type: *A*`
+        },
+        {
+          type: 'mrkdwn',
+          text: `TTL: ${record.ttl}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `IP: \`${record.address}\``
+        }
+      ]
+    });
+  }
+
+  return output;
+};
+
+const formattedAAAARecords = (records, hostname) => {
+  const output = [];
+  for (const record of records) {
+    output.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `${hostname}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `Type: *AAAA*`
+        },
+        {
+          type: 'mrkdwn',
+          text: `TTL: ${record.ttl}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `IP: \`${record.address}\``
+        }
+      ]
+    });
+  }
+
+  return output;
+};
+
+const formattedMXRecords = (records, hostname) => {
+  const output = [];
+  for (const record of records) {
+    output.push({
+      type: 'context',
+      elements: [
+        {type: 'mrkdwn', text: `${hostname}`},
+        {type: 'mrkdwn', text: `\`${record.exchange}\``},
+        {type: 'mrkdwn', text: `Priority: \`${record.priority}\``}
+      ]
+    });
+  }
+
+  return output;
+};
+
+const formattedTXTRecords = (records, hostname) => {
+  const output = [];
+  for (const record of records) {
+    output.push({
+      type: 'context',
+      elements: [
+        {type: 'mrkdwn', text: `${hostname}`},
+        {type: 'mrkdwn', text: `Type: *TXT*`},
+        {type: 'mrkdwn', text: `\`${record[0]}\``}
+      ]
+    });
+  }
+
+  return output;
+};
+
+const formattedNSRecords = (records, hostname) => {
+  const output = [];
+  for (const record of records) {
+    output.push({
+      type: 'context',
+      elements: [
+        {type: 'mrkdwn', text: `${hostname}`},
+        {type: 'mrkdwn', text: `Type: *NS*`},
+        {type: 'mrkdwn', text: `\`${record}\``}
+      ]
+    });
+  }
+
+  return output;
+};
+
 /**
  * @description null
  * @param {ParamsType} params list of command parameters
