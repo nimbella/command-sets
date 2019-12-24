@@ -115,33 +115,71 @@ const formattedNSRecords = (records, hostname) => {
  */
 async function _command(params) {
   const {hostname} = params;
+  let {type = 'A'} = params;
+  type = type.toUpperCase();
 
   const result = [];
   const dns = require('dns');
   const {promisify} = require('util');
 
   try {
-    const resolve4Async = promisify(dns.resolve4);
-    const records = await resolve4Async(hostname, {ttl: true});
-    for (const record of records) {
+    switch (type) {
+      case 'AAAA': {
+        const resolve6Async = promisify(dns.resolve6);
+        const records = await resolve6Async(hostname, {ttl: true});
+        result.push(...formattedAAAARecords(records, hostname));
+        break;
+      }
+
+      case 'TXT': {
+        const resolveTXTAsync = promisify(dns.resolveTxt);
+        const records = await resolveTXTAsync(hostname);
+        result.push(formattedTXTRecords(records));
+        break;
+      }
+
+      case 'MX': {
+        const resolveMXAsync = promisify(dns.resolveMx);
+        const records = await resolveMXAsync(hostname);
+        result.push(...formattedMXRecords(records, hostname));
+        break;
+      }
+
+      case 'NS': {
+        const resolveNSAsync = promisify(dns.resolveNs);
+        const records = await resolveNSAsync(hostname);
+        result.push(...formattedNSRecords(records, hostname));
+        break;
+      }
+
+      // The default record is 'A'
+      default: {
+        const resolve4Async = promisify(dns.resolve4);
+        const records = await resolve4Async(hostname, {ttl: true});
+        result.push(...formattedARecords(records, hostname));
+        break;
+      }
+    }
+  } catch (error) {
+    if (error.code === 'ENODATA') {
       result.push({
         type: 'context',
         elements: [
-          {type: 'mrkdwn', text: `${hostname}`},
-          {type: 'mrkdwn', text: `${record.ttl}`},
-          {type: 'mrkdwn', text: `${record.address}`}
+          {
+            type: 'mrkdwn',
+            text: `No records of type *${type}* found for ${hostname}.`
+          }
         ]
       });
+    } else {
+      result.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*ERROR:* ${error.message}`
+        }
+      });
     }
-  } catch (error) {
-    console.error(error.message);
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
   }
 
   return {
