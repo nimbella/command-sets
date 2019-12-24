@@ -70,7 +70,13 @@ const formatAAAARecords = (records, hostname) => {
   return output;
 };
 
-const formattedMXRecords = (records, hostname) => {
+/**
+ * Format 'MX' records into slack blocks.
+ * @param {array} records - Array returned by the resolve func.
+ * @param {string} hostname - The hostname to which the request is made.
+ * @returns {array} - An array of formatted slack blocks.
+ */
+const formatMXRecords = (records, hostname) => {
   const output = [];
   for (const record of records) {
     output.push({
@@ -165,7 +171,7 @@ async function _command(params) {
       case 'MX': {
         const resolveMXAsync = promisify(dns.resolveMx);
         const records = await resolveMXAsync(hostname);
-        result.push(...formattedMXRecords(records, hostname));
+        result.push(...formatMXRecords(records, hostname));
         break;
       }
 
