@@ -167,6 +167,13 @@ async function _command(params) {
 
   try {
     switch (type) {
+      case 'A': {
+        const resolve4Async = promisify(dns.resolve4);
+        const records = await resolve4Async(hostname, {ttl: true});
+        result.push(...formatARecords(records, hostname));
+        break;
+      }
+
       case 'AAAA': {
         const resolve6Async = promisify(dns.resolve6);
         const records = await resolve6Async(hostname, {ttl: true});
@@ -202,11 +209,16 @@ async function _command(params) {
         break;
       }
 
-      // The default record is 'A'
       default: {
-        const resolve4Async = promisify(dns.resolve4);
-        const records = await resolve4Async(hostname, {ttl: true});
-        result.push(...formatARecords(records, hostname));
+        result.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `\`${type}\` is not supported. Supported records are \`A\`, \`AAAA\`, \`TXT\`, \`MX\`, \`NS\` & \`SOA\`.`
+            }
+          ]
+        });
         break;
       }
     }
