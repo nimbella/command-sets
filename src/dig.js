@@ -136,6 +136,19 @@ const formatNSRecords = (records, hostname) => {
   return output;
 };
 
+const formatSoaRecord = (record, hostname) => {
+  const block = {
+    type: 'context',
+    elements: [{type: 'mrkdwn', text: `*${hostname}*`}]
+  };
+
+  for (const [key, value] of Object.entries(record)) {
+    block.elements.push({type: 'mrkdwn', text: `${key}: \`${value}\``});
+  }
+
+  return [block];
+};
+
 /**
  * @description null
  * @param {ParamsType} params list of command parameters
@@ -179,6 +192,13 @@ async function _command(params) {
         const resolveNSAsync = promisify(dns.resolveNs);
         const records = await resolveNSAsync(hostname);
         result.push(...formatNSRecords(records, hostname));
+        break;
+      }
+
+      case 'SOA': {
+        const resolveSoaAsync = promisify(dns.resolveSoa);
+        const records = await resolveSoaAsync(hostname);
+        result.push(...formatSoaRecord(records, hostname));
         break;
       }
 

@@ -21,3 +21,4 @@ Supported record types:
 - `TXT`
 - `MX`
 - `NS`
+- `SOA`
