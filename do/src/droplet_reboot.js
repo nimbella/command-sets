@@ -48,7 +48,6 @@ const postContent = (url, headers, body) => {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const programStart = Date.now();
   const {digitaloceanApiKey} = secrets;
   const {id: dropletID} = params;
 
@@ -80,16 +79,6 @@ async function _command(params, commandText, secrets = {}) {
           action.started_at
         ).toUTCString()}\n Reboot status: ${action.status}`
       }
-    });
-
-    result.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `Time taken: ~${Date.now() - programStart}ms`
-        }
-      ]
     });
   } catch (error) {
     result.push({
