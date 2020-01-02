@@ -20,3 +20,6 @@ command_sets:
   dig:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/dig/commands.yaml
     description: Command to lookup DNS
+  do:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/commands.yaml
+    description: DigitalOcean commands
