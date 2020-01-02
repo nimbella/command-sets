@@ -11,6 +11,13 @@ commands:
     description: Reboot your droplet.
     parameters:
       - name: id
+  droplet_snap:
+    sourcePath: /droplet_snap.js
+    description: Take a snapshot of your droplet.
+    parameters:
+      - name: id
+      - name: name
+        optional: true
   droplet_status:
     sourcePath: /droplet_status.js
     description: Know the status of all your droplets or a single droplet.
