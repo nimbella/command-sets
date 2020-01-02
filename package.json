@@ -1,0 +1,19 @@
+{
+  "name": "command-sets",
+  "version": "0.1.0",
+  "repository": "git@github.com:nimbella/command-sets.git",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint": "xo"
+  },
+  "devDependencies": {
+    "xo": "^0.25.3"
+  },
+  "xo": {
+    "space": true,
+    "prettier": true,
+    "rules": {
+      "unicorn/filename-case": 0
+    }
+  }
+}
