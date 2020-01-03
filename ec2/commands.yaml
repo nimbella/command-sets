@@ -1,0 +1,5 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/ec2/src
+commands:
+  ec2_list:
+    sourcePath: /ec2_list.js
+    description: Lists your EC2 instances in the provided region.
