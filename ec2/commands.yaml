@@ -8,3 +8,8 @@ commands:
     description: Reboot your EC2 instance.
     parameters:
       - name: id
+  ec2_status:
+    sourcePath: /ec2_status.js
+    description: Know the status of your EC2 instances.
+    parameters:
+      - name: id
