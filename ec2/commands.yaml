@@ -3,3 +3,8 @@ commands:
   ec2_list:
     sourcePath: /ec2_list.js
     description: Lists your EC2 instances in the provided region.
+  ec2_reboot:
+    sourcePath: /ec2_reboot.js
+    description: Reboot your EC2 instance.
+    parameters:
+      - name: id
