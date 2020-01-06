@@ -12,7 +12,11 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
+<<<<<<< HEAD
         'You need `awsAccessKey`, `awsSecretKey` and `awsRegion` secrets to use this command. Create one by running `/nc secret_create`.'
+=======
+        'You must create secrets for `awsAccessKey`, `awsSecretKey` and `awsRegion` to use this command '
+>>>>>>> refactor: restructure aws commands
     };
   }
 
@@ -33,6 +37,10 @@ async function _command(params, commandText, secrets = {}) {
     const data = await describeInstancesAsync({DryRun: false});
 
     const {Instances} = data['Reservations'][0];
+<<<<<<< HEAD
+=======
+
+>>>>>>> refactor: restructure aws commands
     for (const instance of Instances) {
       if (substr.length > 0) {
         // Retrieve the instance name.
