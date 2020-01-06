@@ -17,7 +17,6 @@ command_sets:
   missing_set:
     sourcePath: https://nimbella.com/missing_file.yaml
     description: this command set is a test, the yaml file is missing
-<<<<<<< HEAD
   do:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/commands.yaml
     description: DigitalOcean commands
@@ -27,8 +26,3 @@ command_sets:
   dig:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/dig/commands.yaml
     description: Command to lookup DNS
-=======
-  aws:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/aws/commands.yaml
-    description: AWS commands.
->>>>>>> refactor: restructure aws commands
