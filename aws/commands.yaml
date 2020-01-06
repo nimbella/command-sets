@@ -19,3 +19,6 @@ commands:
   dynamodb_list:
     sourcePath: dynamodb/dynamodb_list.js
     description: List DB Tables under your account.
+    parameters:
+      - name: startTable
+        optional: true

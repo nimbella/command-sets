@@ -17,6 +17,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const result = [];
+  const {startTable = null} = params;
   const aws = require('aws-sdk');
   const ddb = new aws.DynamoDB({
     apiVersion: '2012-08-10',
@@ -29,15 +30,28 @@ async function _command(params, commandText, secrets = {}) {
     const {promisify} = require('util');
     const listTablesAsync = promisify(ddb.listTables).bind(ddb);
 
-    const {TableNames} = await listTablesAsync({Limit: 10});
-
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `\`${TableNames.join('`\n`')}\``
-      }
+    const {TableNames} = await listTablesAsync({
+      Limit: 10,
+      ExclusiveStartTableName: startTable
     });
+
+    if (TableNames.length > 0) {
+      result.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `\`${TableNames.join('`\n`')}\``
+        }
+      });
+    } else {
+      result.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `No tables available.`
+        }
+      });
+    }
   } catch (error) {
     result.push({
       type: 'section',
