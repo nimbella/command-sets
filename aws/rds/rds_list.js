@@ -12,7 +12,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'You must create secrets for `awsAccessKey`, `awsSecretKey` and `awsRegion` to use this command '
+        'You need `awsAccessKey`, `awsSecretKey` and `awsRegion` secrets to use this command. Create them by running `/nc secret_create`.'
     };
   }
 
