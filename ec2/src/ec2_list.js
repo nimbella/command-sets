@@ -55,10 +55,6 @@ async function _command(params, commandText, secrets = {}) {
               },
               {
                 type: 'mrkdwn',
-                text: `Name: ${instanceName}`
-              },
-              {
-                type: 'mrkdwn',
                 text: `Type: \`${instance.InstanceType}\``
               },
               {
@@ -68,6 +64,10 @@ async function _command(params, commandText, secrets = {}) {
               {
                 type: 'mrkdwn',
                 text: `IP: \`${instance.PublicIpAddress}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Name: ${instanceName}`
               }
             ]
           });
