@@ -33,7 +33,6 @@ async function _command(params, commandText, secrets = {}) {
     const data = await describeInstancesAsync({DryRun: false});
 
     const {Instances} = data['Reservations'][0];
-
     for (const instance of Instances) {
       if (substr.length > 0) {
         // Retrieve the instance name.

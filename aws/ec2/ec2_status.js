@@ -32,12 +32,10 @@ async function _command(params, commandText, secrets = {}) {
       ec2.describeInstanceStatus
     ).bind(ec2);
 
-    const data = await describeInstanceStatusAsync({
+    const {InstanceStatuses} = await describeInstanceStatusAsync({
       DryRun: false,
       InstanceIds: [instanceId]
     });
-
-    const {InstanceStatuses} = data;
 
     for (const instance of InstanceStatuses) {
       result.push({
