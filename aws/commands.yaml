@@ -24,4 +24,4 @@ commands:
         optional: true
   rds_list:
     sourcePath: rds/rds_list.js
-    description: List RDS instances under your account.
+    description: List Amazon RDS (Relational Database Service) instances under your account.
