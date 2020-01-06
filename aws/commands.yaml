@@ -22,3 +22,6 @@ commands:
     parameters:
       - name: startTable
         optional: true
+  rds_list:
+    sourcePath: rds/rds_list.js
+    description: List Amazon RDS (Relational Database Service) instances under your account.
