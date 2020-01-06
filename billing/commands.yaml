@@ -11,14 +11,6 @@ commands:
     description: Shows your Datadog bill
     options:
       - name: detail
-  test:
-    sourcePath: /test.js
-    description: Test command
-    parameters:
-      - name: hostname
-      - name: ip_address
-        optional: true
-    options:
-      - name: ttl
-        value: seconds
-      - name: just_a_flag
+  dobill:
+    sourcePath: /dobill.js
+    description: Shows your DigitalOcean bill
