@@ -99,10 +99,6 @@ async function _command(params, commandText, secrets = {}) {
         elements: [
           {
             type: 'mrkdwn',
-            text: `*${droplet.name}*`
-          },
-          {
-            type: 'mrkdwn',
             text: `ID: ${droplet.id}`
           },
           {
@@ -112,6 +108,10 @@ async function _command(params, commandText, secrets = {}) {
           {
             type: 'mrkdwn',
             text: `Status: *${droplet.status}*`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*${droplet.name}*`
           }
         ]
       });
