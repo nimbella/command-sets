@@ -10,7 +10,7 @@ async function _command(params, commandText, secrets = {}) {
 
   if (!awsAccessKey || !awsSecretKey || !awsRegion) {
     return {
-      response_type: 'ephemeral',
+      response_type: 'ephemeral', // eslint-disable-line camelcase
       text:
         'You need `awsAccessKey`, `awsSecretKey` and `awsRegion` secrets to use this command. Create one by running `/nc secret_create`.'
     };
@@ -63,7 +63,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   return {
-    response_type: 'in_channel',
+    response_type: 'in_channel', // eslint-disable-line camelcase
     blocks: result
   };
 }
