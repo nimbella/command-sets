@@ -89,42 +89,54 @@ async function _command(params, commandText, secrets = {}) {
       await getContent(BASE_URL + `/droplets?per_page=10&page=${page}`, headers)
     );
 
-    for (const droplet of droplets) {
-      const IPv4 = droplet.networks.v4[0]
-        ? droplet.networks.v4[0].ip_address
-        : 'not available';
+    if (droplets.length > 0) {
+      for (const droplet of droplets) {
+        const IPv4 = droplet.networks.v4[0]
+          ? droplet.networks.v4[0].ip_address
+          : 'not available';
 
+        result.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `ID: ${droplet.id}`
+            },
+            {
+              type: 'mrkdwn',
+              text: `IP: \`${IPv4}\``
+            },
+            {
+              type: 'mrkdwn',
+              text: `Status: *${droplet.status}*`
+            },
+            {
+              type: 'mrkdwn',
+              text: `*${droplet.name}*`
+            }
+          ]
+        });
+      }
+
+      const {totalPages, currentPage} = calculatePages(links);
+      if (totalPages > 1) {
+        result.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `Current Page: *${currentPage}* Total Pages: *${totalPages}*`
+            }
+          ]
+        });
+      }
+    } else {
       result.push({
         type: 'context',
         elements: [
           {
             type: 'mrkdwn',
-            text: `ID: ${droplet.id}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `IP: \`${IPv4}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Status: *${droplet.status}*`
-          },
-          {
-            type: 'mrkdwn',
-            text: `*${droplet.name}*`
-          }
-        ]
-      });
-    }
-
-    const {totalPages, currentPage} = calculatePages(links);
-    if (totalPages > 1) {
-      result.push({
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `Current Page: *${currentPage}* Total Pages: *${totalPages}*`
+            text: `No droplets under your account.`
           }
         ]
       });
