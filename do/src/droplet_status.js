@@ -160,3 +160,4 @@ async function _command(params, commandText, secrets = {}) {
 const main = async ({__secrets = {}, commandText, ...params}) => ({
   body: await _command(params, commandText, __secrets)
 });
+module.exports = main;

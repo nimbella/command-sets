@@ -52,7 +52,7 @@ async function _command(params, commandText, secrets = {}) {
   const {id: dropletID, cmd} = params;
   if (!['on', 'off'].includes(cmd)) {
     return {
-      response_type: 'in_channel',
+      response_type: 'in_channel', // eslint-disable-line camelcase
       text: `The value of \`cmd\` can only be \`off\` or \`on\`.`
     };
   }
