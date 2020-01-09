@@ -1,0 +1,21 @@
+{
+  "name": "command-sets",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:satyarohith/command-sets.git",
+  "author": "Satya Rohith <me@satyarohith.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.5",
+    "readdirp": "^3.3.0",
+    "mkdirp": "^0.5.1"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^4.6.0",
+    "aws-sdk": "^2.600.0",
+    "read-installed": "^4.0.3"
+  }
+}

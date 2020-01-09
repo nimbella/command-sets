@@ -1,0 +1,5 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/npm-example/src
+commands:
+  package_list:
+    sourcePath: /package_list.js
+    description: Lists the installed npm packages

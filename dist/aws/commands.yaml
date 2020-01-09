@@ -1,0 +1,27 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/aws/
+commands:
+  ec2_list:
+    sourcePath: ec2/ec2_list.js
+    description: Lists your EC2 instances in the provided region.
+    parameters:
+      - name: substr
+        optional: true
+  ec2_reboot:
+    sourcePath: ec2/ec2_reboot.js
+    description: Reboot your EC2 instance.
+    parameters:
+      - name: id
+  ec2_status:
+    sourcePath: ec2/ec2_status.js
+    description: Know the status of your EC2 instances.
+    parameters:
+      - name: id
+  dynamodb_list:
+    sourcePath: dynamodb/dynamodb_list.js
+    description: List DB Tables under your account.
+    parameters:
+      - name: startTable
+        optional: true
+  rds_list:
+    sourcePath: rds/rds_list.js
+    description: List Amazon RDS (Relational Database Service) instances under your account.

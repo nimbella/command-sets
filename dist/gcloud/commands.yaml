@@ -1,0 +1,8 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/gcloud/src
+commands:
+  gcloudbill:
+    sourcePath: /gcloudbill.js
+    description: Shows your Google Cloud bill
+    parameters:
+    - name: month_year
+      optional: true
