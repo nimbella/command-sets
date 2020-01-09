@@ -22,7 +22,7 @@ const commands = [
   'gcloudbill.js',
   'package_list.js',
   'addhost.js',
-  'listhost.js'
+  'listhosts.js'
 ];
 
 async function main() {
