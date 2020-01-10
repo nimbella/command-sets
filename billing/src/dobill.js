@@ -1,6 +1,28 @@
 'use strict';
 
 /**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  const output = [];
+  if (client === 'slack') {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
+/**
  * Makes an https GET request.
  * @param {string} url - The request URL
  * @param {{}} headers - Headers that need to be set while making a request.
@@ -299,6 +321,17 @@ const _command = async (params, commandText, secrets = {}) => {
     };
   }
 
+  const {__slack_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
+
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';
   const headers = {
@@ -365,127 +398,163 @@ const _command = async (params, commandText, secrets = {}) => {
     const today = new Date();
     const monthYear = String(today.getMonth() + 1) + '/' + today.getFullYear();
 
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `Total Costs: $${totalCurrentCosts} Projected Costs (${monthYear}): $${totalProjectedCosts}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Total Costs: $${totalCurrentCosts} Projected Costs (${monthYear}): $${totalProjectedCosts}`
+          }
+        },
+        client
+      )
+    );
 
     if (dropletsCost.projected > 0) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            // Maintain a uniform column length of 15
-            text: `*Droplets* (${droplets.length})   `
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                // Maintain a uniform column length of 15
+                text: `*Droplets* (${droplets.length})   `
+              },
+              {
+                type: 'mrkdwn',
+                text: `Current: $${dropletsCost.current.toFixed(2)}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `Projected: $${dropletsCost.projected.toFixed(2)}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Current: $${dropletsCost.current.toFixed(2)}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Projected: $${dropletsCost.projected.toFixed(2)}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
 
     if (volumesCost.projected > 0) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `*Volumes* (${volumes.length})   `
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `*Volumes* (${volumes.length})   `
+              },
+              {
+                type: 'mrkdwn',
+                text: `Current: $${volumesCost.current.toFixed(2)}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `Projected: $${volumesCost.projected.toFixed(2)}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Current: $${volumesCost.current.toFixed(2)}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Projected: $${volumesCost.projected.toFixed(2)}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
 
     if (databasesCost.projected > 0) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `*Databases* (${databases.length}) `
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `*Databases* (${databases.length}) `
+              },
+              {
+                type: 'mrkdwn',
+                text: `Current: $${databasesCost.current.toFixed(2)}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `Projected: $${databasesCost.projected.toFixed(2)}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Current: $${databasesCost.current.toFixed(2)}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Projected: $${databasesCost.projected.toFixed(2)}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
 
     if (snapshotsCost.projected > 0) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `*Snapshots* (${snapshots.length})    `
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `*Snapshots* (${snapshots.length})    `
+              },
+              {
+                type: 'mrkdwn',
+                text: `Current: $${snapshotsCost.current.toFixed(2)}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `Projected: $${snapshotsCost.projected.toFixed(2)}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Current: $${snapshotsCost.current.toFixed(2)}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Projected: $${snapshotsCost.projected.toFixed(2)}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
 
     if (backupsCost.projected > 0) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `*Backups* (${totalBackups})  `
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `*Backups* (${totalBackups})  `
+              },
+              {
+                type: 'mrkdwn',
+                text: `Current: $${backupsCost.current.toFixed(2)}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `Projected: $${backupsCost.projected.toFixed(2)}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Current: $${backupsCost.current.toFixed(2)}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Projected: $${backupsCost.projected.toFixed(2)}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 };
 
