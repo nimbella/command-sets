@@ -116,17 +116,21 @@ const formatMXRecords = (records, {hostname, isSlack}) => {
  * @param {string} hostname - The hostname to which the request is made.
  * @returns {array} - An array of formatted slack blocks.
  */
-const formatTXTRecords = (records, hostname) => {
+const formatTXTRecords = (records, {hostname, isSlack}) => {
   const output = [];
   for (const record of records) {
-    output.push({
-      type: 'context',
-      elements: [
-        {type: 'mrkdwn', text: `${hostname}`},
-        {type: 'mrkdwn', text: `Type: *TXT*`},
-        {type: 'mrkdwn', text: `\`${record[0]}\``}
-      ]
-    });
+    if (isSlack) {
+      output.push({
+        type: 'context',
+        elements: [
+          {type: 'mrkdwn', text: `${hostname}`},
+          {type: 'mrkdwn', text: `Type: *TXT*`},
+          {type: 'mrkdwn', text: `\`${record[0]}\``}
+        ]
+      });
+    } else {
+      output.push(`${hostname} Type: **TXT** \`${record[0]}\``);
+    }
   }
 
   return output;
@@ -206,7 +210,9 @@ async function _command(params) {
       case 'TXT': {
         const resolveTXTAsync = promisify(dns.resolveTxt);
         const records = await resolveTXTAsync(hostname);
-        result.push(...formatTXTRecords(records, hostname));
+        result.push(
+          ...formatTXTRecords(records, {hostname, isSlack: isSlack()})
+        );
         break;
       }
 
