@@ -1,4 +1,26 @@
 /**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  const output = [];
+  if (client === 'slack') {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
+/**
  * @description undefined
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
@@ -16,8 +38,18 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  const {substr = '', __slack_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
+
   const result = [];
-  const {substr = ''} = params;
   const aws = require('aws-sdk');
   const ec2 = new aws.EC2({
     apiVersion: '2016-11-15',
@@ -45,69 +77,85 @@ async function _command(params, commandText, secrets = {}) {
         }
 
         if (instanceName.includes(substr)) {
-          result.push({
-            type: 'context',
-            elements: [
+          result.push(
+            mui(
               {
-                type: 'mrkdwn',
-                text: `ID: \`${instance.InstanceId}\``
+                type: 'context',
+                elements: [
+                  {
+                    type: 'mrkdwn',
+                    text: `ID: \`${instance.InstanceId}\``
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `Type: \`${instance.InstanceType}\``
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `State: \`${instance.State.Name}\``
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `IP: \`${instance.PublicIpAddress}\``
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `Name: ${instanceName}`
+                  }
+                ]
               },
-              {
-                type: 'mrkdwn',
-                text: `Type: \`${instance.InstanceType}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `State: \`${instance.State.Name}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `IP: \`${instance.PublicIpAddress}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Name: ${instanceName}`
-              }
-            ]
-          });
+              client
+            )
+          );
         }
       } else {
-        result.push({
-          type: 'context',
-          elements: [
+        result.push(
+          mui(
             {
-              type: 'mrkdwn',
-              text: `ID: \`${instance.InstanceId}\``
+              type: 'context',
+              elements: [
+                {
+                  type: 'mrkdwn',
+                  text: `ID: \`${instance.InstanceId}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Type: \`${instance.InstanceType}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `State: \`${instance.State.Name}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `IP: \`${instance.PublicIpAddress}\``
+                }
+              ]
             },
-            {
-              type: 'mrkdwn',
-              text: `Type: \`${instance.InstanceType}\``
-            },
-            {
-              type: 'mrkdwn',
-              text: `State: \`${instance.State.Name}\``
-            },
-            {
-              type: 'mrkdwn',
-              text: `IP: \`${instance.PublicIpAddress}\``
-            }
-          ]
-        });
+            client
+          )
+        );
       }
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     response_type: 'in_channel',
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 }
 
