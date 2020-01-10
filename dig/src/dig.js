@@ -142,17 +142,21 @@ const formatTXTRecords = (records, {hostname, isSlack}) => {
  * @param {string} hostname - The hostname to which the request is made.
  * @returns {array} - An array of formatted slack blocks.
  */
-const formatNSRecords = (records, hostname) => {
+const formatNSRecords = (records, {hostname, isSlack}) => {
   const output = [];
   for (const record of records) {
-    output.push({
-      type: 'context',
-      elements: [
-        {type: 'mrkdwn', text: `${hostname}`},
-        {type: 'mrkdwn', text: `Type: *NS*`},
-        {type: 'mrkdwn', text: `\`${record}\``}
-      ]
-    });
+    if (isSlack) {
+      output.push({
+        type: 'context',
+        elements: [
+          {type: 'mrkdwn', text: `${hostname}`},
+          {type: 'mrkdwn', text: `Type: *NS*`},
+          {type: 'mrkdwn', text: `\`${record}\``}
+        ]
+      });
+    } else {
+      output.push(`${hostname} Type: **NS** \`${record}\``);
+    }
   }
 
   return output;
@@ -228,7 +232,9 @@ async function _command(params) {
       case 'NS': {
         const resolveNSAsync = promisify(dns.resolveNs);
         const records = await resolveNSAsync(hostname);
-        result.push(...formatNSRecords(records, hostname));
+        result.push(
+          ...formatNSRecords(records, {hostname, isSlack: isSlack()})
+        );
         break;
       }
 
