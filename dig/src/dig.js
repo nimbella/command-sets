@@ -50,27 +50,33 @@ const formatARecords = (records, {hostname, isSlack}) => {
 const formatAAAARecords = (records, hostname) => {
   const output = [];
   for (const record of records) {
-    output.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `${hostname}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `Type: *AAAA*`
-        },
-        {
-          type: 'mrkdwn',
-          text: `TTL: ${record.ttl}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `IP: \`${record.address}\``
-        }
-      ]
-    });
+    if (isSlack) {
+      output.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `${hostname}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `Type: *AAAA*`
+          },
+          {
+            type: 'mrkdwn',
+            text: `TTL: ${record.ttl}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `IP: \`${record.address}\``
+          }
+        ]
+      });
+    } else {
+      output.push(
+        `${hostname} Type: **AAAA** TTL: \`${record.ttl}\` IP: \`${record.address}\``
+      );
+    }
   }
 
   return output;
@@ -185,7 +191,9 @@ async function _command(params) {
       case 'AAAA': {
         const resolve6Async = promisify(dns.resolve6);
         const records = await resolve6Async(hostname, {ttl: true});
-        result.push(...formatAAAARecords(records, hostname));
+        result.push(
+          ...formatAAAARecords(records, {hostname, isSlack: isSlack()})
+        );
         break;
       }
 
