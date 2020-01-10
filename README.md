@@ -1,3 +1,3 @@
 # Command-sets
 
-Contains the master list of single name command sets in command_sets.yaml
+Master command sets to install command-sets for [commander](https://nimbella.com/resources-commander/overview#what-is-commander)
