@@ -1,35 +1,41 @@
 'use strict';
 
 /**
- * Formats 'A' records into slack blocks.
+ * Formats 'A' records into slack blocks or mattermost markdown.
  * @param {array} records - Array returned by the resolve func.
  * @param {string} hostname - The hostname for which the request is made.
  * @returns {array} - An array of formatted slack blocks.
  */
-const formatARecords = (records, hostname) => {
+const formatARecords = (records, {hostname, isSlack}) => {
   const output = [];
   for (const record of records) {
-    output.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `${hostname}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `Type: *A*`
-        },
-        {
-          type: 'mrkdwn',
-          text: `TTL: ${record.ttl}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `IP: \`${record.address}\``
-        }
-      ]
-    });
+    if (isSlack) {
+      output.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `${hostname}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `Type: *A*`
+          },
+          {
+            type: 'mrkdwn',
+            text: `TTL: ${record.ttl}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `IP: \`${record.address}\``
+          }
+        ]
+      });
+    } else {
+      output.push(
+        `${hostname} Type: **A** TTL: \`${record.ttl}\` IP: \`${record.address}\`\n`
+      );
+    }
   }
 
   return output;
@@ -157,7 +163,9 @@ const formatSoaRecord = (record, hostname) => {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params) {
-  const {hostname} = params;
+  const {hostname, __slack_headers: clientHeaders} = params;
+  const isSlack = () => clientHeaders['user-agent'].includes('Slackbot');
+
   let {type = 'A'} = params;
   type = type.toUpperCase();
 
@@ -170,7 +178,7 @@ async function _command(params) {
       case 'A': {
         const resolve4Async = promisify(dns.resolve4);
         const records = await resolve4Async(hostname, {ttl: true});
-        result.push(...formatARecords(records, hostname));
+        result.push(...formatARecords(records, {hostname, isSlack: isSlack()}));
         break;
       }
 
@@ -256,7 +264,7 @@ async function _command(params) {
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    blocks: result
+    [isSlack() ? 'blocks' : 'text']: isSlack() ? result : result.join('')
   };
 }
 
