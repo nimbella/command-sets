@@ -3,9 +3,9 @@
  * @param {object} element - Slack element
  * @param {boolean} isSlack - boolean value
  */
-const mui = (element, isSlack) => {
+const mui = (element, client) => {
   const output = [];
-  if (isSlack) {
+  if (client === 'slack') {
     return element;
   } else {
     if (element.type === 'context') {
@@ -30,7 +30,15 @@ const mui = (element, isSlack) => {
 async function _command(params, commandText, secrets = {}) {
   const {awsAccessKey, awsSecretKey, awsRegion} = secrets;
   const {__slack_headers: clientHeaders} = params;
-  const isSlack = () => clientHeaders['user-agent'].includes('Slackbot');
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
 
   if (!awsAccessKey || !awsSecretKey || !awsRegion) {
     return {
@@ -89,7 +97,7 @@ async function _command(params, commandText, secrets = {}) {
               }
             ]
           },
-          isSlack()
+          client
         )
       );
     }
@@ -103,14 +111,15 @@ async function _command(params, commandText, secrets = {}) {
             text: `*ERROR:* ${error.message}`
           }
         },
-        isSlack()
+        client
       )
     );
   }
 
   return {
     response_type: 'in_channel',
-    [isSlack() ? 'blocks' : 'text']: isSlack() ? result : result.join('\n')
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 }
 
