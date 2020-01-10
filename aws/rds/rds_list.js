@@ -1,5 +1,27 @@
 /**
- * @description undefined
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {boolean} isSlack - boolean value
+ */
+const mui = (element, isSlack) => {
+  const output = [];
+  if (isSlack) {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
+/**
+ * @description null
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -7,6 +29,8 @@
  */
 async function _command(params, commandText, secrets = {}) {
   const {awsAccessKey, awsSecretKey, awsRegion} = secrets;
+  const {__slack_headers: clientHeaders} = params;
+  const isSlack = () => clientHeaders['user-agent'].includes('Slackbot');
 
   if (!awsAccessKey || !awsSecretKey || !awsRegion) {
     return {
@@ -34,49 +58,59 @@ async function _command(params, commandText, secrets = {}) {
     const {DBInstances} = await describeDBInstancesAsync();
 
     for (const instance of DBInstances) {
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `Identifier: \`${instance.DBInstanceIdentifier}\``
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `Identifier: \`${instance.DBInstanceIdentifier}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Class: \`${instance.DBInstanceClass}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Status: \`${instance.DBInstanceStatus}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Engine: \`${instance.Engine}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Storage: \`${instance.AllocatedStorage} GiB\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Endpoint: \`${instance.Endpoint.Address}\``
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `Class: \`${instance.DBInstanceClass}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Status: \`${instance.DBInstanceStatus}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Engine: \`${instance.Engine}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Storage: \`${instance.AllocatedStorage} GiB\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Endpoint: \`${instance.Endpoint.Address}\``
-          }
-        ]
-      });
+          isSlack()
+        )
+      );
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        },
+        isSlack()
+      )
+    );
   }
 
   return {
     response_type: 'in_channel',
-    blocks: result
+    [isSlack() ? 'blocks' : 'text']: isSlack() ? result : result.join('\n')
   };
 }
 
