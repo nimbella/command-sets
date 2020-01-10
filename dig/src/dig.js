@@ -163,7 +163,7 @@ const formatNSRecords = (records, {hostname, isSlack}) => {
 };
 
 const formatSoaRecord = (record, {hostname, isSlack}) => {
-  const output = [];
+  const output = [`**${hostname}**`];
   const block = {
     type: 'context',
     elements: [{type: 'mrkdwn', text: `*${hostname}*`}]
@@ -173,11 +173,11 @@ const formatSoaRecord = (record, {hostname, isSlack}) => {
     if (isSlack) {
       block.elements.push({type: 'mrkdwn', text: `${key}: \`${value}\``});
     } else {
-      output.push();
+      output.push(`${key}: \`${value}\``);
     }
   }
 
-  return isSlack ? [block] : output;
+  return isSlack ? [block] : [output.join(' ')];
 };
 
 /**
@@ -246,7 +246,9 @@ async function _command(params) {
       case 'SOA': {
         const resolveSoaAsync = promisify(dns.resolveSoa);
         const records = await resolveSoaAsync(hostname);
-        result.push(...formatSoaRecord(records, hostname));
+        result.push(
+          ...formatSoaRecord(records, {hostname, isSlack: isSlack()})
+        );
         break;
       }
 
