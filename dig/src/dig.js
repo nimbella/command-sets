@@ -33,7 +33,7 @@ const formatARecords = (records, {hostname, isSlack}) => {
       });
     } else {
       output.push(
-        `${hostname} Type: **A** TTL: \`${record.ttl}\` IP: \`${record.address}\`\n`
+        `${hostname} Type: **A** TTL: \`${record.ttl}\` IP: \`${record.address}\``
       );
     }
   }
@@ -162,17 +162,22 @@ const formatNSRecords = (records, {hostname, isSlack}) => {
   return output;
 };
 
-const formatSoaRecord = (record, hostname) => {
+const formatSoaRecord = (record, {hostname, isSlack}) => {
+  const output = [];
   const block = {
     type: 'context',
     elements: [{type: 'mrkdwn', text: `*${hostname}*`}]
   };
 
   for (const [key, value] of Object.entries(record)) {
-    block.elements.push({type: 'mrkdwn', text: `${key}: \`${value}\``});
+    if (isSlack) {
+      block.elements.push({type: 'mrkdwn', text: `${key}: \`${value}\``});
+    } else {
+      output.push();
+    }
   }
 
-  return [block];
+  return isSlack ? [block] : output;
 };
 
 /**
@@ -260,39 +265,51 @@ async function _command(params) {
     }
   } catch (error) {
     if (error.code === 'ENODATA') {
-      result.push({
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `No records of type *${type}* found for ${hostname}.`
-          }
-        ]
-      });
+      if (isSlack()) {
+        result.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `No records of type *${type}* found for ${hostname}.`
+            }
+          ]
+        });
+      } else {
+        result.push(`No records of type **${type}** found for ${hostname}`);
+      }
     } else if (error.code === 'ENOTFOUND') {
-      result.push({
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `Domain ${hostname} not found.`
-          }
-        ]
-      });
+      if (isSlack()) {
+        result.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `Domain ${hostname} not found.`
+            }
+          ]
+        });
+      } else {
+        result.push(`Domain ${hostname} not found.`);
+      }
     } else {
-      result.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*ERROR:* ${error.message}`
-        }
-      });
+      if (isSlack()) {
+        result.push({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        });
+      } else {
+        result.push(`**ERROR:** ${error.message}`);
+      }
     }
   }
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    [isSlack() ? 'blocks' : 'text']: isSlack() ? result : result.join('')
+    [isSlack() ? 'blocks' : 'text']: isSlack() ? result : result.join('\n')
   };
 }
 
