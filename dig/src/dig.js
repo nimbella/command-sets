@@ -88,17 +88,23 @@ const formatAAAARecords = (records, hostname) => {
  * @param {string} hostname - The hostname to which the request is made.
  * @returns {array} - An array of formatted slack blocks.
  */
-const formatMXRecords = (records, hostname) => {
+const formatMXRecords = (records, {hostname, isSlack}) => {
   const output = [];
   for (const record of records) {
-    output.push({
-      type: 'context',
-      elements: [
-        {type: 'mrkdwn', text: `${hostname}`},
-        {type: 'mrkdwn', text: `\`${record.exchange}\``},
-        {type: 'mrkdwn', text: `Priority: \`${record.priority}\``}
-      ]
-    });
+    if (isSlack) {
+      output.push({
+        type: 'context',
+        elements: [
+          {type: 'mrkdwn', text: `${hostname}`},
+          {type: 'mrkdwn', text: `\`${record.exchange}\``},
+          {type: 'mrkdwn', text: `Priority: \`${record.priority}\``}
+        ]
+      });
+    } else {
+      output.push(
+        `${hostname} \`${record.exchange}\` Priority: \`${record.priority}\``
+      );
+    }
   }
 
   return output;
@@ -207,7 +213,9 @@ async function _command(params) {
       case 'MX': {
         const resolveMXAsync = promisify(dns.resolveMx);
         const records = await resolveMXAsync(hostname);
-        result.push(...formatMXRecords(records, hostname));
+        result.push(
+          ...formatMXRecords(records, {hostname, isSlack: isSlack()})
+        );
         break;
       }
 
