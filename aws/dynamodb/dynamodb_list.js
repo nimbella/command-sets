@@ -1,3 +1,27 @@
+'use strict';
+
+/**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  const output = [];
+  if (client === 'slack') {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
 /**
  * @description undefined
  * @param {ParamsType} params list of command parameters
@@ -16,8 +40,18 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  const {startTable = null, __slack_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
+
   const result = [];
-  const {startTable = null} = params;
   const aws = require('aws-sdk');
   const ddb = new aws.DynamoDB({
     apiVersion: '2012-08-10',
@@ -36,35 +70,51 @@ async function _command(params, commandText, secrets = {}) {
     });
 
     if (TableNames.length > 0) {
-      result.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `\`${TableNames.join('`\n`')}\``
-        }
-      });
+      result.push(
+        mui(
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `\`${TableNames.join('`\n`')}\``
+            }
+          },
+          client
+        )
+      );
     } else {
-      result.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `No tables available.`
-        }
-      });
+      result.push(
+        mui(
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `No tables available.`
+            }
+          },
+          client
+        )
+      );
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     response_type: 'in_channel',
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 }
 
