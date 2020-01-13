@@ -49,7 +49,14 @@ const postContent = (url, headers, body) => {
  */
 async function _command(params, commandText, secrets = {}) {
   const {digitaloceanApiKey} = secrets;
-  const {id: dropletID, cmd} = params;
+  if (!digitaloceanApiKey) {
+    return {
+      text:
+        'You need `digitaloceanApiKey` secret to run this command. Create one by running `/nc secret_create`.'
+    };
+  }
+
+  const {id: dropletID, cmd, __slack_headers: clientHeaders} = params;
   if (!['on', 'off'].includes(cmd)) {
     return {
       response_type: 'in_channel',
