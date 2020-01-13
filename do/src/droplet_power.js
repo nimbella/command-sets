@@ -78,7 +78,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {id: dropletID, cmd, __slack_headers: clientHeaders} = params;
+  const {id: dropletID, cmd, __client_headers: clientHeaders} = params;
   if (!['on', 'off'].includes(cmd)) {
     return {
       response_type: 'in_channel',

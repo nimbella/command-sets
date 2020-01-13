@@ -81,7 +81,7 @@ async function _command(params, commandText, secrets = {}) {
   const {
     id: dropletID,
     name: snapshotName = '',
-    __slack_headers: clientHeaders
+    __client_headers: clientHeaders
   } = params;
 
   const getClient = () => {
