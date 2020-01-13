@@ -29,7 +29,7 @@ const mui = (element, client) => {
  */
 async function _command(params, commandText, secrets = {}) {
   const {awsAccessKey, awsSecretKey, awsRegion} = secrets;
-  const {__slack_headers: clientHeaders} = params;
+  const {__client_headers: clientHeaders} = params;
   const getClient = () => {
     if (clientHeaders['user-agent'].includes('Slackbot')) {
       return 'slack';
