@@ -1,6 +1,28 @@
 'use strict';
 
 /**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  const output = [];
+  if (client === 'slack') {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
+/**
  * Makes an https GET request.
  * @param {string} url - The request URL
  * @param {{}} headers - Headers that need to be set while making a request.
@@ -48,14 +70,23 @@ const publicIP = networks => {
  */
 async function _command(params, commandText, secrets = {}) {
   const {digitaloceanApiKey} = secrets;
-  const {id: dropletID = ''} = params;
-
   if (!digitaloceanApiKey) {
     return {
       text:
         'You need `digitaloceanApiKey` secret to run this command. Create one by running `/nc secret_create`.'
     };
   }
+
+  const {id: dropletID = '', __slack_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
 
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';
@@ -70,34 +101,9 @@ async function _command(params, commandText, secrets = {}) {
         await getContent(BASE_URL + `/droplets/${dropletID}`, headers)
       );
 
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `*${droplet.name}*`
-          },
-          {
-            type: 'mrkdwn',
-            text: `Status: *${droplet.status}*`
-          },
-          {
-            type: 'mrkdwn',
-            text: `IPv4: ${publicIP(droplet.networks)}`
-          }
-        ]
-      });
-    } else {
-      const {droplets} = JSON.parse(
-        await getContent(BASE_URL + '/droplets?per_page=100', headers)
-      );
-
-      const inactiveDroplets = [];
-
-      for (const droplet of droplets) {
-        const {status} = droplet;
-        if (status !== 'active') {
-          inactiveDroplets.push({
             type: 'context',
             elements: [
               {
@@ -113,42 +119,93 @@ async function _command(params, commandText, secrets = {}) {
                 text: `IPv4: ${publicIP(droplet.networks)}`
               }
             ]
-          });
+          },
+          client
+        )
+      );
+    } else {
+      const {droplets} = JSON.parse(
+        await getContent(BASE_URL + '/droplets?per_page=100', headers)
+      );
+
+      const inactiveDroplets = [];
+
+      for (const droplet of droplets) {
+        const {status} = droplet;
+        if (status !== 'active') {
+          inactiveDroplets.push(
+            mui(
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'mrkdwn',
+                    text: `*${droplet.name}*`
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `Status: *${droplet.status}*`
+                  },
+                  {
+                    type: 'mrkdwn',
+                    text: `IPv4: ${publicIP(droplet.networks)}`
+                  }
+                ]
+              },
+              client
+            )
+          );
         }
       }
 
       if (inactiveDroplets.length === 0) {
-        result.push({
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `All droplets are active.`
-          }
-        });
+        result.push(
+          mui(
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `All droplets are active.`
+              }
+            },
+            client
+          )
+        );
       } else {
-        result.push({
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `These droplets seems to be inactive.`
-          }
-        });
+        result.push(
+          mui(
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `These droplets seems to be inactive.`
+              }
+            },
+            client
+          )
+        );
         result.push(...inactiveDroplets);
       }
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*ERROR:* ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*ERROR:* ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 }
 
