@@ -37,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {id: instanceID, __slack_headers: clientHeaders} = params;
+  const {id: instanceID, __client_headers: clientHeaders} = params;
   const getClient = () => {
     if (clientHeaders['user-agent'].includes('Slackbot')) {
       return 'slack';
