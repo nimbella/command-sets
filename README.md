@@ -1,10 +1,38 @@
 # Command-sets
 
-Master command sets to install command-sets for [commander](https://nimbella.com/resources-commander/overview#what-is-commander)
+A bunch of command-sets that can be installed using [Nimbella Commander](https://nimbella.com/product/commander) to run on messaging platforms like Slack and Mattermost.
 
-## Built in commands
+## Installation
 
-### AWS
+Make sure you've Nimbella Commander installed. If not, click [here](https://slack.com/oauth/authorize?client_id=876870346995.892105847680&scope=commands) to install it on your slack workspace.
+
+After having Nimbella Commander installed, you can install these command-sets by running the following slash command.
+
+```sh
+/nc csm_install <command-set>
+```
+
+Replace `<command-set>` with any of the command-set available here.
+
+Example:
+
+To install AWS command-set, we have to run the below command.
+
+```
+/nc csm_install aws
+```
+
+Now, you can access all commands available under `aws` command-set using the default app `dapp`.
+
+To list EC2 instances under your account:
+
+```
+/dapp ec2_list
+```
+
+### Available commands
+
+### AWS (`aws`)
 
 `ec2_list` - Lists EC2 instances.
 
@@ -20,7 +48,7 @@ Master command sets to install command-sets for [commander](https://nimbella.com
 
 `listhosts` - Lists AWS route53 managed hostnames.
 
-### DigitalOcean (do)
+### DigitalOcean (`do`)
 
 `droplet_list` - Lists the droplets under your account.
 
@@ -32,7 +60,7 @@ Master command sets to install command-sets for [commander](https://nimbella.com
 
 `droplet_reboot` - Command to reboot a droplet.
 
-### Billing
+### Billing (`billing`)
 
 `awsbill` - Shows your AWS bill.
 
@@ -42,4 +70,8 @@ Master command sets to install command-sets for [commander](https://nimbella.com
 
 ### Misc
 
-`dig` - A clone of dig that works on nimbella commander.
+`dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)
+
+## License
+
+Apache License, version 2.0
