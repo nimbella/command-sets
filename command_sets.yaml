@@ -5,9 +5,6 @@ command_sets:
   gcloud:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/commands.yaml
     description: Google Cloud commands (right now, just billing)
-  route53:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/route53/commands.yaml
-    description: Commands to interact with Amazon AWS Route53 DNS
   npm-example:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/npm-example/commands.yaml
     description: Example that installs a package and that lists installed packages
