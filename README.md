@@ -1,18 +1,22 @@
 # Command-sets
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](https://nimbella-community.slack.com/)
+[![Twitter](https://img.shields.io/twitter/follow/nimbella.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=nimbella)
+
 A bunch of command-sets that can be installed using [Nimbella Commander](https://nimbella.com/product/commander) to run on messaging platforms like Slack and Mattermost.
 
 ## Installation
 
 Make sure you've Nimbella Commander installed. If not, click [here](https://slack.com/oauth/authorize?client_id=876870346995.892105847680&scope=commands) to install it on your slack workspace.
 
-After having Nimbella Commander installed, you can install these command-sets by running the following slash command.
+After having Nimbella Commander installed, you can install a command-set by running the following slash command.
 
 ```sh
 /nc csm_install <command-set>
 ```
 
-Replace `<command-set>` with any of the command-set available here.
+Replace `<command-set>` with any of the command-sets available.
 
 Example:
 
@@ -30,7 +34,7 @@ To list EC2 instances under your account:
 /dapp ec2_list
 ```
 
-### Available commands
+## Available commands
 
 ### AWS (`aws`)
 
@@ -44,9 +48,9 @@ To list EC2 instances under your account:
 
 `rds_list` - Lists RDS instances under an account.
 
-`addhost` - Adds an AWS route53 hostname.
+`53_add` - Adds an AWS route53 hostname.
 
-`listhosts` - Lists AWS route53 managed hostnames.
+`53_list` - Lists AWS route53 managed hostnames.
 
 ### DigitalOcean (`do`)
 
@@ -71,7 +75,3 @@ To list EC2 instances under your account:
 ### Misc
 
 `dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)
-
-## License
-
-Apache License, version 2.0
