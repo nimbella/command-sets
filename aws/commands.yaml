@@ -25,3 +25,17 @@ commands:
   rds_list:
     sourcePath: rds/rds_list.js
     description: List Amazon RDS (Relational Database Service) instances under your account.
+  53_list:
+    sourcePath: route53/53_list.js
+    description: Lists AWS route53 managed hostnames
+    options:
+      - name: type
+        value: record_type
+      - name: match
+        value: match_string
+  53_add:
+    sourcePath: route53/53_add.js
+    description: Adds an AWS route53 hostname
+    parameters:
+      - name: hostname
+      - name: ip_address
