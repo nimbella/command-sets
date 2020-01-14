@@ -23,9 +23,7 @@ commands:
     description: Power on/off your droplet.
     parameters:
       - name: cmd
-        description: This parameter can include the values on or off.
       - name: id
-        description: The id of your droplet.
   droplet_status:
     sourcePath: /droplet_status.js
     description: Know the status of all your droplets or a single droplet.
