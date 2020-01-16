@@ -64,6 +64,10 @@ To list EC2 instances under your account:
 
 `droplet_reboot` - Command to reboot a droplet.
 
+### Google Cloud Platform (`gcloud`)
+
+`gcloudbill` - Shows your GCP bill.
+
 ### Billing (`billing`)
 
 `awsbill` - Shows your AWS bill.
