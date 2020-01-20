@@ -3,3 +3,8 @@ commands:
   vultr_list:
     sourcePath: /vultr_list.js
     description: Lists Vultr server instances.
+  vultr_reboot:
+    sourcePath: /vultr_reboot.js
+    description: Reboot Vultr server instance.
+    parameters:
+      - name: subid
