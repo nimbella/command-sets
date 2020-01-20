@@ -8,3 +8,8 @@ commands:
     description: Reboot Vultr server instance.
     parameters:
       - name: subid
+  vultr_snap:
+    sourcePath: /vultr_snap.js
+    description: Create a snapshot of Vultr server instance.
+    parameters:
+      - name: subid
