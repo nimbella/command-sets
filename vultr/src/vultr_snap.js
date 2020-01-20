@@ -1,5 +1,22 @@
 'use strict';
 
+// To enable the platform to cache the module when possible.
+let Vultr;
+
+/**
+ * Install NPM packages.
+ * @param {string} pkgName - The name of the package to be installed.
+ */
+async function install(pkgName) {
+  return new Promise((resolve, reject) => {
+    const {exec} = require('child_process');
+    exec(`npm install ${pkgName}`, (err, stdout, stderr) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 /**
  * @description Says "Hello, world!" or "Hello, <name>" when the name is provided.
  * @param {ParamsType} params list of command parameters
@@ -20,21 +37,34 @@ async function _command(params, commandText, secrets = {}) {
   const result = [];
   const {subid} = params;
 
-  const Vultr = require('@vultr/vultr-node');
+  try {
+    if (!Vultr) {
+      await install('@vultr/vultr-node');
+      Vultr = require('@vultr/vultr-node');
+    }
 
-  const {snapshot} = Vultr.initialize({apiKey: vultrApiKey});
+    const {snapshot} = Vultr.initialize({apiKey: vultrApiKey});
 
-  const {SNAPSHOTID} = await snapshot.create({SUBID: subid});
+    const {SNAPSHOTID} = await snapshot.create({SUBID: Number(subid)});
 
-  result.push({
-    type: 'context',
-    elements: [
-      {
+    result.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `Snapshot with ID \`${SNAPSHOTID}\` is initiated for \`${subid}\``
+        }
+      ]
+    });
+  } catch (error) {
+    result.push({
+      type: 'section',
+      text: {
         type: 'mrkdwn',
-        text: `Snapshot with ID \`${SNAPSHOTID}\` is initiated for \`${subid}\``
+        text: `*Error*: ${error.message}`
       }
-    ]
-  });
+    });
+  }
 
   return {
     // Or `ephemeral` for private response
