@@ -1,0 +1,5 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/vultr/src
+commands:
+  vultr_list:
+    sourcePath: /vultr_list.js
+    description: Lists Vultr server instances.
