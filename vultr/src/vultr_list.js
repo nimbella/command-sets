@@ -1,5 +1,27 @@
 'use strict';
 
+/**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  const output = [];
+  if (client === 'slack') {
+    return element;
+  } else {
+    if (element.type === 'context') {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+    } else if (element.type === 'section') {
+      output.push(element.text.text.replace(/\*/g, '**'));
+    }
+  }
+
+  return output.join(' ');
+};
+
 // To enable the platform to cache the module when possible.
 let Vultr;
 
@@ -33,6 +55,17 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  const {__slack_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
+
   // This array is used to store slack blocks.
   const result = [];
 
@@ -47,42 +80,53 @@ async function _command(params, commandText, secrets = {}) {
     const data = await server.list();
     for (const [key, value] of Object.entries(data)) {
       const {main_ip, status, label} = value;
-      result.push({
-        type: 'context',
-        elements: [
+      result.push(
+        mui(
           {
-            type: 'mrkdwn',
-            text: `ID: ${key}`
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `ID: ${key}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `IP: \`${main_ip}\``
+              },
+              {
+                type: 'mrkdwn',
+                text: `Status: *${status}*`
+              },
+              {
+                type: 'mrkdwn',
+                text: `${label}`
+              }
+            ]
           },
-          {
-            type: 'mrkdwn',
-            text: `IP: \`${main_ip}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `Status: *${status}*`
-          },
-          {
-            type: 'mrkdwn',
-            text: `${label}`
-          }
-        ]
-      });
+          client
+        )
+      );
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Error*: ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Error*: ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     // Or `ephemeral` for private response
     response_type: 'in_channel', // eslint-disable-line camelcase
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 }
 
