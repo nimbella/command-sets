@@ -6,41 +6,24 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  const output = [];
   if (client === 'slack') {
     return element;
-  } else {
-    if (element.type === 'context') {
-      for (const item of element.elements) {
-        output.push(item.text.replace(/\*/g, '**'));
-      }
-    } else if (element.type === 'section') {
-      output.push(element.text.text.replace(/\*/g, '**'));
+  }
+
+  const output = [];
+  if (element.type === 'context') {
+    for (const item of element.elements) {
+      output.push(item.text.replace(/\*/g, '**'));
     }
+  } else if (element.type === 'section') {
+    output.push(element.text.text.replace(/\*/g, '**'));
   }
 
   return output.join(' ');
 };
 
-// To enable the platform to cache the module when possible.
-let Vultr;
-
 /**
- * Install NPM packages.
- * @param {string} pkgName - The name of the package to be installed.
- */
-async function install(pkgName) {
-  return new Promise((resolve, reject) => {
-    const {exec} = require('child_process');
-    exec(`npm install ${pkgName}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
-/**
- * @description Says "Hello, world!" or "Hello, <name>" when the name is provided.
+ * @description Take a snapshot of server instance.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -70,10 +53,7 @@ async function _command(params, commandText, secrets = {}) {
   const result = [];
 
   try {
-    if (!Vultr) {
-      await install('@vultr/vultr-node');
-      Vultr = require('@vultr/vultr-node');
-    }
+    const Vultr = require('@vultr/vultr-node');
 
     const {snapshot} = Vultr.initialize({apiKey: vultrApiKey});
 
