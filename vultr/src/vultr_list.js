@@ -6,17 +6,17 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  const output = [];
   if (client === 'slack') {
     return element;
-  } else {
-    if (element.type === 'context') {
-      for (const item of element.elements) {
-        output.push(item.text.replace(/\*/g, '**'));
-      }
-    } else if (element.type === 'section') {
-      output.push(element.text.text.replace(/\*/g, '**'));
+  }
+
+  const output = [];
+  if (element.type === 'context') {
+    for (const item of element.elements) {
+      output.push(item.text.replace(/\*/g, '**'));
     }
+  } else if (element.type === 'section') {
+    output.push(element.text.text.replace(/\*/g, '**'));
   }
 
   return output.join(' ');
