@@ -135,18 +135,20 @@ async function _command(params, commandText, secrets = {}) {
         continue;
       }
 
-      let serviceName = service.Keys[0];
-      serviceName = serviceName.replace('Amazon ', '');
-      serviceName = serviceName.replace('Amazon', '');
-      serviceName = serviceName.replace('AWS', '');
-      serviceName = serviceName.replace(
-        'Elastic Compute Cloud',
-        'Elastic Compute'
+      // Object key is the search value & object value is the replace value.
+      const replaceDict = {
+        'Elastic Compute Cloud': 'Elastic Compute',
+        'Amazon ': '',
+        AWS: '',
+        'EC2 Container Registry (ECR)': 'EC2 Container Registry'
+      };
+
+      const regex = new RegExp(Object.keys(replaceDict).join('|'), 'gi');
+      const serviceName = service.Keys[0].replace(
+        regex,
+        matched => replaceDict[matched]
       );
-      serviceName = serviceName.replace(
-        'EC2 Container Registry (ECR)',
-        'EC2 Container Registry'
-      );
+
       totalCost += cost;
       const {Unit: serviceUnit} = service.Metrics.AmortizedCost;
       if (serviceUnit == 'USD') {
