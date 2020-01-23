@@ -204,16 +204,9 @@ const formatSoaRecord = (record, {hostname, client}) => {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params) {
-  const {hostname, __slack_headers: clientHeaders} = params;
-  const getClient = () => {
-    if (clientHeaders['user-agent'].includes('Slackbot')) {
-      return 'slack';
-    }
+  const {hostname, __client} = params;
 
-    return 'mattermost';
-  };
-
-  const client = getClient();
+  const client = __client.name;
 
   let {type = 'A'} = params;
   type = type.toUpperCase();

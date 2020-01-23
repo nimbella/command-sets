@@ -91,7 +91,7 @@ const calculatePages = links => {
  */
 async function _command(params, commandText, secrets = {}) {
   const {digitaloceanApiKey} = secrets;
-  const {page = 1, __slack_headers: clientHeaders} = params;
+  const {page = 1, __client} = params;
   if (!digitaloceanApiKey) {
     return {
       text:
@@ -99,15 +99,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const getClient = () => {
-    if (clientHeaders['user-agent'].includes('Slackbot')) {
-      return 'slack';
-    }
-
-    return 'mattermost';
-  };
-
-  const client = getClient();
+  const client = __client.name;
 
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';

@@ -78,21 +78,9 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {
-    id: dropletID,
-    name: snapshotName = '',
-    __slack_headers: clientHeaders
-  } = params;
+  const {id: dropletID, name: snapshotName = '', __client} = params;
 
-  const getClient = () => {
-    if (clientHeaders['user-agent'].includes('Slackbot')) {
-      return 'slack';
-    }
-
-    return 'mattermost';
-  };
-
-  const client = getClient();
+  const client = __client.name;
 
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';
