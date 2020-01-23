@@ -1,6 +1,44 @@
 // jshint esversion: 9
 
 /**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  if (client === 'slack') {
+    return element;
+  }
+
+  const output = [];
+  switch (element.type) {
+    case 'context': {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'section': {
+      if (element.fields && element.fields.length > 0) {
+        for (const field of element.fields) {
+          output.push(field.text.replace(/\*/g, '**') + '\n');
+        }
+      } else if (element.text) {
+        // Convert single text element to h4 in mattermost.
+        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'divider': {
+      output.push('***');
+      break;
+    }
+  }
+
+  return output.join(' ');
+};
+
+/**
  * @description Shows your AWS bill
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText slack text message
@@ -25,7 +63,17 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {month_year: monthYear} = params;
+  const {month_year: monthYear, __client_headers: clientHeaders} = params;
+  const getClient = () => {
+    if (clientHeaders['user-agent'].includes('Slackbot')) {
+      return 'slack';
+    }
+
+    return 'mattermost';
+  };
+
+  const client = getClient();
+
   const AWS = require('aws-sdk');
 
   const now = new Date();
@@ -157,21 +205,37 @@ async function _command(params, commandText, secrets = {}) {
     }
 
     result.blocks.push(
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: title
-        }
-      },
-      {
-        type: 'divider'
-      },
-      serviceSection
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: title
+          }
+        },
+        client
+      )
     );
+
+    result.blocks.push(
+      mui(
+        {
+          type: 'divider'
+        },
+        client
+      )
+    );
+
+    result.blocks.push(mui(serviceSection, client));
   } catch (error) {
     result.response_type = 'ephemeral';
     result.text = `Error: ${error.message}`;
+  }
+
+  if (client === 'mattermost') {
+    result.text = result.blocks.join('\n');
+    delete result.blocks;
+    return result;
   }
 
   return result;
