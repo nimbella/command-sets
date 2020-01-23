@@ -8,28 +8,32 @@
  * @return {Promise<SlackBodyType>} Slack response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {month_year} = params;
-
-  AWS = require('aws-sdk');
+  const {
+    awsCostExplorerAccessKeyId,
+    awsCostExplorerSecretAccessKey,
+    awsCostExplorerRegion
+  } = secrets;
 
   if (
-    !secrets.awsCostExplorerAccessKeyId ||
-    !secrets.awsCostExplorerSecretAccessKey ||
-    !secrets.awsCostExplorerRegion
+    !awsCostExplorerAccessKeyId ||
+    !awsCostExplorerSecretAccessKey ||
+    !awsCostExplorerRegion
   ) {
     return {
-      response_type: 'ephemeral',
-      text:
-        'You must create secrets for awsCostExplorerAccessKeyId, awsCostExplorerSecretAccessKeyId ' +
-        'and awsCostExporerRegion to use this command '
+      response_type: 'ephemeral', // eslint-disable-line camelcase
+      text: `You must create secrets for \`awsCostExplorerAccessKeyId\`, \`awsCostExplorerSecretAccessKey\` and \`awsCostExporerRegion\` to use this command`
     };
   }
 
-  let now = new Date();
+  const {month_year: monthYear} = params;
+  const AWS = require('aws-sdk');
+
+  const now = new Date();
   let month = now.getUTCMonth();
   let year = now.getUTCFullYear();
-  if (month_year != null) {
-    let arr = month_year.split('/');
+
+  if (monthYear != null) {
+    const arr = monthYear.split('/');
     if (arr.length != 2) {
       return {
         response_type: 'ephemeral',
@@ -40,29 +44,20 @@ async function _command(params, commandText, secrets = {}) {
     year = parseInt(arr[1]);
     if (month < 1 || month > 12 || year < 1900 || year > 2800) {
       return {
-        response_type: 'ephemeral',
+        response_type: 'ephemeral', // eslint-disable-line camelcase
         text: 'Month or year out of range. Example: 11/2019 for November 2019'
       };
     }
   }
-  // determine billing period start/end. toISOString() is UTC (GMT) time, which is what AWS bills in
-  let firstOfThisMonth = new Date(year, month, 1);
-  let firstOfNextMonth;
-  if (month != 12) {
-    firstOfNextMonth = new Date(year, month + 1, 1);
-  } else {
-    firstOfNextMonth = new Date(year + 1, 1, 1);
-  }
-  let start = firstOfThisMonth.toISOString().substring(0, 10);
-  let end = firstOfNextMonth.toISOString().substring(0, 10);
 
-  var costexplorer = new AWS.CostExplorer({
-    accessKeyId: secrets.awsCostExplorerAccessKeyId,
-    secretAccessKey: secrets.awsCostExplorerSecretAccessKey,
-    region: secrets.awsCostExplorerRegion
-  });
+  // Determine billing period start/end. toISOString() is UTC (GMT) time, which is what AWS bills in
+  const firstOfThisMonth = new Date(year, month, 1);
+  const firstOfNextMonth = new Date(year, month + 1, 1);
 
-  var costParams = {
+  const start = firstOfThisMonth.toISOString().substring(0, 10);
+  const end = firstOfNextMonth.toISOString().substring(0, 10);
+
+  const costParams = {
     TimePeriod: {
       Start: start,
       End: end
@@ -72,117 +67,114 @@ async function _command(params, commandText, secrets = {}) {
     Metrics: ['AmortizedCost']
   };
 
-  return costexplorer
-    .getCostAndUsage(costParams)
-    .promise()
-    .then(
-      function(data) {
-        // for debugging:
-        // console.log(JSON.stringify(data, null, 4));
+  const result = {response_type: 'in_channel', blocks: []};
 
-        let byServiceSection = {fields: []};
-        byServiceSection.type = 'section';
-        let groups = data.ResultsByTime[0].Groups;
-        let totalCost = 0.0;
-        let unit;
-        let hasMultipleUnits = 0;
-        let i,
-          n = 0;
-        for (i = 0; i < groups.length; i++) {
-          let cost = groups[i].Metrics.AmortizedCost.Amount;
-          if (cost == 0) {
-            continue;
-          }
-          cost = parseFloat(cost);
+  const costExplorer = new AWS.CostExplorer({
+    accessKeyId: secrets.awsCostExplorerAccessKeyId,
+    secretAccessKey: secrets.awsCostExplorerSecretAccessKey,
+    region: secrets.awsCostExplorerRegion
+  });
 
-          // make the service names shorter
-          let serviceName = groups[i].Keys[0];
-          serviceName = serviceName.replace('Amazon ', '');
-          serviceName = serviceName.replace('Amazon', '');
-          serviceName = serviceName.replace('AWS', '');
-          serviceName = serviceName.replace(
-            'Elastic Compute Cloud',
-            'Elastic Compute'
-          );
-          serviceName = serviceName.replace(
-            'EC2 Container Registry (ECR)',
-            'EC2 Container Registry'
-          );
-
-          totalCost += cost;
-          let thisUnit = groups[i].Metrics.AmortizedCost.Unit;
-          if (thisUnit == 'USD') {
-            costInUnits = '$' + cost.toFixed(2);
-          } else {
-            costInUnits = cost.toFixed(2) + ' ' + thisUnit;
-          }
-          byServiceSection.fields[n] = {
-            type: 'mrkdwn',
-            text: costInUnits + ' *' + serviceName + '*'
-          };
-          if (unit != null && unit != thisUnit) {
-            hasMultipleUnits = 1;
-          }
-          unit = thisUnit;
-          n++;
-        }
-
-        totalCostString = totalCost.toFixed(2);
-        if (hasMultipleUnits) {
-          totalCostString += ' (costs in in multiple units)';
-        } else {
-          if (unit == 'USD') {
-            totalCostString = '$' + totalCostString;
-          } else {
-            totalCostString += ' ' + unit;
-          }
-        }
-
-        // for debugging:
-        // console.log("Month-to-date AWS charges: " + totalCostString);
-        // console.log("Charges by service: " + byServiceString);
-        let month_names = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec'
-        ];
-        let title = totalCostString + ' ';
-        if (month_year != null) {
-          title += '*AWS Cost for ' + month_names[month] + ' ' + year + '*';
-        } else {
-          title += '*AWS Cost Month-to-Date*';
-        }
-        let response = {
-          response_type: 'in_channel',
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: title
-              }
-            },
-            {
-              type: 'divider'
-            },
-            byServiceSection
-          ]
-        };
-        return response;
-      },
-      function(error) {
-        return {response_type: 'in_channel', text: 'Error: ' + error};
-      }
+  try {
+    const {promisify} = require('util');
+    const getCostAndUsageAsync = promisify(costExplorer.getCostAndUsage).bind(
+      costExplorer
     );
+    const data = await getCostAndUsageAsync(costParams);
+
+    const serviceSection = {type: 'section', fields: []};
+    const {Groups: groups} = data.ResultsByTime[0];
+    let totalCost = 0.0;
+    let unit;
+    let hasMultipleUnits = false;
+
+    for (const service of groups) {
+      const cost = Number(service.Metrics.AmortizedCost.Amount);
+      if (cost === 0) {
+        continue;
+      }
+
+      let serviceName = service.Keys[0];
+      serviceName = serviceName.replace('Amazon ', '');
+      serviceName = serviceName.replace('Amazon', '');
+      serviceName = serviceName.replace('AWS', '');
+      serviceName = serviceName.replace(
+        'Elastic Compute Cloud',
+        'Elastic Compute'
+      );
+      serviceName = serviceName.replace(
+        'EC2 Container Registry (ECR)',
+        'EC2 Container Registry'
+      );
+      totalCost += cost;
+      const {Unit: serviceUnit} = service.Metrics.AmortizedCost;
+      if (serviceUnit == 'USD') {
+        costInUnits = '$' + cost.toFixed(2);
+      } else {
+        costInUnits = cost.toFixed(2) + ' ' + serviceUnit;
+      }
+      serviceSection.fields.push({
+        type: 'mrkdwn',
+        text: costInUnits + ' *' + serviceName + '*'
+      });
+      if (unit != null && unit != serviceUnit) {
+        hasMultipleUnits = true;
+      }
+      unit = serviceUnit;
+    }
+
+    totalCostString = totalCost.toFixed(2);
+    if (hasMultipleUnits) {
+      totalCostString += ' (costs in in multiple units)';
+    } else {
+      if (unit == 'USD') {
+        totalCostString = '$' + totalCostString;
+      } else {
+        totalCostString += ' ' + unit;
+      }
+    }
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
+    let title = totalCostString + ' ';
+    if (monthYear != null) {
+      title += '*AWS Cost for ' + months[month] + ' ' + year + '*';
+    } else {
+      title += '*AWS Cost Month-to-Date*';
+    }
+
+    result.blocks.push(
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: title
+        }
+      },
+      {
+        type: 'divider'
+      },
+      serviceSection
+    );
+  } catch (error) {
+    result.response_type = 'ephemeral';
+    result.text = `Error: ${error.message}`;
+  }
+
+  return result;
 }
 
 /**
@@ -190,7 +182,6 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-
 const main = async ({__secrets = {}, commandText, ...params}) => ({
   body: await _command(params, commandText, __secrets)
 });
