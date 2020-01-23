@@ -40,16 +40,9 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {startTable = null, __client_headers: clientHeaders} = params;
-  const getClient = () => {
-    if (clientHeaders['user-agent'].includes('Slackbot')) {
-      return 'slack';
-    }
+  const {startTable = null, __client} = params;
 
-    return 'mattermost';
-  };
-
-  const client = getClient();
+  const client = __client.name;
 
   const result = [];
   const aws = require('aws-sdk');
