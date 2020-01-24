@@ -68,6 +68,14 @@ To list EC2 instances under your account:
 
 `gcloudbill` - Shows your GCP bill.
 
+### Vultr (`vultr`)
+
+`vultr_list` - Lists vultr server instances.
+
+`vultr_reboot` - Reboot Vultr server instance.
+
+`vultr_snap` - Create a snapshot of Vultr server instance.
+
 ### Billing (`billing`)
 
 `awsbill` - Shows your AWS bill.
