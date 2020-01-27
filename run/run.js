@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @description undefined
+ * @description Runs slash commands
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -12,20 +12,23 @@ async function _command(params, commandText, secrets = {}) {
   if (!mmURL || !mmToken) {
     return {
       response_type: 'ephemeral',
-      text: `You need to create secrets named \`mmURL\` & \`mmToken\` with your mattermost server URL & API token. Create secrets by running \`/nc secret_create\``
+      text:
+        `You need to create secrets named \`mmURL\` & \`mmToken\` with your mattermost` +
+        `server URL & API token. Create secrets by running \`/nc secret_create\``
     };
   }
 
+  const {varArgs, __client} = params;
+  const requestEndpoint = `${mmURL}/api/v4/commands/execute`;
+
   try {
     const axios = require('axios');
-    const {cmdWithArgs, __client} = params;
-    const requestEndpoint = `${mmURL}/api/v4/commands/execute`;
-    const response = await axios({
+    await axios({
       method: 'POST',
       url: requestEndpoint,
       data: {
         channel_id: __client.channel_id,
-        command: cmdWithArgs.replace(/"/g, '')
+        command: varArgs.startsWith('/') ? varArgs : '/' + varArgs
       },
       headers: {
         Authorization: `Bearer ${mmToken}`
@@ -34,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     return {
       response_type: 'in_channel',
-      text: JSON.stringify(error)
+      text: error.message
     };
   }
 }
