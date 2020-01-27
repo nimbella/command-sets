@@ -1,7 +1,7 @@
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/run/src
 commands:
   run:
-    sourcePath: ./run.js
+    sourcePath: /run.js
     description: Slash command to run slash commands.
     parameters:
       - name: ...
