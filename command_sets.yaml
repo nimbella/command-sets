@@ -11,9 +11,6 @@ command_sets:
   echo:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/echo/commands.yaml
     description: simple echo test
-  missing_set:
-    sourcePath: https://nimbella.com/missing_file.yaml
-    description: this command set is a test, the yaml file is missing
   do:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/commands.yaml
     description: DigitalOcean commands
