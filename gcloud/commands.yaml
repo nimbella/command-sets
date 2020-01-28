@@ -1,4 +1,4 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/gcloud/src
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/src
 commands:
   gcloudbill:
     sourcePath: /gcloudbill.js
