@@ -243,7 +243,8 @@ const _command = async (params, commandText, secrets = {}) => {
     };
   }
 
-  const {detail = false} = params;
+  const {detail = false, __client} = params;
+  const client = __client.name;
   const result = [];
 
   const now = new Date();
