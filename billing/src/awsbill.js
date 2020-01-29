@@ -65,7 +65,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const {month_year: monthYear, __client} = params;
 
-  const client = __client.name;
+  const client = 'slack';
 
   const AWS = require('aws-sdk');
 
