@@ -59,7 +59,7 @@ async function _command(params, commandText, secrets = {}) {
   ) {
     return {
       response_type: 'ephemeral', // eslint-disable-line camelcase
-      text: `You must create secrets for \`awsCostExplorerAccessKeyId\`, \`awsCostExplorerSecretAccessKey\` and \`awsCostExporerRegion\` to use this command`
+      text: `You must create secrets for \`awsCostExplorerAccessKeyId\`, \`awsCostExplorerSecretAccessKey\` and \`awsCostExplorerRegion\` to use this command`
     };
   }
 
