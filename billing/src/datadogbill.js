@@ -209,7 +209,7 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
     const {cost, forwardCost, ...hosts} = hostsCosts;
     verbose.Hosts = hosts;
   }
-
+  
   if (metricsCosts.cost !== 0) {
     const {cost, forwardCost, ...metrics} = metricsCosts;
     verbose.Metrics = metrics;
@@ -237,9 +237,16 @@ const _command = async (params, commandText, secrets = {}) => {
   const {datadogApiKey, datadogApplicationKey} = secrets;
   if (!datadogApiKey || !datadogApplicationKey) {
     return {
+<<<<<<< HEAD
       text:
         `You need \`datadogApiKey\` and \`datadogApplicationKey\` secrets to use this command.` +
         `Create them by running \`/nc secret_create\``
+=======
+      body: {
+        text:
+          'You must create secrets for datadogApiKey and datadogApplicationKey to use this command '
+      }
+>>>>>>> feat: use slack blocks & refactor a bit
     };
   }
 
@@ -276,6 +283,7 @@ const _command = async (params, commandText, secrets = {}) => {
       JSON.parse(syntheticsData)
     );
 
+<<<<<<< HEAD
     result.push(
       mui(
         {
@@ -320,6 +328,37 @@ const _command = async (params, commandText, secrets = {}) => {
             client
           )
         );
+=======
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Datadog Bill*`
+      }
+    });
+
+    result.push({type: 'divider'});
+
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Projected this month: *$${totalCost.toFixed(
+          2
+        )}* Projected next month: *$${totalForwardCost.toFixed(2)}*`
+      }
+    });
+
+    if (detail === true) {
+      for (const [key, service] of Object.entries(verbose)) {
+        result.push({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${key}*`
+          }
+        });
+>>>>>>> feat: use slack blocks & refactor a bit
 
         const detailSection = {type: 'section', fields: []};
         for (const [key, value] of Object.entries(service)) {
@@ -329,6 +368,7 @@ const _command = async (params, commandText, secrets = {}) => {
           });
         }
 
+<<<<<<< HEAD
         result.push(mui(detailSection, client));
       }
     }
@@ -345,12 +385,29 @@ const _command = async (params, commandText, secrets = {}) => {
         client
       )
     );
+=======
+        result.push(detailSection);
+      }
+    }
+  } catch (error) {
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Error*: ${error.message}`
+      }
+    });
+>>>>>>> feat: use slack blocks & refactor a bit
   }
 
   return {
     response_type: 'in_channel',
+<<<<<<< HEAD
     [client === 'slack' ? 'blocks' : 'text']:
       client === 'slack' ? result : result.join('\n')
+=======
+    blocks: result
+>>>>>>> feat: use slack blocks & refactor a bit
   };
 };
 
