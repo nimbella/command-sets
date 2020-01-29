@@ -1,5 +1,43 @@
 // jshint esversion: 8
 
+/**
+ * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ */
+const mui = (element, client) => {
+  if (client === 'slack') {
+    return element;
+  }
+
+  const output = [];
+  switch (element.type) {
+    case 'context': {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'section': {
+      if (element.fields && element.fields.length > 0) {
+        for (const field of element.fields) {
+          output.push(field.text.replace(/\*/g, '**') + '\n');
+        }
+      } else if (element.text) {
+        // Convert single text element to h4 in mattermost.
+        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'divider': {
+      output.push('***');
+      break;
+    }
+  }
+
+  return output.join(' ');
+};
+
 // this code is from: https://www.tomas-dvorak.cz/posts/nodejs-request-without-dependencies/
 // it allows us to do a promise https request without any dependencies
 const getContent = function(url) {
@@ -238,35 +276,50 @@ const _command = async (params, commandText, secrets = {}) => {
       JSON.parse(syntheticsData)
     );
 
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Datadog Bill*`
-      }
-    });
-
-    result.push({type: 'divider'});
-
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `Projected this month: *$${totalCost.toFixed(
-          2
-        )}* Projected next month: *$${totalForwardCost.toFixed(2)}*`
-      }
-    });
-
-    if (detail === true) {
-      for (const [key, service] of Object.entries(verbose)) {
-        result.push({
+    result.push(
+      mui(
+        {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*${key}*`
+            text: `*Datadog Bill*`
           }
-        });
+        },
+        client
+      )
+    );
+
+    result.push(mui({type: 'divider'}, client));
+
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Projected this month: *$${totalCost.toFixed(
+              2
+            )}* Projected next month: *$${totalForwardCost.toFixed(2)}*`
+          }
+        },
+        client
+      )
+    );
+
+    if (detail === true) {
+      for (const [key, service] of Object.entries(verbose)) {
+        result.push(
+          mui(
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `*${key}*`
+              }
+            },
+            client
+          )
+        );
 
         const detailSection = {type: 'section', fields: []};
         for (const [key, value] of Object.entries(service)) {
@@ -276,22 +329,28 @@ const _command = async (params, commandText, secrets = {}) => {
           });
         }
 
-        result.push(detailSection);
+        result.push(mui(detailSection, client));
       }
     }
   } catch (error) {
-    result.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Error*: ${error.message}`
-      }
-    });
+    result.push(
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Error*: ${error.message}`
+          }
+        },
+        client
+      )
+    );
   }
 
   return {
     response_type: 'in_channel',
-    blocks: result
+    [client === 'slack' ? 'blocks' : 'text']:
+      client === 'slack' ? result : result.join('\n')
   };
 };
 
