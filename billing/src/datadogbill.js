@@ -199,10 +199,9 @@ const _command = async (params, commandText, secrets = {}) => {
   const {datadogApiKey, datadogApplicationKey} = secrets;
   if (!datadogApiKey || !datadogApplicationKey) {
     return {
-      body: {
-        text:
-          'You must create secrets for datadogApiKey and datadogApplicationKey to use this command '
-      }
+      text:
+        `You need \`datadogApiKey\` and \`datadogApplicationKey\` secrets to use this command.` +
+        `Create them by running \`/nc secret_create\``
     };
   }
 
