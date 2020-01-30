@@ -204,12 +204,15 @@ const formatSoaRecord = (record, {hostname, client}) => {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params) {
-  const {hostname, __client} = params;
+  const {__client} = params;
 
   const client = __client ? __client.name : 'slack';
 
-  let {type = 'A'} = params;
+  let {type = 'A', hostname} = params;
   type = type.toUpperCase();
+  hostname = hostname.startsWith('<')
+    ? hostname.split('|')[1].slice(0, -1)
+    : hostname;
 
   const result = [];
   const dns = require('dns');
