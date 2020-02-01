@@ -244,7 +244,7 @@ const _command = async (params, commandText, secrets = {}) => {
   }
 
   const {detail = false, __client} = params;
-  const client = __client.name;
+  const client = __client ? __client.name : 'slack';
   const result = [];
 
   const now = new Date();

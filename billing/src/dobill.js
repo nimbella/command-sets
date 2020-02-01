@@ -322,7 +322,7 @@ const _command = async (params, commandText, secrets = {}) => {
   }
 
   const {__client} = params;
-  const client = __client.name;
+  const client = __client ? __client.name : 'slack';
 
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';
