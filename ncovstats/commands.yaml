@@ -1,5 +1,10 @@
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/ncovstats/src
 commands:
+
+  advice:
+    sourcePath: /advice.js
+    description: List of do's and don'ts from WHO
+
   worldwide:
     sourcePath: /world.js
     description: Worldwide Stats
