@@ -1,0 +1,23 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/ncovstats/src
+commands:
+  worldwide:
+    sourcePath: /world.js
+    description: Worldwide Stats
+      
+  country:
+    sourcePath: /country.js
+    description: Stats for a Country
+    parameters:
+      - name: country_name
+        optional: false
+  cfr:
+    sourcePath: /cfr.js
+    description: Case Fatality Ratio 
+   
+  ro:
+    sourcePath: /ro.js
+    description: The Attack Rate or Transmissibility  
+ 
+  ip:
+    sourcePath: /ip.js
+    description: Incubation Period
