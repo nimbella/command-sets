@@ -1,8 +1,8 @@
-sourceBasePath: https://raw.githubusercontent.com/bhageena/command-sets/master/ncovstats/src
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/ncovstats/src
 commands:
   advice:
     sourcePath: /advice.js
-    description: List of dos and donts from WHO
+    description: List of do's and don'ts from WHO
   worldwide:
     sourcePath: /world.js
     description: Worldwide Stats      

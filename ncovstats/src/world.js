@@ -35,18 +35,15 @@ async function _command(params, commandText, secrets = {}) {
   const result = {};
 
   const html = cheerio.load(response.data);
-  html('.maincounter-number').filter((i, el) => {
-    let count = el.children[0].next.children[0].data;
-    if (i === 0) {
-      result.cases = count;
-    } else {
-      result.deaths = count;
-    }
-  });
+  const statsElements = html(`.maincounter-number`);
+  const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
+  result.cases = `${stats[0]} ${statsElements.next().text()}`;
+  result.deaths = stats[1];
+  result.cured = stats[2];
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: `CoronaVirus Stats Worldwide: \n Cases:- ${result.cases} \n Deaths:- ${result.deaths}`
+    text: `CoronaVirus Stats Worldwide: \n Cases:- ${result.cases} \n Deaths:- ${result.deaths} \n Cured:- ${result.cured}`
   };
 }
 
