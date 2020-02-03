@@ -35,17 +35,22 @@ async function _command(params, commandText, secrets = {}) {
   const result = {};
 
   const html = cheerio.load(response.data);
-  const country = toTitleCase(params.country_name); 
+  let country = toTitleCase(params.country_name);
+  country = abbrExpand(country);
   const countryStat = html(`td:contains(${country})`);
-  if(countryStat.length)
-  {
+  let msg;
+  if (countryStat.length) {
     result.cases = countryStat.next().text();
     result.deaths = countryStat.next().next().text();
+    msg = `CoronaVirus Stats in ${country}:\n Cases:- ${result.cases} \n Deaths:- ${result.deaths}`;
+  }
+  else {
+    msg = `${country} is safe till now.`;
   }
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: `CoronaVirus Stats in ${country}:\n Cases:- ${result.cases} \n Deaths:- ${result.deaths}`
+    text: msg
   };
 }
 
@@ -55,6 +60,33 @@ const toTitleCase = (phrase) => {
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+};
+
+const abbrExpand = (shortName) => {
+  longName = shortName;
+  switch (shortName) {
+    case 'Us':
+      longName = 'United States';
+      break;
+    case 'Uk':
+      longName = 'United Kingdom';
+      break;
+    case 'Sk':
+      longName = 'South Korea';
+      break;
+    case 'Hk':
+      longName = 'Hong Kong';
+      break;
+    case 'Uae':
+      longName = 'United Arab Emirates';
+      break;
+    case 'Sl':
+      longName = 'Sri Lanka';
+      break;
+    default:
+      break;
+  }
+  return longName;
 };
 
 const install = (pkgs) => {
