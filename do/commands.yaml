@@ -1,5 +1,10 @@
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/src
 commands:
+  droplet_ip:
+    sourcePath: /droplet_ip.js
+    description: Display IP addresses of a droplet.
+    parameters:
+      - name: dropletIp
   droplet_list:
     sourcePath: /droplet_list.js
     description: Lists your droplets.
