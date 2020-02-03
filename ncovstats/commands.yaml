@@ -1,4 +1,4 @@
-sourceBasePath: ttps://raw.githubusercontent.com/bhageena/command-sets/master/ncovstats/src
+sourceBasePath: https://raw.githubusercontent.com/bhageena/command-sets/master/ncovstats/src
 commands:
   advice:
     sourcePath: /advice.js
