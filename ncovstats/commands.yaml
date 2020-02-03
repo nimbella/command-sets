@@ -1,4 +1,4 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/ncovstats/src
+sourceBasePath: ttps://raw.githubusercontent.com/bhageena/command-sets/master/ncovstats/src
 commands:
   advice:
     sourcePath: /advice.js
