@@ -5,7 +5,7 @@ let axios, cheerio;
 
 const coronaMeter = 'https://www.worldometers.info/coronavirus/countries-where-coronavirus-has-spread/';
 /**
- * @description null
+ * @description Stats for a Country
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -42,7 +42,7 @@ async function _command(params, commandText, secrets = {}) {
   if (countryStat.length) {
     result.cases = countryStat.next().text();
     result.deaths = countryStat.next().next().text();
-    msg = `CoronaVirus Stats in ${country}:\n Cases:- ${result.cases} \n Deaths:- ${result.deaths}`;
+    msg = `CoronaVirus :mask: Stats in *${country}* ${flagger(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
   }
   else {
     msg = `${country} is safe till now.`;
@@ -61,6 +61,7 @@ const toTitleCase = (phrase) => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
+
 
 const abbrExpand = (shortName) => {
   longName = shortName;
@@ -87,6 +88,37 @@ const abbrExpand = (shortName) => {
       break;
   }
   return longName;
+};
+
+
+const flagger = (name) => {
+  let flag = '';
+  switch (name) {
+    case 'United States':
+      flag = ':flag-us:';
+      break;
+    case 'United Kingdom':
+      flag = ':flag-us:';
+      break;
+    case 'India':
+      flag = ':flag-in:';
+      break;
+    case 'South Korea':
+      flag = '🇰🇷';
+      break;
+    case 'Hong Kong':
+      flag = '🇭🇰';
+      break;
+    case 'United Arab Emirates':
+      flag = '🇦🇪';
+      break;
+    case 'Sri Lanka':
+      flag = '🇱🇰';
+      break;
+    default:
+      break;
+  }
+  return flag;
 };
 
 const install = (pkgs) => {
