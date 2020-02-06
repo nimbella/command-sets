@@ -4,4 +4,4 @@ commands:
     sourcePath: /run.js
     description: Slash command to run slash commands.
     parameters:
-      - name: ...
+      - name: "..."
