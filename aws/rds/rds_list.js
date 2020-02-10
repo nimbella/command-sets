@@ -31,7 +31,7 @@ async function _command(params, commandText, secrets = {}) {
   const {awsAccessKey, awsSecretKey, awsRegion} = secrets;
   const {__client} = params;
 
-  const client = __client ? __client.name : 'slack';
+  const client = __client.name;
 
   if (!awsAccessKey || !awsSecretKey || !awsRegion) {
     return {
