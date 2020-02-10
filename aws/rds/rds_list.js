@@ -58,37 +58,52 @@ async function _command(params, commandText, secrets = {}) {
 
     const {DBInstances} = await describeDBInstancesAsync();
 
-    for (const instance of DBInstances) {
+    if (DBInstances.length > 0) {
+      for (const instance of DBInstances) {
+        result.push(
+          mui(
+            {
+              type: 'context',
+              elements: [
+                {
+                  type: 'mrkdwn',
+                  text: `Identifier: \`${instance.DBInstanceIdentifier}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Class: \`${instance.DBInstanceClass}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Status: \`${instance.DBInstanceStatus}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Engine: \`${instance.Engine}\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Storage: \`${instance.AllocatedStorage} GiB\``
+                },
+                {
+                  type: 'mrkdwn',
+                  text: `Endpoint: \`${instance.Endpoint.Address}\``
+                }
+              ]
+            },
+            client
+          )
+        );
+      }
+    } else {
       result.push(
         mui(
           {
-            type: 'context',
-            elements: [
-              {
-                type: 'mrkdwn',
-                text: `Identifier: \`${instance.DBInstanceIdentifier}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Class: \`${instance.DBInstanceClass}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Status: \`${instance.DBInstanceStatus}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Engine: \`${instance.Engine}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Storage: \`${instance.AllocatedStorage} GiB\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Endpoint: \`${instance.Endpoint.Address}\``
-              }
-            ]
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `No instances under your account.`
+            }
           },
           client
         )
