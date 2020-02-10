@@ -42,7 +42,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const {startTable = null, __client} = params;
 
-  const client = __client ? __client.name : 'slack';
+  const client = __client.name;
 
   const result = [];
   const aws = require('aws-sdk');
