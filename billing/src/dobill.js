@@ -332,39 +332,25 @@ const _command = async (params, commandText, secrets = {}) => {
   };
 
   try {
-    const dropletsRequest = getContent(
-      BASE_URL + '/droplets?per_page=100',
-      headers
-    );
-    const databasesRequest = getContent(
-      BASE_URL + '/databases?per_page=100',
-      headers
-    );
-    const snapshotsRequest = getContent(
-      BASE_URL + '/snapshots?per_page=100',
-      headers
-    );
-    const volumesRequest = getContent(
-      BASE_URL + '/volumes?per_page=100',
-      headers
-    );
-
     const [
       dropletsData,
       databasesData,
       snapshotsData,
-      volumesData
+      volumesData,
+      balanceData
     ] = await Promise.all([
-      dropletsRequest,
-      databasesRequest,
-      snapshotsRequest,
-      volumesRequest
+      getContent(BASE_URL + '/droplets?per_page=100', headers),
+      getContent(BASE_URL + '/databases?per_page=100', headers),
+      getContent(BASE_URL + '/snapshots?per_page=100', headers),
+      getContent(BASE_URL + '/volumes?per_page=100', headers),
+      getContent(BASE_URL + '/customers/my/balance', headers)
     ]);
 
     const {droplets} = JSON.parse(dropletsData);
     const {databases} = JSON.parse(databasesData);
     const {volumes} = JSON.parse(volumesData);
     const {snapshots} = JSON.parse(snapshotsData);
+    const balance = JSON.parse(balanceData);
 
     const dropletsCost = calcDropletsCost(droplets);
     const databasesCost = calcDBCosts(databases);
@@ -388,7 +374,6 @@ const _command = async (params, commandText, secrets = {}) => {
     ).toFixed(2);
 
     const today = new Date();
-    const monthYear = String(today.getMonth() + 1) + '/' + today.getFullYear();
 
     result.push(
       mui(
@@ -396,7 +381,7 @@ const _command = async (params, commandText, secrets = {}) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `Total Costs: $${totalCurrentCosts} Projected Costs (${monthYear}): $${totalProjectedCosts}`
+            text: `Realtime Month-to-Date Cost: *$${totalCurrentCosts}* Projected Full-Month Cost: *$${totalProjectedCosts}*`
           }
         },
         client
@@ -528,6 +513,23 @@ const _command = async (params, commandText, secrets = {}) => {
         )
       );
     }
+
+    result.push(
+      mui(
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `As per DigitalOcean, usage as of ${new Date(
+                balance.generated_at
+              ).toUTCString()} is *$${balance.month_to_date_usage}*`
+            }
+          ]
+        },
+        client
+      )
+    );
   } catch (error) {
     result.push(
       mui(
@@ -535,7 +537,7 @@ const _command = async (params, commandText, secrets = {}) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*ERROR:* ${error.message}`
+            text: `*Error:* ${error.message}`
           }
         },
         client
