@@ -54,6 +54,8 @@ To list EC2 instances under your account:
 
 ### DigitalOcean (`do`)
 
+`droplet_ip` - List IP addresses of a droplet.
+
 `droplet_list` - Lists the droplets under your account.
 
 `droplet_status` - Shows the current status of a droplet.

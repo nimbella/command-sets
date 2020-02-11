@@ -39,7 +39,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const {dropletId, __client} = params;
-  const client = __client ? __client.name : 'slack';
+  const client = __client.name;
 
   const result = [];
   const BASE_URL = 'https://api.digitalocean.com/v2';
