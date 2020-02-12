@@ -200,15 +200,15 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const metricsCosts = calcMetricsCosts(timeseriesJson);
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
- if (hostsCosts.cost !== 0) {
+ if (hostsCosts.thisMonthCost !== 0) {
     verbose.Hosts = hostsCosts;
   }
 
-  if (metricsCosts.cost !== 0) {
+  if (metricsCosts.thisMonthCost !== 0) {
     verbose.Metrics = metricsCosts;
   }
 
-  if (syntheticsCosts.cost !== 0) {
+  if (syntheticsCosts.thisMonthCost !== 0) {
     verbose.Synthetics = syntheticsCosts;
   }
 
