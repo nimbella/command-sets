@@ -39,7 +39,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const {subid, __client} = params;
-  const client = __client ? __client.name : 'slack';
+  const client = __client.name;
 
   // This array is used to store slack blocks.
   const result = [];

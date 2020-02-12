@@ -206,7 +206,7 @@ const formatSoaRecord = (record, {hostname, client}) => {
 async function _command(params) {
   const {__client} = params;
 
-  const client = __client ? __client.name : 'slack';
+  const client = __client.name;
 
   let {type = 'A', hostname} = params;
   type = type.toUpperCase();

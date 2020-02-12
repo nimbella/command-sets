@@ -37,13 +37,17 @@ async function _command(params, commandText, secrets = {}) {
   const html = cheerio.load(response.data);
   const statsElements = html(`.maincounter-number`);
   const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
+
   result.cases = `${stats[0]} \`${statsElements.next().text()}\``;
+
   result.deaths = stats[1];
   result.cured = stats[2];
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
+
     text: `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \` /ncovstats country <country_name>\` e.g. /ncovstats country uk`
+
   };
 }
 
