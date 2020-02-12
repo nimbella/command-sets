@@ -5,7 +5,7 @@ let axios, cheerio;
 
 const coronaMeter = 'https://www.worldometers.info/coronavirus/countries-where-coronavirus-has-spread/';
 /**
- * @description null
+ * @description Stats for a Country
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -35,17 +35,22 @@ async function _command(params, commandText, secrets = {}) {
   const result = {};
 
   const html = cheerio.load(response.data);
-  const country = toTitleCase(params.country_name); 
+  let country = toTitleCase(params.country_name);
+  country = abbrExpand(country);
   const countryStat = html(`td:contains(${country})`);
-  if(countryStat.length)
-  {
+  let msg;
+  if (countryStat.length) {
     result.cases = countryStat.next().text();
     result.deaths = countryStat.next().next().text();
+    msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
+  }
+  else {
+    msg = `${country} is safe till now.`;
   }
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: `CoronaVirus Stats in ${country}:\n Cases:- ${result.cases} \n Deaths:- ${result.deaths}`
+    text: msg
   };
 }
 
@@ -55,6 +60,65 @@ const toTitleCase = (phrase) => {
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+};
+
+
+const abbrExpand = (shortName) => {
+  longName = shortName;
+  switch (shortName) {
+    case 'Us':
+      longName = 'United States';
+      break;
+    case 'Uk':
+      longName = 'United Kingdom';
+      break;
+    case 'Sk':
+      longName = 'South Korea';
+      break;
+    case 'Hk':
+      longName = 'Hong Kong';
+      break;
+    case 'Uae':
+      longName = 'United Arab Emirates';
+      break;
+    case 'Sl':
+      longName = 'Sri Lanka';
+      break;
+    default:
+      break;
+  }
+  return longName;
+};
+
+
+const getFlag = (name) => {
+  let flag = '';
+  switch (name) {
+    case 'United States':
+      flag = ':flag-us:';
+      break;
+    case 'United Kingdom':
+      flag = ':flag-us:';
+      break;
+    case 'India':
+      flag = ':flag-in:';
+      break;
+    case 'South Korea':
+      flag = '🇰🇷';
+      break;
+    case 'Hong Kong':
+      flag = '🇭🇰';
+      break;
+    case 'United Arab Emirates':
+      flag = '🇦🇪';
+      break;
+    case 'Sri Lanka':
+      flag = '🇱🇰';
+      break;
+    default:
+      break;
+  }
+  return flag;
 };
 
 const install = (pkgs) => {
