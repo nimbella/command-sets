@@ -92,10 +92,10 @@ const getContent = function(url) {
 function calcHostsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
-  const hostsByHour = [];
+  const hostsByHour = []; 
   const apmHostsByHour = [];
 
   let recentHostCount = 0;
@@ -125,12 +125,12 @@ function calcHostsCosts(json) {
   const billingHostCount = hostsByHour[n99];
   const billingApmHostCount = apmHostsByHour[n99];
 
-  const cost = billingHostCount * 18 + billingApmHostCount * 36;
-  const forwardCost = recentHostCount * 18 + recentApmHostCount * 36;
+  const thisMonthCost = billingHostCount * 18 + billingApmHostCount * 36;
+  const nextMonthCost = recentHostCount * 18 + recentApmHostCount * 36;
 
   return {
-    cost,
-    forwardCost,
+    thisMonthCost,
+    nextMonthCost,
     billingHostCount,
     billingApmHostCount,
     recentHostCount,
@@ -142,7 +142,7 @@ function calcHostsCosts(json) {
 function calcMetricsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
   const metricsByHour = [];
@@ -157,12 +157,12 @@ function calcMetricsCosts(json) {
   const n99 = Math.floor(numHours * 0.01);
   const billingMetricsCount = metricsByHour[n99];
 
-  const cost = billingMetricsCount * 0.05;
-  const forwardCost = recentMetricsCount * 0.05;
+  const thisMonthCost = billingMetricsCount * 0.05;
+  const nextMonthCost = recentMetricsCount * 0.05;
 
   return {
-    cost,
-    forwardCost,
+    thisMonthCost,
+    nextMonthCost,
     billingMetricsCount,
     recentMetricsCount,
     maxMetricsCount
@@ -172,7 +172,7 @@ function calcMetricsCosts(json) {
 function calcSyntheticsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
   let recentCount = 0;
@@ -183,12 +183,12 @@ function calcSyntheticsCosts(json) {
     recentCount = count;
   }
 
-  const cost = (totalSynthetics / 1000) * 7.2 * (720 / numHours);
-  const forwardCost = ((recentCount * 24 * 30) / 1000) * 7.2;
+  const thisMonthCost = (totalSynthetics / 1000) * 7.2 * (720 / numHours);
+  const nextMonthCost = ((recentCount * 24 * 30) / 1000) * 7.2;
 
   return {
-    cost,
-    forwardCost,
+    thisMonthCost,
+    nextMonthCost,
     totalSynthetics,
     recentCount
   };
@@ -200,30 +200,26 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const metricsCosts = calcMetricsCosts(timeseriesJson);
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
-  if (hostsCosts.cost !== 0) {
+  if (hostsCosts.thisMonthCost!== 0) {
     verbose.Hosts = hostsCosts;
   }
 
-  if (metricsCosts.cost !== 0) {
+  if (metricsCosts.thisMonthCost!== 0) {
     verbose.Metrics = metricsCosts;
   }
 
-  if (syntheticsCosts.cost !== 0) {
+  if (syntheticsCosts.thisMonthCost!== 0) {
     verbose.Synthetics = syntheticsCosts;
   }
 
-  const totalCost = hostsCosts.cost + metricsCosts.cost + syntheticsCosts.cost;
-  hostsCosts.cost = '$' + Number(hostsCosts.cost).toFixed(2);
-  metricsCosts.cost = '$' + Number(metricsCosts.cost).toFixed(2);
-  syntheticsCosts.cost = '$' + Number(syntheticsCosts.cost).toFixed(2);
-
+  const totalCost = hostsCosts.thisMonthCost+ metricsCosts.thisMonthCost+ syntheticsCosts.thisMonthCost;
+  hostCosts.thisMonthCost= '$' + hostCosts.toFixed(2);
+  metricsCosts.thisMonthCost= '$' + metricCosts.toFixed(2);
+  syhtheticsCosts.thisMonthCost= '$' + hostCosts.toFixed(2);
   const totalForwardCost =
-    hostsCosts.forwardCost +
-    metricsCosts.forwardCost +
-    syntheticsCosts.forwardCost;
-  hostsCosts.forwardCost = '$' + Number(hostsCosts.forwardCost).toFixed(2);
-  metricsCosts.forwardCost = '$' + Number(metricsCosts.forwardCost).toFixed(2);
-  syntheticsCosts.forwardCost = '$' + Number(syntheticsCosts.forwardCost).toFixed(2);
+    hostsCosts.nextMonthCost +
+    metricsCosts.nextMonthCost +
+    syntheticsCosts.nextMonthCost;
 
   return {
     totalCost,
