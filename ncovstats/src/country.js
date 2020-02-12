@@ -42,7 +42,7 @@ async function _command(params, commandText, secrets = {}) {
   if (countryStat.length) {
     result.cases = countryStat.next().text();
     result.deaths = countryStat.next().next().text();
-    msg = `CoronaVirus :mask: Stats in *${country}* ${flagger(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
+    msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
   }
   else {
     msg = `${country} is safe till now.`;
@@ -91,7 +91,7 @@ const abbrExpand = (shortName) => {
 };
 
 
-const flagger = (name) => {
+const getFlag = (name) => {
   let flag = '';
   switch (name) {
     case 'United States':
