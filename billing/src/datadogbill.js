@@ -98,7 +98,6 @@ function calcHostsCosts(json) {
   const hostsByHour = [];
   const apmHostsByHour = [];
 
-  let numBadHosts = 0;
   let recentHostCount = 0;
   let recentApmHostCount = 0;
 
@@ -107,9 +106,8 @@ function calcHostsCosts(json) {
     const apmHostCount = usage.apm_host_count;
 
     // datadog's usage logging has problems where recent host fields are null for unknown reasons
-    if (!hostCount || !apmHostCount) {
-      numBadHosts += 1;
-    } else {
+    // so we check for hostCount and apmHostCount
+    if (hostCount && apmHostCount) {
       hostsByHour.push(hostCount);
       recentHostCount = hostCount;
       apmHostsByHour.push(apmHostCount);
@@ -117,8 +115,9 @@ function calcHostsCosts(json) {
     }
   }
 
-  const maxHostCount = Math.max(...hostsByHour);
-  const maxApmHostCount = Math.max(...apmHostsByHour);
+  // if we needed the max host counts, we could calculate them with this
+  // const maxHostCount = Math.max(...hostsByHour);
+  // const maxApmHostCount = Math.max(...apmHostsByHour);
 
   hostsByHour.sort((a, b) => b - a);
   apmHostsByHour.sort((a, b) => b - a);
@@ -132,15 +131,11 @@ function calcHostsCosts(json) {
   return {
     cost,
     forwardCost,
-    numBadHosts,
     billingHostCount,
     billingApmHostCount,
-    maxHostCount,
     recentHostCount,
     recentApmHostCount,
-    maxApmHostCount,
-    numHours,
-    n99
+    numHours
   };
 }
 
@@ -206,25 +201,29 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
   if (hostsCosts.cost !== 0) {
-    const {cost, forwardCost, ...hosts} = hostsCosts;
-    verbose.Hosts = hosts;
+    verbose.Hosts = hostsCosts;
   }
 
   if (metricsCosts.cost !== 0) {
-    const {cost, forwardCost, ...metrics} = metricsCosts;
-    verbose.Metrics = metrics;
+    verbose.Metrics = metricsCosts;
   }
 
   if (syntheticsCosts.cost !== 0) {
-    const {cost, forwardCost, ...synthetics} = syntheticsCosts;
-    verbose.Synthetics = synthetics;
+    verbose.Synthetics = syntheticsCosts;
   }
 
   const totalCost = hostsCosts.cost + metricsCosts.cost + syntheticsCosts.cost;
+  hostsCosts.cost = '$' + Number(hostsCosts.cost).toFixed(2);
+  metricsCosts.cost = '$' + Number(metricsCosts.cost).toFixed(2);
+  syntheticsCosts.cost = '$' + Number(syntheticsCosts.cost).toFixed(2);
+
   const totalForwardCost =
     hostsCosts.forwardCost +
     metricsCosts.forwardCost +
     syntheticsCosts.forwardCost;
+  hostsCosts.forwardCost = '$' + Number(hostsCosts.forwardCost).toFixed(2);
+  metricsCosts.forwardCost = '$' + Number(metricsCosts.forwardCost).toFixed(2);
+  syntheticsCosts.forwardCost = '$' + Number(syntheticsCosts.forwardCost).toFixed(2);
 
   return {
     totalCost,
@@ -244,7 +243,7 @@ const _command = async (params, commandText, secrets = {}) => {
   }
 
   const {detail = false, __client} = params;
-  const client = __client.name;
+  const client = __client ? __client.name : 'slack';
   const result = [];
 
   const now = new Date();
