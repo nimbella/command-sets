@@ -200,26 +200,30 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const metricsCosts = calcMetricsCosts(timeseriesJson);
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
-  if (hostsCosts.thisMonthCost!== 0) {
+ if (hostsCosts.cost !== 0) {
     verbose.Hosts = hostsCosts;
   }
 
-  if (metricsCosts.thisMonthCost!== 0) {
+  if (metricsCosts.cost !== 0) {
     verbose.Metrics = metricsCosts;
   }
 
-  if (syntheticsCosts.thisMonthCost!== 0) {
+  if (syntheticsCosts.cost !== 0) {
     verbose.Synthetics = syntheticsCosts;
   }
 
-  const totalCost = hostsCosts.thisMonthCost+ metricsCosts.thisMonthCost+ syntheticsCosts.thisMonthCost;
-  hostCosts.thisMonthCost= '$' + hostCosts.toFixed(2);
-  metricsCosts.thisMonthCost= '$' + metricCosts.toFixed(2);
-  syhtheticsCosts.thisMonthCost= '$' + hostCosts.toFixed(2);
+  const totalCost = hostsCosts.thisMonthCost + metricsCosts.thisMonthCost + syntheticsCosts.thisMonthCost;
+  hostsCosts.thisMonthCost = '$' + Number(hostsCosts.thisMonthCost).toFixed(2);
+  metricsCosts.thisMonthCost = '$' + Number(metricsCosts.thisMonthCst).toFixed(2);
+  syntheticsCosts.thisMonthCost = '$' + Number(syntheticsCosts.thisMonthCost).toFixed(2);
+
   const totalForwardCost =
     hostsCosts.nextMonthCost +
     metricsCosts.nextMonthCost +
     syntheticsCosts.nextMonthCost;
+  hostsCosts.nextMonthCost = '$' + Number(hostsCosts.nextMonthCost).toFixed(2);
+  metricsCosts.nextMonthCost = '$' + Number(metricsCosts.nextMonthCost).toFixed(2);
+  syntheticsCosts.nextMonthCost = '$' + Number(syntheticsCosts.nextMonthCost).toFixed(2);
 
   return {
     totalCost,
