@@ -132,8 +132,8 @@ function calcHostsCosts(json) {
     thisMonthCost,
     nextMonthCost,
     billingHostCount,
-    billingApmHostCount,
     recentHostCount,
+    billingApmHostCount,
     recentApmHostCount,
     numHours
   };
