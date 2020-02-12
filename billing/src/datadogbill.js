@@ -214,7 +214,7 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
 
   const totalCost = hostsCosts.thisMonthCost + metricsCosts.thisMonthCost + syntheticsCosts.thisMonthCost;
   hostsCosts.thisMonthCost = '$' + Number(hostsCosts.thisMonthCost).toFixed(2);
-  metricsCosts.thisMonthCost = '$' + Number(metricsCosts.thisMonthCst).toFixed(2);
+  metricsCosts.thisMonthCost = '$' + Number(metricsCosts.thisMonthCost).toFixed(2);
   syntheticsCosts.thisMonthCost = '$' + Number(syntheticsCosts.thisMonthCost).toFixed(2);
 
   const totalForwardCost =
