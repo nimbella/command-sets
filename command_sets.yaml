@@ -20,6 +20,9 @@ command_sets:
   vultr:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/vultr/commands.yaml
     description: Vultr commands.
+  run:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/run/commands.yaml
+    description: Command to run slash commands.
   dig:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/dig/commands.yaml
     description: Command to lookup DNS
