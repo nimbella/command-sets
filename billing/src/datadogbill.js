@@ -92,13 +92,12 @@ const getContent = function(url) {
 function calcHostsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
-  const hostsByHour = [];
+  const hostsByHour = []; 
   const apmHostsByHour = [];
 
-  let numBadHosts = 0;
   let recentHostCount = 0;
   let recentApmHostCount = 0;
 
@@ -107,9 +106,8 @@ function calcHostsCosts(json) {
     const apmHostCount = usage.apm_host_count;
 
     // datadog's usage logging has problems where recent host fields are null for unknown reasons
-    if (!hostCount || !apmHostCount) {
-      numBadHosts += 1;
-    } else {
+    // so we check for hostCount and apmHostCount
+    if (hostCount && apmHostCount) {
       hostsByHour.push(hostCount);
       recentHostCount = hostCount;
       apmHostsByHour.push(apmHostCount);
@@ -117,8 +115,9 @@ function calcHostsCosts(json) {
     }
   }
 
-  const maxHostCount = Math.max(...hostsByHour);
-  const maxApmHostCount = Math.max(...apmHostsByHour);
+  // if we needed the max host counts, we could calculate them with this
+  // const maxHostCount = Math.max(...hostsByHour);
+  // const maxApmHostCount = Math.max(...apmHostsByHour);
 
   hostsByHour.sort((a, b) => b - a);
   apmHostsByHour.sort((a, b) => b - a);
@@ -126,28 +125,24 @@ function calcHostsCosts(json) {
   const billingHostCount = hostsByHour[n99];
   const billingApmHostCount = apmHostsByHour[n99];
 
-  const cost = billingHostCount * 18 + billingApmHostCount * 36;
-  const forwardCost = recentHostCount * 18 + recentApmHostCount * 36;
+  const thisMonthCost = billingHostCount * 18 + billingApmHostCount * 36;
+  const nextMonthCost = recentHostCount * 18 + recentApmHostCount * 36;
 
   return {
-    cost,
-    forwardCost,
-    numBadHosts,
+    thisMonthCost,
+    nextMonthCost,
     billingHostCount,
-    billingApmHostCount,
-    maxHostCount,
     recentHostCount,
+    billingApmHostCount,
     recentApmHostCount,
-    maxApmHostCount,
-    numHours,
-    n99
+    numHours
   };
 }
 
 function calcMetricsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
   const metricsByHour = [];
@@ -162,12 +157,12 @@ function calcMetricsCosts(json) {
   const n99 = Math.floor(numHours * 0.01);
   const billingMetricsCount = metricsByHour[n99];
 
-  const cost = billingMetricsCount * 0.05;
-  const forwardCost = recentMetricsCount * 0.05;
+  const thisMonthCost = billingMetricsCount * 0.05;
+  const nextMonthCost = recentMetricsCount * 0.05;
 
   return {
-    cost,
-    forwardCost,
+    thisMonthCost,
+    nextMonthCost,
     billingMetricsCount,
     recentMetricsCount,
     maxMetricsCount
@@ -177,7 +172,7 @@ function calcMetricsCosts(json) {
 function calcSyntheticsCosts(json) {
   const numHours = json.usage.length;
   if (numHours === 0) {
-    return {cost: 0, forwardCost: 0};
+    return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
   let recentCount = 0;
@@ -188,12 +183,12 @@ function calcSyntheticsCosts(json) {
     recentCount = count;
   }
 
-  const cost = (totalSynthetics / 1000) * 7.2 * (720 / numHours);
-  const forwardCost = ((recentCount * 24 * 30) / 1000) * 7.2;
+  const thisMonthCost = (totalSynthetics / 1000) * 7.2 * (720 / numHours);
+  const nextMonthCost = ((recentCount * 24 * 30) / 1000) * 7.2;
 
   return {
-    cost,
-    forwardCost,
+    thisMonthCost,
+    nextMonthCost,
     totalSynthetics,
     recentCount
   };
@@ -205,26 +200,30 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const metricsCosts = calcMetricsCosts(timeseriesJson);
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
-  if (hostsCosts.cost !== 0) {
-    const {cost, forwardCost, ...hosts} = hostsCosts;
-    verbose.Hosts = hosts;
+ if (hostsCosts.thisMonthCost !== 0) {
+    verbose.Hosts = hostsCosts;
   }
 
-  if (metricsCosts.cost !== 0) {
-    const {cost, forwardCost, ...metrics} = metricsCosts;
-    verbose.Metrics = metrics;
+  if (metricsCosts.thisMonthCost !== 0) {
+    verbose.Metrics = metricsCosts;
   }
 
-  if (syntheticsCosts.cost !== 0) {
-    const {cost, forwardCost, ...synthetics} = syntheticsCosts;
-    verbose.Synthetics = synthetics;
+  if (syntheticsCosts.thisMonthCost !== 0) {
+    verbose.Synthetics = syntheticsCosts;
   }
 
-  const totalCost = hostsCosts.cost + metricsCosts.cost + syntheticsCosts.cost;
+  const totalCost = hostsCosts.thisMonthCost + metricsCosts.thisMonthCost + syntheticsCosts.thisMonthCost;
+  hostsCosts.thisMonthCost = '$' + Number(hostsCosts.thisMonthCost).toFixed(2);
+  metricsCosts.thisMonthCost = '$' + Number(metricsCosts.thisMonthCost).toFixed(2);
+  syntheticsCosts.thisMonthCost = '$' + Number(syntheticsCosts.thisMonthCost).toFixed(2);
+
   const totalForwardCost =
-    hostsCosts.forwardCost +
-    metricsCosts.forwardCost +
-    syntheticsCosts.forwardCost;
+    hostsCosts.nextMonthCost +
+    metricsCosts.nextMonthCost +
+    syntheticsCosts.nextMonthCost;
+  hostsCosts.nextMonthCost = '$' + Number(hostsCosts.nextMonthCost).toFixed(2);
+  metricsCosts.nextMonthCost = '$' + Number(metricsCosts.nextMonthCost).toFixed(2);
+  syntheticsCosts.nextMonthCost = '$' + Number(syntheticsCosts.nextMonthCost).toFixed(2);
 
   return {
     totalCost,
@@ -244,7 +243,7 @@ const _command = async (params, commandText, secrets = {}) => {
   }
 
   const {detail = false, __client} = params;
-  const client = __client.name;
+  const client = __client ? __client.name : 'slack';
   const result = [];
 
   const now = new Date();
