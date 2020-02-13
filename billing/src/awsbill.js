@@ -129,9 +129,13 @@ async function _command(params, commandText, secrets = {}) {
     let unit;
     let hasMultipleUnits = false;
 
+    let serviceCountLimiter = 0;
     for (const service of groups) {
       const cost = Number(service.Metrics.AmortizedCost.Amount);
       if (cost === 0) {
+        continue;
+      }
+      if (serviceCountLimiter++ == 9) {
         continue;
       }
 
@@ -140,6 +144,7 @@ async function _command(params, commandText, secrets = {}) {
         'Elastic Compute Cloud': 'Elastic Compute',
         'Amazon ': '',
         AWS: '',
+        'Elastic Container Service for Kubernetes': 'ECS for Kubernetes',
         'EC2 Container Registry (ECR)': 'EC2 Container Registry'
       };
 
