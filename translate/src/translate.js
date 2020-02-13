@@ -12,17 +12,12 @@ async function _command(params, commandText, secrets = {}) {
 
   const axios = require('axios');
   const sourceLang = 'auto';
-  let targetLang = params.language;
   let translatedText = '';
+  const {
+    language: targetLang = 'en',
+    text: sourceText
+  } = params;
 
-  if (!params.language) { targetLang = 'en'; }
-  if (!params.text) {
-    return {
-      response_type: 'ephemeral',
-      text: 'Please specify the text to translate!'
-    };
-  }
-  const sourceText = params.text;
   let response;
   try {
 
@@ -52,5 +47,11 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async ({ __secrets = {}, commandText, ...params }) => ({ body: await _command(params, commandText, __secrets) });
+const main = async ({
+  __secrets = {},
+  commandText,
+  ...params
+}) => ({
+  body: await _command(params, commandText, __secrets)
+});
 module.exports = main;
