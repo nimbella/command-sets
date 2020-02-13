@@ -1,8 +1,5 @@
 // jshint esversion: 9
 
-let axios;
-
-
 const translator = 'https://translate.googleapis.com/translate_a/single';
 /**
  * @description null
@@ -13,10 +10,7 @@ const translator = 'https://translate.googleapis.com/translate_a/single';
  */
 async function _command(params, commandText, secrets = {}) {
 
-  if (!axios) {
-    await install(['axios']);
-    axios = require('axios');
-  }
+  const axios = require('axios');
   const sourceLang = 'auto';
   let targetLang = params.language;
   let translatedText = '';
@@ -51,18 +45,6 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
-
-// installs a set of npm packages
-async function install(pkgs) {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
 
 /**
  * @typedef {object} SlackBodyType

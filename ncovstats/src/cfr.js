@@ -1,6 +1,6 @@
 // jshint esversion: 9
 
-let axios, cheerio;
+let cheerio;
 
 
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
@@ -13,10 +13,9 @@ const coronaMeter = 'https://www.worldometers.info/coronavirus/';
  */
 async function _command(params, commandText, secrets = {}) {
 
-  if (!axios) {
-    await install(['axios']);
-    axios = require('axios');
-  }
+
+  const axios = require('axios');
+
   if (!cheerio) {
     await install(['cheerio']);
     cheerio = require('cheerio');
