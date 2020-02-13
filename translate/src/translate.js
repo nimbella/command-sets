@@ -1,11 +1,11 @@
 // jshint esversion: 9
 
-let axios, cheerio;
+let axios;
 
 
-const coronaMeter = 'https://www.worldometers.info/coronavirus/';
+const translator = 'https://translate.googleapis.com/translate_a/single';
 /**
- * @description Worldwide Stats
+ * @description null
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -17,37 +17,37 @@ async function _command(params, commandText, secrets = {}) {
     await install(['axios']);
     axios = require('axios');
   }
-  if (!cheerio) {
-    await install(['cheerio']);
-    cheerio = require('cheerio');
-  }
+  const sourceLang = 'auto';
+  let targetLang = params.language;
+  let translatedText = '';
 
+  if (!params.language) { targetLang = 'en'; }
+  if (!params.text) {
+    return {
+      response_type: 'ephemeral',
+      text: 'Please specify the text to translate!'
+    };
+  }
+  const sourceText = params.text;
   let response;
   try {
-    response = await axios.get(coronaMeter);
+
+    const url = `${translator}?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURI(sourceText)}`;
+    response = await axios.get(url);
     if (response.status !== 200) {
       throw err;
     }
+    const result = response.data;
+    translatedText = result[0][0][0];
+
   } catch (err) {
     return null;
   }
 
-  const result = {};
-
-  const html = cheerio.load(response.data);
-  const statsElements = html(`.maincounter-number`);
-  const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
-
-  result.cases = `${stats[0]}`;
-
-  result.deaths = stats[1];
-  result.cured = stats[2];
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-
-    text: `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \` /ncovstats country <country_name>\` e.g. /ncovstats country uk`
-
+    text: translatedText
   };
 }
 
