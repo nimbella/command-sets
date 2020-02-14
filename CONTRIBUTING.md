@@ -1,40 +1,46 @@
-# Contributing to Command Set Registry
+### Contributing to the Nimbella Command Set Registry
 
-Thanks for taking the time to contribute. We're thankful and will do our best to make progress with you.
+We are thankful that you're taking the time to read this contribution guide, and we are excited to work with you toward a positive contribution to the project.
+This document outlines the process for contributing to the project. It also provides some guidance for creating and contributing a new Nimbella Command Set.
 
-_If this your first time contributing to an open source project on GitHub, you can watch this [series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute._
+### We welcome all contributions.
 
-We have a [Code of Conduct](CODE_OF_CONDUCT), please take a look before you proceed.
+Contributions come in many different forms, not just code. Here are some quick tips:
+- **Improving project documentation**: If you found a typo, just make a pull request with the fix. If you are planning to write new documentation for a command set or a command, please [open an issue first](../../issues/new/choose). This gives us a chance to provide guidance when necessary.
+- **Requesting a new feature or command**: [Open a "Feature Request"](../../issues/new?template=feature_request.md) and fill out details appropriately.
+- **Changing existing commands**: Please open an appropriate [issue](../../issues/new/choose) describing your proposed change before you create a pull request. This ensures consensus and allows us to work together toward positive outcomes.
 
-# Contributing to docs
+### Contribution guidelines.
 
-If you found a typo, just make a pull request with the fix. But if you're planning to write docs for a command set or a command, please raise an issue first and then proceed. This gives us a chance to provide guidance when necessary.
+Please review and keep the following guidelines in mind. _If this your first time contributing to an open source project on GitHub, we recommend this [video series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute._
+- We have a [Code of Conduct](CODE_OF_CONDUCT.md), please review it so you are familiar with the project values.
+- You agree that your contributions will be licensed under the [Apache 2.0 License](LICENSE).
+- When you open a pull request with your contributions, **you are certifying that you wrote the code** in the corresponding patch pursuant to the [Developer Certificate of Origin](#developer-certificate-of-origin) included below for your reference.
+- If you're contributing a new Command Set, the [guide below](#creating-a-new-command-set) wil help you get started.
 
-# Requesting for a new feature/command
+### Contact us.
 
-Raise an issue using "Feature Request" template and fill details appropriately.
+We're always happy to help you with any issues you encounter. You may want to [join our Slack community](https://nimbella-community.slack.com/) to engage with us for a more rapid response.
 
-# Making changes to existing commands
+---
 
-First, please raise an issue describing your change. After discussion, you can make a pull request.
-
-# Creating a new command set
+### Creating a new command set
 
 Let's create a small `greetings` command set to understand the flow.
 
-### 1. Fork this repo & clone it.
+##### 1. Fork this repo & clone it.
 
 ```sh
 $ git clone https://github.com/<username>/command-sets
 ```
 
-### 2. Create a new directory named `greetings` inside the `command-sets` repository.
+##### 2. Create a new directory named `greetings` inside the `command-sets` repository.
 
 ```sh
 $ cd command-sets && mkdir -p greetings/packages/default
 ```
 
-### 3. Create two new files inside `greetings` to greet in Spanish & French.
+##### 3. Create two new files inside `greetings` to greet in Spanish & French.
 
 ```sh
 $ cd greetings/packages/default && touch {hola,bonjour}.js
@@ -42,7 +48,7 @@ $ cd greetings/packages/default && touch {hola,bonjour}.js
 
 Here each file represents a command.
 
-### 4. Create a `commands.yaml` file inside `greetings`
+##### 4. Create a `commands.yaml` file inside `greetings`
 
 This is to let Commander know about our commands & their requirements.
 
@@ -69,7 +75,7 @@ commands:
       - name: name
 ```
 
-### 5. Write code.
+##### 5. Write code.
 
 You can use the below code as a template & put your logic in `__command` function.
 
@@ -106,7 +112,7 @@ module.exports = main;
 
 This is the code in `hola.js`.
 
-### 6. Specify your command set in `command_sets.yaml` file.
+##### 6. Specify your command set in `command_sets.yaml` file.
 
 This will help commander install your command set by using its name. Like: `/nc csm_install greetings`.
 
@@ -118,7 +124,9 @@ greetings:
   description: Greet in different languages.
 ```
 
-# Developer Certificate of Origin
+---
+
+### Developer Certificate of Origin
 
 ```
 Developer Certificate of Origin
@@ -159,7 +167,3 @@ By making a contribution to this project, I certify that:
     maintained indefinitely and may be redistributed consistent with
     this project or the open source license(s) involved.
 ```
-
-# Contact us
-
-We're always happy to help you with any issues you've contributing to this repo. [Join](https://nimbella-community.slack.com/) our community Slack channel to engage with us.
