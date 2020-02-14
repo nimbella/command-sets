@@ -2,23 +2,23 @@
 
 Thanks for taking the time to contribute. We're thankful and will do our best to make progress with you.
 
-> In case this your first time contributing on GitHub, you can watch this [series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute.
+_If this your first time contributing to an open source project on GitHub, you can watch this [series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute._
 
 We have a [Code of Conduct](CODE_OF_CONDUCT), please take a look before you proceed.
 
-## Contributing to docs
+# Contributing to docs
 
-If you found a typo, just make a pull request with the fix. But if you're planning to write docs for a command set or a command, raise an issue and then proceed.
+If you found a typo, just make a pull request with the fix. But if you're planning to write docs for a command set or a command, please raise an issue first and then proceed. This gives us a chance to provide guidance when necessary.
 
-## Requesting for a new feature/command
+# Requesting for a new feature/command
 
-Raise an issue with a brief description about your problem and in what way a command/feature can solve it.
+Raise an issue using "Feature Request" template and fill details appropriately.
 
-## Making changes to existing commands
+# Making changes to existing commands
 
-First, raise an issue describing your change. After discussion, you can make a pull request.
+First, please raise an issue describing your change. After discussion, you can make a pull request.
 
-## Creating a new command set
+# Creating a new command set
 
 Let's create a small `greetings` command set to understand the flow.
 
@@ -31,23 +31,23 @@ $ git clone https://github.com/<username>/command-sets
 ### 2. Create a new directory named `greetings` inside the `command-sets` repository.
 
 ```sh
-$ cd command-sets && md greetings
+$ cd command-sets && mkdir -p greetings/packages/default
 ```
 
 ### 3. Create two new files inside `greetings` to greet in Spanish & French.
 
 ```sh
-$ cd greetings && touch {hola,bonjour}.js
+$ cd greetings/packages/default && touch {hola,bonjour}.js
 ```
 
-Here each file represent a command.
+Here each file represents a command.
 
-### 4. Create a `commands.yaml` file.
+### 4. Create a `commands.yaml` file inside `greetings`
 
-This is to let commander know about our commands & their requirements.
+This is to let Commander know about our commands & their requirements.
 
 ```sh
-$ touch commands.yaml
+$ cd ../../greetings && touch commands.yaml
 ```
 
 Copy & paste the below into `commands.yaml`.
@@ -57,13 +57,13 @@ Copy & paste the below into `commands.yaml`.
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/greetings
 commands:
   hola:
-    sourcePath: /hola.js # Path of the command relative to sourceBasePath
+    sourcePath: /packages/default/hola.js # Path of the command relative to sourceBasePath
     description: Greet in Spanish. # Small description of the command.
     parameters:
       - name: name
         optional: true # The name parameter is not strictly required by our code.
   bonjour:
-    sourcePath: /bonjour.js
+    sourcePath: /packages/default/bonjour.js
     description: Greet in French.
     parameters:
       - name: name
@@ -118,6 +118,6 @@ greetings:
   description: Greet in different languages.
 ```
 
-## Contact us
+# Contact us
 
 We're always happy to help you with any issues you've contributing to this repo. [Join](https://nimbella-community.slack.com/) our community Slack channel to engage with us.
