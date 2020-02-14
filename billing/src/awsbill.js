@@ -123,22 +123,26 @@ async function _command(params, commandText, secrets = {}) {
     );
     const data = await getCostAndUsageAsync(costParams);
 
-    const serviceSection = {type: 'section', fields: []};
+    const serviceSectionList = [];
+    let serviceSection = {type: 'section', fields: []};
     const {Groups: groups} = data.ResultsByTime[0];
     let totalCost = 0.0;
     let unit;
     let hasMultipleUnits = false;
 
-    let serviceCountLimiter = 0;
+    let serviceFieldCount = 0;
     for (const service of groups) {
       const cost = Number(service.Metrics.AmortizedCost.Amount);
       if (cost === 0) {
         continue;
       }
-      if (serviceCountLimiter++ == 9) {
-        continue;
+	  if (serviceFieldCount == 10) {
+		serviceSectionList.push(serviceSection);
+        serviceSection = {type: 'section', fields: []};
+        serviceFieldCount = 0;
       }
-
+      serviceFieldCount++;
+      
       // Object key is the search value & object value is the replace value.
       const replaceDict = {
         'Elastic Compute Cloud': 'Elastic Compute',
@@ -170,7 +174,9 @@ async function _command(params, commandText, secrets = {}) {
       }
       unit = serviceUnit;
     }
-
+	if (serviceFieldCount > 0) {
+      serviceSectionList.push(serviceSection);
+    }
     totalCostString = totalCost.toFixed(2);
     if (hasMultipleUnits) {
       totalCostString += ' (costs in in multiple units)';
@@ -225,8 +231,9 @@ async function _command(params, commandText, secrets = {}) {
         client
       )
     );
-
-    result.blocks.push(mui(serviceSection, client));
+    for (serviceSection of serviceSectionList) {
+      result.blocks.push(mui(serviceSection, client));
+    }
   } catch (error) {
     result.response_type = 'ephemeral';
     result.text = `Error: ${error.message}`;
