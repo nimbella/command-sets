@@ -26,3 +26,6 @@ command_sets:
   dig:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/dig/commands.yaml
     description: Command to lookup DNS
+  translate:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/translate/commands.yaml
+    description: Translates text to a given language
