@@ -12,7 +12,7 @@ Contributions come in many different forms, not just code. Here are some quick t
 
 ### Contribution guidelines.
 
-Please review and keep the following guidelines in mind. _If this your first time contributing to an open source project on GitHub, we recommend this [video series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute._
+Please review and keep the following guidelines in mind. _If this is your first time contributing to an open source project on GitHub, we recommend this [video series](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) to learn how to contribute._
 - We have a [Code of Conduct](CODE_OF_CONDUCT.md), please review it so you are familiar with the project values.
 - You agree that your contributions will be licensed under the [Apache 2.0 License](LICENSE).
 - When you open a pull request with your contributions, **you are certifying that you wrote the code** in the corresponding patch pursuant to the [Developer Certificate of Origin](#developer-certificate-of-origin) included below for your reference.
