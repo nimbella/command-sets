@@ -174,7 +174,7 @@ async function _command(params, commandText, secrets = {}) {
       }
       unit = serviceUnit;
     }
-	if (serviceFieldCount > 0) {
+    if (serviceFieldCount > 0) {
       serviceSectionList.push(serviceSection);
     }
     totalCostString = totalCost.toFixed(2);
