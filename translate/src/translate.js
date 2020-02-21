@@ -42,6 +42,10 @@ async function _command(params, commandText, secrets = {}) {
       targetLang = ISO6391.getCode(targetLang);
     }
     
+    if (targetLang == '') {
+      return { response_type: 'in_channel', text: 'Unknown language. Language can be a <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|2 character ISO6931 code> or a language name such as Spanish, Chinese, etc.' };
+    }
+    
     const url = `${translator}?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURI(sourceText)}`;
     response = await axios.get(url);
     if (response.status !== 200) {
