@@ -16,7 +16,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {title = '', desc = '', email = '', start = '', end = ''} = params;
+  const {title = '', desc = '', emails = '', start = '', end = ''} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -41,13 +41,18 @@ async function _command(params, commandText, secrets = {}) {
     baseURL +
     `/v1/user/${users[0].id}/scheduled_meeting?access_token=${data.access_token}?personal_meeting=true`;
 
+  const attendees = [];
+  for (const email of emails.split(',')) {
+    attendees.push({email});
+  }
+
   const {data: meeting} = await axios.post(requestURL, {
     title: title,
     description: desc,
     timezone: 'America/New_York',
     start: Math.round(new Date(start).getTime()),
     end: Math.round(new Date(end).getTime()),
-    attendees: [{email: email}],
+    attendees: attendees,
     endPointType: 'WEB_APP',
     endPointVersion: '2.10'
   });
@@ -62,12 +67,12 @@ async function _command(params, commandText, secrets = {}) {
     )} **End:** ${new Date(meeting.end).toLocaleString('en-US')}`
   );
 
-  let attendees = '**Attendees:**';
+  let attendeesOutput = '**Attendees:**';
   for (const attendee of meeting.attendees) {
-    attendees += `\`${attendee.email}\``;
+    attendeesOutput += `\`${attendee.email}\` `;
   }
 
-  result.push(attendees);
+  result.push(attendeesOutput);
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
