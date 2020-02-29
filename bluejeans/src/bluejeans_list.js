@@ -38,22 +38,29 @@ async function _command(params, commandText, secrets = {}) {
   // Fetch all meetings using the first user.
   const {data: meetings} = await axios.get(
     baseURL +
-      `/v1/users/${users[0].id}/scheduled_meeting?access_token=${data.access_token}`
+      `/v1/user/${users[0].id}/scheduled_meeting?access_token=${data.access_token}`
   );
 
   result.push(`### Upcoming meetings`);
+  result.push(`---`);
 
   for (const meeting of meetings) {
-    result.push(`---`);
     result.push(`#### ${meeting.title}`);
     result.push(`${meeting.description}`);
+
     // TODO: Show proper timings.
     result.push(
       `**Start**: ${new Date(meeting.start).toLocaleString(
         'en-US'
       )} **End:** ${new Date(meeting.end).toLocaleString('en-US')}`
     );
-    result.push(`Total attendees: **${meeting.attendees.length}**`);
+
+    let attendees = '**Attendees:**';
+    for (const attendee of meeting.attendees) {
+      attendees += `\`${attendee.email}\` `;
+    }
+
+    result.push(attendees);
   }
 
   return {
