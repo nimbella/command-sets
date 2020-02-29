@@ -3,3 +3,18 @@ commands:
   bluejeans_list:
     sourcePath: src/bluejeans_list.js
     description: List meetings of a user.
+  bluejeans_create:
+    sourcePath: src/bluejeans_create.js
+    description: Create a BlueJeans meeting.
+    parameters:
+      - name: title
+        value: title
+      - name: email
+        value: email
+      - name: desc
+        value: desc
+        optional: true
+      - name: start
+        value: start
+      - name: end
+        value: end
