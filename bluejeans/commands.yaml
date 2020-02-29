@@ -1,0 +1,23 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/
+commands:
+  bluejeans_list:
+    sourcePath: src/bluejeans_list.js
+    description: List meetings of a user.
+    parameters:
+      - name: userId
+        optional: true
+  bluejeans_create:
+    sourcePath: src/bluejeans_create.js
+    description: Create a BlueJeans meeting.
+    parameters:
+      - name: title
+        value: title
+      - name: emails
+        value: emails
+      - name: desc
+        value: desc
+        optional: true
+      - name: start
+        value: start
+      - name: end
+        value: end
