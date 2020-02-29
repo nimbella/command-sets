@@ -29,3 +29,6 @@ command_sets:
   translate:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/translate/commands.yaml
     description: Translates text to a given language
+  bluejeans:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/commands.yaml
+    description: Bluejeans commands.
