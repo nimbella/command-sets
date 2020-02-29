@@ -16,7 +16,6 @@ commands:
         value: emails
       - name: desc
         value: desc
-        optional: true
       - name: start
         value: start
       - name: end
