@@ -86,6 +86,12 @@ To list EC2 instances under your account:
 
 `dobill` - Calculates DigitalOcean bill based on usage.
 
+### BlueJeans (`bluejeans`)
+
+`bluejeans_create` - Create a meeting.
+
+`bluejeans_list` - List meetings of a user.
+
 ### Misc
 
 `dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)
