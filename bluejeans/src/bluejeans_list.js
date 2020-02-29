@@ -16,6 +16,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  const {userId} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -38,7 +39,9 @@ async function _command(params, commandText, secrets = {}) {
   // Fetch all meetings using the first user.
   const {data: meetings} = await axios.get(
     baseURL +
-      `/v1/user/${users[0].id}/scheduled_meeting?access_token=${data.access_token}`
+      `/v1/user/${
+        userId ? userId : users[0].id
+      }/scheduled_meeting?access_token=${data.access_token}`
   );
 
   result.push(`### Upcoming meetings`);
