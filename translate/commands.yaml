@@ -1,7 +1,6 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/translate/src
 commands:
   translate:
-    sourcePath: /translate.js
+    sourcePath: /src/translate.js
     description: Translates text to a given language 
     parameters:
       - name: text

@@ -1,34 +1,23 @@
 command_sets:
   billing:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/billing/commands.yaml
     description: commands to show cloud service bills
   gcloud:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/commands.yaml
     description: Google Cloud commands (right now, just billing)
   npm-example:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/npm-example/commands.yaml
     description: Example that installs a package and that lists installed packages
   echo:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/echo/commands.yaml
     description: simple echo test
   do:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/commands.yaml
     description: DigitalOcean commands
   aws:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/aws/commands.yaml
     description: AWS commands.
   vultr:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/vultr/commands.yaml
     description: Vultr commands.
   run:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/run/commands.yaml
     description: Command to run slash commands.
   dig:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/dig/commands.yaml
     description: Command to lookup DNS
   translate:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/translate/commands.yaml
     description: Translates text to a given language
   bluejeans:
-    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/commands.yaml
     description: Bluejeans commands.

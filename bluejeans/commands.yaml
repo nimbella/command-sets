@@ -1,4 +1,3 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/
 commands:
   bluejeans_list:
     sourcePath: src/bluejeans_list.js

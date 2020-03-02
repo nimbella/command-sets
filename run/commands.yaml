@@ -1,4 +1,3 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/run/src
 commands:
   run:
     sourcePath: /run.js
