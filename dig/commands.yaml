@@ -1,6 +1,6 @@
 commands:
   dig:
-    sourcePath: /src.js
+    sourcePath: /src/dig.js
     description: Perform DNS queries.
     parameters:
       - name: hostname
