@@ -1,36 +1,35 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/do/src
 commands:
   droplet_ip:
-    sourcePath: /droplet_ip.js
+    sourcePath: /do/src/droplet_ip.js
     description: List IP addresses of a droplet.
     parameters:
       - name: dropletIp
   droplet_list:
-    sourcePath: /droplet_list.js
+    sourcePath: /do/src/droplet_list.js
     description: Lists your droplets.
     parameters:
       - name: page
         optional: true
   droplet_reboot:
-    sourcePath: /droplet_reboot.js
+    sourcePath: /do/src/droplet_reboot.js
     description: Reboot your droplet.
     parameters:
       - name: id
   droplet_snap:
-    sourcePath: /droplet_snap.js
+    sourcePath: /do/src/droplet_snap.js
     description: Take a snapshot of your droplet.
     parameters:
       - name: id
       - name: name
         optional: true
   droplet_power:
-    sourcePath: /droplet_power.js
+    sourcePath: /do/src/droplet_power.js
     description: Power on/off your droplet.
     parameters:
       - name: cmd
       - name: id
   droplet_status:
-    sourcePath: /droplet_status.js
+    sourcePath: /do/src/droplet_status.js
     description: Know the status of all your droplets or a single droplet.
     parameters:
       - name: id

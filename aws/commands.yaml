@@ -1,32 +1,31 @@
-sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/aws/
 commands:
   ec2_list:
-    sourcePath: ec2/ec2_list.js
+    sourcePath: /aws/ec2/ec2_list.js
     description: Lists your EC2 instances in the provided region.
     parameters:
       - name: substr
         optional: true
   ec2_reboot:
-    sourcePath: ec2/ec2_reboot.js
+    sourcePath: /aws/ec2/ec2_reboot.js
     description: Reboot your EC2 instance.
     parameters:
       - name: id
   ec2_status:
-    sourcePath: ec2/ec2_status.js
+    sourcePath: /aws/ec2/ec2_status.js
     description: Know the status of your EC2 instances.
     parameters:
       - name: id
   dynamodb_list:
-    sourcePath: dynamodb/dynamodb_list.js
+    sourcePath: /aws/dynamodb/dynamodb_list.js
     description: List DB Tables under your account.
     parameters:
       - name: startTable
         optional: true
   rds_list:
-    sourcePath: rds/rds_list.js
+    sourcePath: /aws/rds/rds_list.js
     description: List Amazon RDS (Relational Database Service) instances under your account.
   53_list:
-    sourcePath: route53/53_list.js
+    sourcePath: /aws/route53/53_list.js
     description: Lists AWS route53 managed hostnames
     options:
       - name: type
@@ -34,7 +33,7 @@ commands:
       - name: match
         value: match_string
   53_add:
-    sourcePath: route53/53_add.js
+    sourcePath: /aws/route53/53_add.js
     description: Adds an AWS route53 hostname
     parameters:
       - name: hostname
