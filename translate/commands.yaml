@@ -1,6 +1,6 @@
 commands:
   translate:
-    sourcePath: /translate/src/translate.js
+    sourcePath: /src/translate.js
     description: Translates text to a given language 
     parameters:
       - name: text

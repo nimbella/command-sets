@@ -1,4 +1,4 @@
 commands:
   package_list:
-    sourcePath: /npm-example/src/package_list.js
+    sourcePath: /src/package_list.js
     description: Lists the installed npm packages

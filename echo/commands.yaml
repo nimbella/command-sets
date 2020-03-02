@@ -1,6 +1,6 @@
 commands:
   echo:
-    sourcePath: /echo/src/echo.js
+    sourcePath: /src/echo.js
     description: simple echo test
     parameters:
       - name: msg
