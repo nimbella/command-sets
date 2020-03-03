@@ -13,7 +13,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        `You need to create secrets named \`mmURL\` & \`mmToken\` with your mattermost` +
+        `You need to create secrets named \`mmURL\` & \`mmToken\` with your mattermost ` +
         `server URL & API token. Create secrets by running \`/nc secret_create\``
     };
   }

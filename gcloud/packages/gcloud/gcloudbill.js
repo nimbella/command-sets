@@ -12,7 +12,7 @@ const path = "./gcloud_cred.json";
  */
 async function _command(params, commandText, secrets = {}) {
     if (!secrets || !secrets.gcloud_cred_json || !secrets.gcloud_cred_key || !secrets.billing_table_name) {
-        return { body: { text: "You must create secrets for GCloud Billing service to use this command.\nSecrets required to run this command are: \ngcloud_cred_json \ngcloud_cred_key \nbilling_table_name" } };
+        return { text: "You must create secrets for GCloud Billing service to use this command.\nSecrets required to run this command are: \ngcloud_cred_json \ngcloud_cred_key \nbilling_table_name" };
     }
     let month;
     let year;
