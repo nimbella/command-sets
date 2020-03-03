@@ -1,0 +1,18 @@
+sourceBasePath: ''
+commands:
+  stats:
+    sourcePath: /stats.js
+    description: 'View community contribution stats for provided GitLab project repository. Example repository: username/project'
+    parameters:
+      - name: repo
+        optional: false
+  create:
+    sourcePath: /create.js
+    description: 'Creates a GitLab ticket with provided project repository, title, and descriptions. Example repository: username/project'
+    parameters:
+      - name: repo
+        optional: false
+      - name: title
+        optional: false
+      - name: description
+        optional: false
