@@ -51,8 +51,8 @@ This isn't practical, but it's there if you need it until we have a better versi
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async ({params, commandText, __secrets}) => ({
-  body: await _command(params, commandText, __secrets || {}).catch(error => ({
+const main = async ({__secrets = {}, commandText, ...params}) => ({
+  body: await _command(params, commandText, __secrets).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
