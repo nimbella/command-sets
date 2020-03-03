@@ -101,14 +101,13 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async ({__secrets = {}, commandText, ...params}) => ({
-  body: await _command(params, commandText, __secrets).catch(error => ({
+const main = async (args) => ({
+  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
 });
 module.exports = main;
-```
 
 This is the code in `hola.js`.
 
