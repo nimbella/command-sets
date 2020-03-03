@@ -48,9 +48,9 @@ To list EC2 instances under your account:
 
 `rds_list` - Lists RDS instances under an account.
 
-`53_add` - Adds an AWS route53 hostname.
+`route53_add` - Adds an AWS route53 hostname.
 
-`53_list` - Lists AWS route53 managed hostnames.
+`route53_list` - Lists AWS route53 managed hostnames.
 
 ### DigitalOcean (`do`)
 
