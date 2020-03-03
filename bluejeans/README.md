@@ -18,16 +18,16 @@ After you've the credentials, we need two secrets named `bluejeansAppKey` & `blu
 
 To create a meeting with `satya@nimbella.com` & `eric@nimbella.com`:
 ```sh
-/devops bluejeans_create -title "A new beggining" -emails "satya@nimbella.com,eric@nimbella.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
+/dapp bluejeans_create -title "A new beginning" -emails "satya@nimbella.com,eric@nimbella.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
 ```
 
 To list all meetings of admin:
 ```sh
-/devops bluejeans_list
+/dapp bluejeans_list
 ```
 
 You can also list meetings of a specific user by passing in their user id:
 ```sh
-/devops bluejeans_list <userId>
+/dapp bluejeans_list <userId>
 ```
 This isn't practical, but it's there if you need it until we have a better version.
