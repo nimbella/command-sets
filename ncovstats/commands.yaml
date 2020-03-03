@@ -1,22 +1,22 @@
 commands:
   advice:
-    sourcePath: /src/advice.js
+    sourcePath: packages/ncovstats/advice.js
     description: List of do's and don'ts from WHO
   worldwide:
-    sourcePath: /src/world.js
+    sourcePath: packages/ncovstats/world.js
     description: Worldwide Stats      
   country:
-    sourcePath: /src/country.js
+    sourcePath: packages/ncovstats/country.js
     description: Stats for a Country
     parameters:
       - name: country_name
         optional: false
   cfr:
-    sourcePath: /src/cfr.js
+    sourcePath: packages/ncovstats/cfr.js
     description: Case Fatality Ratio   
   ro:
-    sourcePath: /src/ro.js
+    sourcePath: packages/ncovstats/ro.js
     description: The Attack Rate or Transmissibility 
   ip:
-    sourcePath: /src/ip.js
+    sourcePath: packages/ncovstats/ip.js
     description: Incubation Period
