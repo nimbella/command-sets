@@ -7,7 +7,7 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function _command(params, commandText, secrets = {}) {
+async function _command(params = {}, commandText, secrets = {}) {
   const {bluejeansAppKey, bluejeansAppSecret} = secrets;
   if (!bluejeansAppKey || !bluejeansAppSecret) {
     return {
