@@ -4,8 +4,15 @@ Only supported on Mattermost for now.
 
 ## Available commands
 
+- `bluejeans` - Displays help.
 - `bluejeans_create` - Create a meeting.
 - `bluejeans_list` - List meetings of a user.
+
+## Requirements
+
+We need App Key and App Secret that can be created under **ADMIN > OAUTH ACCESS** in your BlueJeans dashboard. Follow ["Client Grant Type"](https://support.bluejeans.com/s/article/Authentication-Methods-for-BlueJeans-Meetings-API-Endpoints) section to create them.
+
+After you've the credentials, we need two secrets named `bluejeansAppKey` & `bluejeansAppSecret` with your credentials as their values. You can create them by running `/nc secret_create`.`
 
 ## Usage
 
@@ -13,3 +20,14 @@ To create a meeting with `satya@nimbella.com` & `eric@nimbella.com`:
 ```sh
 /devops bluejeans_create -title "A new beggining" -emails "satya@nimbella.com,eric@nimbella.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
 ```
+
+To list all meetings of admin:
+```sh
+/devops bluejeans_list
+```
+
+You can also list meetings of a specific user by passing in their user id:
+```sh
+/devops bluejeans_list <userId>
+```
+This isn't practical, but it's there if you need it until we have a better version.
