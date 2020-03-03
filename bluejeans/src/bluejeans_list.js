@@ -16,7 +16,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {userId} = params;
+  const {userId = ''} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -51,19 +51,19 @@ async function _command(params, commandText, secrets = {}) {
     result.push(`#### ${meeting.title}`);
     result.push(`${meeting.description}`);
 
-    // TODO: Show proper timings.
     result.push(
-      `**Start**: ${new Date(meeting.start).toLocaleString(
-        'en-US'
-      )} **End:** ${new Date(meeting.end).toLocaleString('en-US')}`
+      `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
+        meeting.end
+      ).toUTCString()}`
     );
 
-    let attendees = '**Attendees:**';
+    let attendeesOutput = '**Attendees:**';
     for (const attendee of meeting.attendees) {
-      attendees += `\`${attendee.email}\` `;
+      attendeesOutput += `\`${attendee.email}\` `;
     }
 
-    result.push(attendees);
+    result.push(attendeesOutput);
+    result.push(`**Link:** https://bluejeans.com/${meeting.numericMeetingId}`);
   }
 
   return {
