@@ -16,10 +16,11 @@ After you've the credentials, we need two secrets named `bluejeansAppKey` & `blu
 
 ## Usage
 
-To create a meeting with `satya@nimbella.com` & `eric@nimbella.com`:
+To create a meeting with `joe@commander.com` & `judy@commander.com`:
 ```sh
-/dapp bluejeans_create -title "A new beginning" -emails "satya@nimbella.com,eric@nimbella.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
+/dapp bluejeans_create -title "A new beginning" -emails "joe@commander.com,judy@commander.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
 ```
+Where date is in `mm/dd/yy` format and time is in UTC
 
 To list all meetings of admin:
 ```sh
