@@ -1,35 +1,35 @@
 commands:
   droplet_ip:
-    sourcePath: /src/droplet_ip.js
+    sourcePath: packages/do/droplet_ip.js
     description: List IP addresses of a droplet.
     parameters:
       - name: dropletIp
   droplet_list:
-    sourcePath: /src/droplet_list.js
+    sourcePath: packages/do/droplet_list.js
     description: Lists your droplets.
     parameters:
       - name: page
         optional: true
   droplet_reboot:
-    sourcePath: /src/droplet_reboot.js
+    sourcePath: packages/do/droplet_reboot.js
     description: Reboot your droplet.
     parameters:
       - name: id
   droplet_snap:
-    sourcePath: /src/droplet_snap.js
+    sourcePath: packages/do/droplet_snap.js
     description: Take a snapshot of your droplet.
     parameters:
       - name: id
       - name: name
         optional: true
   droplet_power:
-    sourcePath: /src/droplet_power.js
+    sourcePath: packages/do/droplet_power.js
     description: Power on/off your droplet.
     parameters:
       - name: cmd
       - name: id
   droplet_status:
-    sourcePath: /src/droplet_status.js
+    sourcePath: packages/do/droplet_status.js
     description: Know the status of all your droplets or a single droplet.
     parameters:
       - name: id

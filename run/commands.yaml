@@ -1,6 +1,6 @@
 commands:
   run:
-    sourcePath: /run.js
+    sourcePath: packages/run/run.js
     description: Slash command to run slash commands.
     parameters:
       - name: "..."

@@ -1,15 +1,15 @@
 commands:
   awsbill:
-    sourcePath: /src/awsbill.js
+    sourcePath: packages/billing/awsbill.js
     description: Shows your AWS bill
     parameters:
       - name: month_year
         optional: true
   datadogbill:
-    sourcePath: /src/datadogbill.js
+    sourcePath: packages/billing/datadogbill.js
     description: Shows your Datadog bill
     options:
       - name: detail
   dobill:
-    sourcePath: /src/dobill.js
+    sourcePath: packages/billing/dobill.js
     description: Shows your DigitalOcean bill
