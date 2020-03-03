@@ -17,11 +17,18 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const {title = '', desc = '', emails = '', start = '', end = ''} = params;
+  if (!title || !emails || !start || !end) {
+    return {
+      response_type: 'ephemeral',
+      text: `Params \`-title\`, \`-emails\`, \`-start\` and \`-end\` are essential to schedule a meeting.`
+    };
+  }
+
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
 
-  // Fetch access_token
+  // Fetch access token
   const {data} = await axios.post(baseURL + '/oauth2/token?Client', {
     grant_type: 'client_credentials',
     client_id: bluejeansAppKey,
@@ -37,9 +44,10 @@ async function _command(params, commandText, secrets = {}) {
   );
 
   // Create a meeting
-  let requestURL =
+  const requestURL =
     baseURL +
-    `/v1/user/${users[0].id}/scheduled_meeting?access_token=${data.access_token}?personal_meeting=true`;
+    users[0].uri +
+    `/scheduled_meeting?access_token=${data.access_token}`;
 
   const attendees = [];
   for (const email of emails.split(',')) {
@@ -48,7 +56,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const {data: meeting} = await axios.post(requestURL, {
     title: title,
-    description: desc,
+    description: desc ? desc : '',
     timezone: 'America/New_York',
     start: Math.round(new Date(start).getTime()),
     end: Math.round(new Date(end).getTime()),
@@ -60,19 +68,19 @@ async function _command(params, commandText, secrets = {}) {
   result.push(`#### ${meeting.title}`);
   result.push(`${meeting.description}`);
 
-  // TODO: Show proper timings.
   result.push(
-    `**Start**: ${new Date(meeting.start).toLocaleString(
-      'en-US'
-    )} **End:** ${new Date(meeting.end).toLocaleString('en-US')}`
+    `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
+      meeting.end
+    ).toUTCString()}`
   );
 
-  let attendeesOutput = '**Attendees:**';
+  let attendeesOutput = '**Attendees:** ';
   for (const attendee of meeting.attendees) {
     attendeesOutput += `\`${attendee.email}\` `;
   }
 
   result.push(attendeesOutput);
+  result.push(`**Link:** https://bluejeans.com/${meeting.numericMeetingId}`);
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
