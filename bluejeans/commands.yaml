@@ -1,5 +1,8 @@
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/
 commands:
+  bluejeans:
+    sourcePath: src/bluejeans.js
+    description: Dipslay help to use BlueJeans Command Set.
   bluejeans_list:
     sourcePath: src/bluejeans_list.js
     description: List meetings of a user.
