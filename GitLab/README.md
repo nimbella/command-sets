@@ -1,16 +1,11 @@
 # Nimbella Commander GitLab Command Set
 A Nimbella Commander command set for viewing GitLab project statistics, creating tickets, and assigning issues. Currently supports slack.
 
-**Table of Contents**
-
-[TOCM]
-
-[TOC]
-
 ## Features
 - View community contribution stats for GitLab projects
 - Create a ticket for a GitLab project
 - Assign issues for a GitLab project
+- View list of users in project repository
 
 ## Install
 ```
@@ -33,5 +28,11 @@ Viewing community contributions for a GitLab project
 Creating a ticket for a GitLab project
 ```
 /GitLab create <repo> <title> <description>
+```
+![](x.png)
+
+Viewing list of users in project repository
+```
+/GitLab users <repo> [<name>]
 ```
 ![](x.png)
