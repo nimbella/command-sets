@@ -16,3 +16,11 @@ commands:
         optional: false
       - name: description
         optional: false
+  stats:
+    sourcePath: /users.js
+    description: 'View list of users in GitLab project repository. Example repository: username/project'
+    parameters:
+      - name: repo
+        optional: false
+      - name: name
+        optional: true
