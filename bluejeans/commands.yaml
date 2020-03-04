@@ -9,6 +9,8 @@ commands:
     parameters:
       - name: userId
         optional: true
+    options:
+      - name: detail
   bluejeans_create:
     sourcePath: src/bluejeans_create.js
     description: Create a BlueJeans meeting.
@@ -23,3 +25,10 @@ commands:
         value: start
       - name: end
         value: end
+  bluejeans_cancel:
+    sourcePath: src/bluejeans_cancel.js
+    description: Cancel a BlueJeans meeting.
+    parameters:
+      - name: meetingId
+      - name: cancellationMessage
+        optional: true
