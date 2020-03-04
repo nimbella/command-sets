@@ -9,6 +9,8 @@ commands:
     parameters:
       - name: userId
         optional: true
+    options:
+      - name: detail
   bluejeans_create:
     sourcePath: src/bluejeans_create.js
     description: Create a BlueJeans meeting.

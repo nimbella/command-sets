@@ -27,6 +27,11 @@ To list all meetings of admin:
 /dapp bluejeans_list
 ```
 
+To include respective meeting id in the list, pass `-detail` option.
+```sh
+/dapp bluejeans_list -detail
+```
+
 You can also list meetings of a specific user by passing in their user id:
 ```sh
 /dapp bluejeans_list <userId>

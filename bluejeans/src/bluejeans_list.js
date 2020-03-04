@@ -16,7 +16,7 @@ async function _command(params = {}, commandText, secrets = {}) {
     };
   }
 
-  const {userId = ''} = params;
+  const {userId = '', detail = false} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -50,6 +50,10 @@ async function _command(params = {}, commandText, secrets = {}) {
   for (const meeting of meetings) {
     result.push(`#### ${meeting.title}`);
     result.push(`${meeting.description}`);
+
+    if (detail === true) {
+      result.push(`**Meeting ID**: ${meeting.id}`);
+    }
 
     result.push(
       `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
