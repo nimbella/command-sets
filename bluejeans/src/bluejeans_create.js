@@ -47,7 +47,7 @@ async function _command(params = {}, commandText, secrets = {}) {
   const requestURL =
     baseURL +
     users[0].uri +
-    `/scheduled_meeting?access_token=${data.access_token}`;
+    `/scheduled_meeting?email=true&access_token=${data.access_token}`;
 
   const attendees = [];
   for (const email of emails.split(',')) {
