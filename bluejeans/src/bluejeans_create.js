@@ -24,6 +24,16 @@ async function _command(params = {}, commandText, secrets = {}) {
     };
   }
 
+  const startTime = new Date(start).getTime();
+  const endTime = new Date(end).getTime();
+
+  if (endTime <= startTime) {
+    return {
+      response_type: 'ephemeral',
+      text: `Meeting \`-end\` time cannot be before or same as \`-start\` time.`
+    };
+  }
+
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -58,8 +68,8 @@ async function _command(params = {}, commandText, secrets = {}) {
     title: title,
     description: desc ? desc : '',
     timezone: 'America/New_York',
-    start: Math.round(new Date(start).getTime()),
-    end: Math.round(new Date(end).getTime()),
+    start: startTime,
+    end: endTime,
     attendees: attendees,
     endPointType: 'WEB_APP',
     endPointVersion: '2.10'
