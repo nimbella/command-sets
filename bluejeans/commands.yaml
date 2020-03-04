@@ -25,3 +25,10 @@ commands:
         value: start
       - name: end
         value: end
+  bluejeans_cancel:
+    sourcePath: src/bluejeans_cancel.js
+    description: Cancel a BlueJeans meeting.
+    parameters:
+      - name: meetingId
+      - name: cancellationMessage
+        optional: true

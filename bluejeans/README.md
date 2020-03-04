@@ -22,6 +22,12 @@ To create a meeting with `joe@example.com` & `judy@example.com`:
 ```
 Where date is in `mm/dd/yy` format and time is in UTC.
 
+To cancel a meeting:
+```sh
+/dapp bluejeans_cancel <meetingId> [<cancellationMessage>]
+```
+`meetingId` is required and `cancellationMessage` is optional.
+
 To list all meetings of admin:
 ```sh
 /dapp bluejeans_list
