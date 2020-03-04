@@ -1,6 +1,6 @@
 commands:
   bluejeans:
-    sourcePath: src/bluejeans.js
+    sourcePath: packages/src/bluejeans.js
     description: Dipslay help to use BlueJeans Command Set.
   bluejeans_list:
     sourcePath: packages/bluejeans/bluejeans_list.js
