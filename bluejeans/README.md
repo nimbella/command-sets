@@ -12,14 +12,15 @@ Only supported on Mattermost for now.
 
 We need App Key and App Secret that can be created under **ADMIN > OAUTH ACCESS** in your BlueJeans dashboard. Follow ["Client Grant Type"](https://support.bluejeans.com/s/article/Authentication-Methods-for-BlueJeans-Meetings-API-Endpoints) section to create them.
 
-After you've the credentials, we need two secrets named `bluejeansAppKey` & `bluejeansAppSecret` with your credentials as their values. You can create them by running `/nc secret_create`.`
+After you've the credentials, we need two secrets named `bluejeansAppKey` & `bluejeansAppSecret` with your credentials as their values. You can create them by running `/nc secret_create`.
 
 ## Usage
 
-To create a meeting with `satya@nimbella.com` & `eric@nimbella.com`:
+To create a meeting with `joe@example.com` & `judy@example.com`:
 ```sh
-/dapp bluejeans_create -title "A new beginning" -emails "satya@nimbella.com,eric@nimbella.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
+/dapp bluejeans_create -title "A new beginning" -emails "joe@example.com,judy@example.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
 ```
+Where date is in `mm/dd/yy` format and time is in UTC.
 
 To list all meetings of admin:
 ```sh
