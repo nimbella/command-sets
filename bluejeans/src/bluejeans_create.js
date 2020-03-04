@@ -27,10 +27,10 @@ async function _command(params = {}, commandText, secrets = {}) {
   const startTime = new Date(start).getTime();
   const endTime = new Date(end).getTime();
 
-  if (endTime <= startTime) {
+  if (endTime <= startTime || startTime <= Date.now()) {
     return {
       response_type: 'ephemeral',
-      text: `Meeting \`-end\` time cannot be before or same as \`-start\` time.`
+      text: `Meeting \`-end\` time cannot be before or same as \`-start\` time. And \`-start\` cannot be before or same as present time.`
     };
   }
 
