@@ -7,6 +7,7 @@ Only supported on Mattermost for now.
 - `bluejeans` - Displays help.
 - `bluejeans_create` - Create a meeting.
 - `bluejeans_list` - List meetings of a user.
+- `bluejeans_cancel` - Cancel a meeting.
 
 ## Requirements
 
