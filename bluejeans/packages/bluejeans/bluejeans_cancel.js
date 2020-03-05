@@ -16,12 +16,12 @@ async function _command(params = {}, commandText, secrets = {}) {
     };
   }
 
-  const {userId = '', detail = false} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
+  const {meetingId, cancellationMessage = ''} = params;
   const axios = require('axios');
 
-  // Fetch access_token
+  // Fetch access token
   const {data} = await axios.post(baseURL + '/oauth2/token?Client', {
     grant_type: 'client_credentials',
     client_id: bluejeansAppKey,
@@ -36,43 +36,17 @@ async function _command(params = {}, commandText, secrets = {}) {
       `/v1/enterprise/${data.scope.enterprise}/users?access_token=${data.access_token}`
   );
 
-  // Fetch all meetings using the first user.
-  const {data: meetings} = await axios.get(
-    baseURL +
-      `/v1/user/${
-        userId ? userId : users[0].id
-      }/scheduled_meeting?access_token=${data.access_token}`
-  );
+  // Cancel a meeting
+  let requestURL = baseURL + users[0].uri + `/scheduled_meeting/${meetingId}`;
+  requestURL += `?email=true&access_token=${data.access_token}`;
 
-  result.push(`### Upcoming meetings`);
-  result.push(`---`);
+  if (cancellationMessage) {
+    requestURL += `&cancellationMessage=${cancellationMessage}`;
+  }
 
-  for (const meeting of meetings) {
-    // Skip this meeting if its end time is in the past.
-    if (meeting.end < Date.now()) {
-      continue;
-    }
-
-    result.push(`#### ${meeting.title}`);
-    result.push(`${meeting.description}`);
-
-    if (detail === true) {
-      result.push(`**Meeting ID**: ${meeting.id}`);
-    }
-
-    result.push(
-      `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
-        meeting.end
-      ).toUTCString()}`
-    );
-
-    let attendeesOutput = '**Attendees:**';
-    for (const attendee of meeting.attendees) {
-      attendeesOutput += `\`${attendee.email}\` `;
-    }
-
-    result.push(attendeesOutput);
-    result.push(`**Link:** https://bluejeans.com/${meeting.numericMeetingId}`);
+  const {status} = await axios.delete(requestURL);
+  if (status === 200) {
+    result.push(`Successfully cancelled the meeting (ID: \`${meetingId}\`).`);
   }
 
   return {
@@ -86,8 +60,8 @@ async function _command(params = {}, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async ({__secrets = {}, commandText, ...params}) => ({
+  body: await _command(params, commandText, __secrets).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))

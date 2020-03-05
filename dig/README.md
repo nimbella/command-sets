@@ -5,13 +5,13 @@ A dig clone for Nimbella Commander.
 ## Install
 
 ```
-/nc csm_install github:satyarohith/dig_nimbella
+/nc csm_install dig
 ```
 
 ## Usage
 
 ```
-/devops dig <hostname> [<type>]
+/dapp dig <hostname> [<type>]
 ```
 
 Supported record types:
