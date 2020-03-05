@@ -25,7 +25,7 @@ commands:
       - name: end
         value: end
   bluejeans_cancel:
-    sourcePath: src/bluejeans_cancel.js
+    sourcePath: packages/bluejeans/bluejeans_cancel.js
     description: Cancel a BlueJeans meeting.
     parameters:
       - name: meetingId
