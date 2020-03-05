@@ -48,6 +48,11 @@ async function _command(params = {}, commandText, secrets = {}) {
   result.push(`---`);
 
   for (const meeting of meetings) {
+    // Skip this meeting if its end time is in the past.
+    if (meeting.end < Date.now()) {
+      continue;
+    }
+
     result.push(`#### ${meeting.title}`);
     result.push(`${meeting.description}`);
 
