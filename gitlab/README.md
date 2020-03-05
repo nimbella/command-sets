@@ -1,5 +1,5 @@
 # Nimbella Commander GitLab Command Set
-A Nimbella Commander command set for viewing GitLab project statistics, creating tickets, and assigning issues. Currently supports slack.
+A Nimbella Commander command set for viewing GitLab project statistics, creating tickets, and assigning issues.
 
 ## Features
 - View community contribution stats for GitLab projects
@@ -9,30 +9,36 @@ A Nimbella Commander command set for viewing GitLab project statistics, creating
 
 ## Install
 ```
-/nc csm_install xxx
+/nc csm_install github:Maljean/command-sets/tree/dev/gitlab
 ```
 
 ## Requirements
 ```
 In order to use this command set, you must set up a Personal Access Token on GitLab with API access. And save the token as a secret with the key 'AcessToken_GitLab'
-https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
+Use /nc secret_create to create keys
+Visit https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html to learn how to setup a Personal Access Token on GitLab
 ```
 
 ## Usage
-Viewing community contributions for a GitLab project
+Viewing community contributions for a GitLab project.
 ```
-/GitLab stats <repo>
+/dapp gitlab_stats <repo>
 ```
-![](x.png)
+![]()
 
-Creating a ticket for a GitLab project
+Creating a ticket for a GitLab project.
 ```
-/GitLab create <repo> <title> <description>
+/dapp gitlab_create <repo> <title> <description>
 ```
-![](x.png)
+![]()
 
-Viewing list of users in project repository
+Viewing list of users in project repository.
 ```
-/GitLab users <repo> [<name>]
+/dapp gitlab_users <repo> [<name>]
 ```
-![](x.png)
+![]()
+
+Viewing GitLab command set documentation.
+```
+/dapp gitlab_gitlab
+```

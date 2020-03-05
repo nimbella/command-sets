@@ -1,13 +1,12 @@
-sourceBasePath: ''
 commands:
-  stats:
-    sourcePath: /stats.js
+  gitlab_stats:
+    sourcePath: packages/gitlab/gitlab_stats.js
     description: 'View community contribution stats for provided GitLab project repository. Example repository: username/project'
     parameters:
       - name: repo
         optional: false
-  create:
-    sourcePath: /create.js
+  gitlab_create:
+    sourcePath: packages/gitlab/gitlab_create.js
     description: 'Creates a GitLab ticket with provided project repository, title, and descriptions. Example repository: username/project'
     parameters:
       - name: repo
@@ -16,11 +15,14 @@ commands:
         optional: false
       - name: description
         optional: false
-  stats:
-    sourcePath: /users.js
+  gitlab_stats:
+    sourcePath: packages/gitlab/gitlab_users.js
     description: 'View list of users in GitLab project repository. Example repository: username/project'
     parameters:
       - name: repo
         optional: false
       - name: name
         optional: true
+  gitlab_gitlab:
+    sourcePath: packages/gitlab/gitlab_gitlab.js
+    description: 'View gitlab command set documentation'
