@@ -3,7 +3,7 @@ commands:
     sourcePath: packages/do/droplet_ip.js
     description: List IP addresses of a droplet.
     parameters:
-      - name: dropletIp
+      - name: id
   droplet_list:
     sourcePath: packages/do/droplet_list.js
     description: Lists your droplets.
