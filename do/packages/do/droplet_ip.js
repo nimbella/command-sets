@@ -38,7 +38,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {dropletId, __client} = params;
+  const {id: dropletID, __client} = params;
   const client = __client.name;
 
   const result = [];
@@ -50,7 +50,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     const axios = require('axios');
-    const {data} = await axios.get(BASE_URL + `/droplets/${dropletId}`, {
+    const {data} = await axios.get(BASE_URL + `/droplets/${dropletID}`, {
       headers
     });
 
