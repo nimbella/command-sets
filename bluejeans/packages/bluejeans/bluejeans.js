@@ -27,7 +27,7 @@ After you've the credentials, we need two secrets named \`bluejeansAppKey\` & \`
 
 To create a meeting with \`joe@example.com\` & \`judy@example.com\`:
 \`\`\`sh
-/dapp bluejeans_create -title "A new beginning" -emails "joe@example.com,judy@example.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
+/dapp bluejeans_create -title "A new beginning" -emails "joe@example.com,judy@example.com" -start "03/01/20 18:00" -end "03/01/20 18:30"
 \`\`\`
 Where date is in \`mm/dd/yy\` format and time is in UTC.
 
