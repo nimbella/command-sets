@@ -29,10 +29,16 @@ async function _command(params, commandText, secrets = {}) {
   const issue = {
     title: title,
     description: description,
-    access_token: secrets.AcessToken_GitLab,
+    access_token: secrets.gitlabToken,
   };
   const repoURL = repo.replace(/\//g, "%2F");
   
+  if (!secrets.gitlabToken)
+    return  {
+      response_type: 'in_channel',
+      text: 'Incorrect or missing personal access token!'
+    };
+    
   // HTTP response from issue POST request
   const url = `https://gitlab.com/api/v4/projects/${repoURL}/issues?`;
   var ret = await sendIssue(url, issue);
@@ -56,8 +62,8 @@ Ticket URL: ${ret.web_url}\`\`\`\n`
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async ({__secrets = {}, commandText, ...params}) => ({
-  body: await _command(params, commandText, __secrets).catch(error => ({
+const main = async (args) => ({
+  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))

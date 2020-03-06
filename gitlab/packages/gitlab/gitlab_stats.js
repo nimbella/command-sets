@@ -21,19 +21,25 @@ async function _command(params, commandText, secrets = {}) {
     repo
   } = params;
   
+  if (!secrets.gitlabToken)
+    return  {
+      response_type: 'in_channel',
+      text: 'Incorrect or missing personal access token!'
+    };
+  
   // The gitLab api endpoint for viewing information on projects
   const repoURL = `https://gitlab.com/api/v4/projects/${repo.replace(/\//g, "%2F")}`;
   
   // A dictionary of api urls for each statistic
   const urlKey = {
-    fetches: `${repoURL}/statistics?access_token=${secrets.AcessToken_GitLab}`,
-    commits: `${repoURL}/repository/commits?access_token=${secrets.AcessToken_GitLab}`,
-    issuesOpened: `https://gitlab.com/api/v4/issues?state=opened&access_token=${secrets.AcessToken_GitLab}`,
-    issuesClosed: `https://gitlab.com/api/v4/issues?state=closed&access_token=${secrets.AcessToken_GitLab}`,
-    mergeRequestsOpened: `${repoURL}/merge_requests?state=opened&access_token=${secrets.AcessToken_GitLab}`,
-    mergeRequestsClosed: `${repoURL}/merge_requests?state=closed&access_token=${secrets.AcessToken_GitLab}`,
-    mergeRequestsLocked: `${repoURL}/merge_requests?state=locked&access_token=${secrets.AcessToken_GitLab}`,
-    mergeRequestsMerged: `${repoURL}/merge_requests?state=closed&access_token=${secrets.AcessToken_GitLab}`,
+    fetches: `${repoURL}/statistics?access_token=${secrets.gitlabToken}`,
+    commits: `${repoURL}/repository/commits?access_token=${secrets.gitlabToken}`,
+    issuesOpened: `https://gitlab.com/api/v4/issues?state=opened&access_token=${secrets.gitlabToken}`,
+    issuesClosed: `https://gitlab.com/api/v4/issues?state=closed&access_token=${secrets.gitlabToken}`,
+    mergeRequestsOpened: `${repoURL}/merge_requests?state=opened&access_token=${secrets.gitlabToken}`,
+    mergeRequestsClosed: `${repoURL}/merge_requests?state=closed&access_token=${secrets.gitlabToken}`,
+    mergeRequestsLocked: `${repoURL}/merge_requests?state=locked&access_token=${secrets.gitlabToken}`,
+    mergeRequestsMerged: `${repoURL}/merge_requests?state=closed&access_token=${secrets.gitlabToken}`,
   };
   
   // If the first GET request returns an error message stop everything and return it
@@ -75,10 +81,10 @@ Merge Requests Total: ${mergeRequestsOpened.length+mergeRequestsClosed.length+me
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async ({__secrets = {}, commandText, ...params}) => ({
-  body: await _command(params, commandText, __secrets).catch(error => ({
-    response_type: 'ephemeral',
-    text: `Error: ${error.message}`
-  }))
+const main = async (args) => ({
+    body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+      response_type: 'ephemeral',
+      text: `Error: ${error.message}`
+    }))
 });
 module.exports = main;
