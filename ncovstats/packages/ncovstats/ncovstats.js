@@ -1,9 +1,9 @@
 // jshint esversion: 9
 
-let  cheerio;
+let cheerio;
 
 
-const coronaMeter = 'https://www.worldometers.info/coronavirus/countries-where-coronavirus-has-spread/';
+let coronaMeter = 'https://www.worldometers.info/coronavirus/';
 /**
  * @description Stats for a Country
  * @param {ParamsType} params list of command parameters
@@ -12,9 +12,10 @@ const coronaMeter = 'https://www.worldometers.info/coronavirus/countries-where-c
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-
   const axios = require('axios');
-
+  if (params.countryName) {
+    coronaMeter += 'countries-where-coronavirus-has-spread/';
+  }
   if (!cheerio) {
     await install(['cheerio']);
     cheerio = require('cheerio');
@@ -31,38 +32,44 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const result = {};
-
   const html = cheerio.load(response.data);
-  let country = toTitleCase(params.country_name);
-  country = abbrExpand(country);
-  const countryStat = html(`td:contains(${country})`);
   let msg;
-  if (countryStat.length) {
-    result.cases = countryStat.next().text();
-    result.deaths = countryStat.next().next().text();
-    msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
-  }
-  else {
-    msg = `${country} is safe till now.`;
+
+
+  if (params.countryName) {
+    let country = toTitleCase(params.countryName);
+    const countryStat = html(`td:contains(${country})`);
+    country = abbrExpand(country);
+    if (countryStat.length) {
+      result.cases = countryStat.next().text();
+      result.deaths = countryStat.next().next().text();
+      msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
+    } else {
+      msg = `${country} is safe till now.`;
+    }
+  } else {
+    const statsElements = html('.maincounter-number');
+    const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
+    result.cases = `${stats[0]}`;
+    result.deaths = stats[1];
+    result.cured = stats[2];
+    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`ncovstats <countryName>\` e.g. /dapp ncovstats uk`;
   }
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: msg
+    text: msg,
   };
 }
 
-const toTitleCase = (phrase) => {
-  return phrase
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
+const toTitleCase = (phrase) => phrase
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
 
 const abbrExpand = (shortName) => {
-  longName = shortName;
+  let longName = shortName;
   switch (shortName) {
     case 'Us':
       longName = 'United States';
@@ -87,7 +94,6 @@ const abbrExpand = (shortName) => {
   }
   return longName;
 };
-
 
 const getFlag = (name) => {
   let flag = '';
@@ -122,7 +128,9 @@ const getFlag = (name) => {
 const install = (pkgs) => {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
+    const {
+      exec,
+    } = require('child_process');
     exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
       if (err) reject(err);
       else resolve();
@@ -137,9 +145,9 @@ const install = (pkgs) => {
  */
 
 const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+  body: await _command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`
-  }))
+    text: `Error: ${error.message}`,
+  })),
 });
 module.exports = main;
