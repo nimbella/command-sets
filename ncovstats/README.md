@@ -5,10 +5,5 @@ Coronaviruses (CoV) are a large family of viruses that cause illness ranging fro
 Since information is protection, this command-set gives live stats for the epidemic.
 
 Available commands:
-- `advice`     -- List of do's and don'ts from WHO
-- `worldwide`  -- Worldwide Stats
-- `country`    -- Stats for a country
-- `cfr`        -- Case Fatality Ratio
-- `ro`         -- The attack rate or transmissibility 
-- `ip`         -- Incubation Period
+- `ncovstats`     -- Live stats for the epidemic, worldwide or in a specific country
  
