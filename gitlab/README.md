@@ -24,19 +24,19 @@ Viewing community contributions for a GitLab project.
 ```
 /dapp gitlab_stats <repo>
 ```
-![](https://raw.githubusercontent.com/Maljean/command-sets/master/gitlab/screenshots/statsCommandScreenshot.PNG)
+![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/statsCommandScreenshot.PNG)
 
 Creating a ticket for a GitLab project.
 ```
 /dapp gitlab_create <repo> <title> <description>
 ```
-![](https://raw.githubusercontent.com/Maljean/command-sets/master/gitlab/screenshots/createCommandScreenshot.PNG)
+![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/createCommandScreenshot.PNG)
 
 Viewing list of users in project repository.
 ```
 /dapp gitlab_users <repo> [<name>]
 ```
-![](https://raw.githubusercontent.com/Maljean/command-sets/master/gitlab/screenshots/usersCommandScreenshot.PNG)
+![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/usersCommandScreenshot.PNG)
 
 Viewing GitLab command set documentation.
 ```

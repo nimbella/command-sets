@@ -21,11 +21,12 @@ async function _command(params, commandText, secrets = {}) {
     repo
   } = params;
   
-  if (!secrets.gitlabToken)
+  if (!secrets.gitlabToken) {
     return  {
       response_type: 'in_channel',
       text: 'Incorrect or missing personal access token!'
     };
+  }
   
   // The gitLab api endpoint for viewing information on projects
   const repoURL = `https://gitlab.com/api/v4/projects/${repo.replace(/\//g, "%2F")}`;
