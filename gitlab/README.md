@@ -38,13 +38,20 @@ Viewing list of users in project repository.
 ```
 ![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/usersCommandScreenshot.PNG)
 
+Viewing GitLab project issues.
+Note: Status may be all, opened, or closed.
+```
+/dapp gitlab_issues
+```
+
 Viewing GitLab command set documentation.
 ```
-/dapp gitlab_gitlab
+/dapp gitlab
 ```
 
 Assigning an issue and adding labels.
 Note: Use the gitlab_users command to find a team members id to use for the assignee_id.
+Use gitlab_issues to find an issue id.
 ```
 /dapp gitlab_assign <repo> <issue_id> <assignee_ids> [<labels>]
 ```

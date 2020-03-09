@@ -23,6 +23,14 @@ commands:
         optional: false
       - name: name
         optional: true
+  gitlab_issues:
+    sourcePath: packages/gitlab/gitlab_issues.js
+    description: 'View GitLab project issues. Note: Status may be all, opened, or closed.'
+    parameters:
+      - name: repo
+        optional: false
+      - name: status
+        optional: true
   gitlab_assign:
     sourcePath: packages/gitlab/gitlab_assign.js
     description: 'Assign issues to GitLab users and add labels to them. Labels must be comma deliminated!'
@@ -36,5 +44,5 @@ commands:
       - name: labels
         optional: true
   gitlab:
-    sourcePath: packages/gitlab/gitlab_gitlab.js
+    sourcePath: packages/gitlab/gitlab.js
     description: 'View gitlab command set documentation'
