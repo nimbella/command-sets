@@ -7,7 +7,7 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function _command(params = {}, commandText, secrets = {}) {
+async function _command(params, commandText, secrets) {
   const {bluejeansAppKey, bluejeansAppSecret} = secrets;
   if (!bluejeansAppKey || !bluejeansAppSecret) {
     return {
@@ -16,7 +16,7 @@ async function _command(params = {}, commandText, secrets = {}) {
     };
   }
 
-  const {userId = '', detail = false} = params;
+  const {userId = ''} = params;
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
   const axios = require('axios');
@@ -55,11 +55,7 @@ async function _command(params = {}, commandText, secrets = {}) {
 
     result.push(`#### ${meeting.title}`);
     result.push(`${meeting.description}`);
-
-    if (detail === true) {
-      result.push(`**Meeting ID**: ${meeting.id}`);
-    }
-
+    result.push(`**Meeting ID**: ${meeting.id}`);
     result.push(
       `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
         meeting.end
@@ -86,8 +82,8 @@ async function _command(params = {}, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async ({params = {}, commandText, __secrets = {}}) => ({
+  body: await _command(params, commandText, __secrets).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
