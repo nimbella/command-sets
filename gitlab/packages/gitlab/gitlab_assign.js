@@ -8,12 +8,11 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-// Sends ticket to gitLab API
-
 const axios = require('axios');
 
-async function sendIssue(url, issue) {
-  return await axios.post(url, issue)
+async function editIssue(url, issue) {
+    
+    return await axios.put(url, issue)
     .then(response => { return response.data; })
     .catch(error => { return error.response.data; });
 }
@@ -22,16 +21,10 @@ async function _command(params, commandText, secrets = {}) {
   
   const {
     repo,
-    title,
-    description
+    issue_id,
+    assignee_ids,
+    labels = ''
   } = params;
-  
-  const issue = {
-    title: title,
-    description: description,
-    access_token: secrets.gitlabToken,
-  };
-  const repoURL = repo.replace(/\//g, "%2F");
   
   if (!secrets.gitlabToken) {
     return  {
@@ -39,21 +32,14 @@ async function _command(params, commandText, secrets = {}) {
       text: 'Incorrect or missing personal access token!'
     };
   }
-    
-  // HTTP response from issue POST request
-  const url = `https://gitlab.com/api/v4/projects/${repoURL}/issues?`;
-  var ret = await sendIssue(url, issue);
   
-  if (!ret.web_url) {
-    ret.message = ret.message.error ? ret.message.error : ret.message;
-  }
-    
+  var url = `https://gitlab.com/api/v4/projects/${repo.replace(/\//g, "%2F")}/issues/${issue_id}?access_token=${secrets.gitlabToken}`;
+  
+  var ret = await editIssue(url, params);
+
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: ret.message ? ret.message : 
-    `\`\`\`Title: ${title}
-Description: ${description}
-Ticket URL: ${ret.web_url}\`\`\`\n`
+    text: ret.message ? ret.message : ret.web_url
   };
 }
 
