@@ -44,31 +44,37 @@ async function _command(params, commandText, secrets) {
       }/scheduled_meeting?access_token=${data.access_token}`
   );
 
-  result.push(`### Upcoming meetings`);
-  result.push(`---`);
+  if (meetings.length > 0) {
+    result.push(`### Upcoming meetings`);
+    result.push(`---`);
 
-  for (const meeting of meetings) {
-    // Skip this meeting if its end time is in the past.
-    if (meeting.end < Date.now()) {
-      continue;
+    for (const meeting of meetings) {
+      // Skip this meeting if its end time is in the past.
+      if (meeting.end < Date.now()) {
+        continue;
+      }
+
+      result.push(`#### ${meeting.title}`);
+      result.push(`${meeting.description}`);
+      result.push(`**Meeting ID**: ${meeting.id}`);
+      result.push(
+        `**Start**: ${new Date(
+          meeting.start
+        ).toUTCString()} **End:** ${new Date(meeting.end).toUTCString()}`
+      );
+
+      let attendeesOutput = '**Attendees:**';
+      for (const attendee of meeting.attendees) {
+        attendeesOutput += `\`${attendee.email}\` `;
+      }
+
+      result.push(attendeesOutput);
+      result.push(
+        `**Link:** https://bluejeans.com/${meeting.numericMeetingId}`
+      );
     }
-
-    result.push(`#### ${meeting.title}`);
-    result.push(`${meeting.description}`);
-    result.push(`**Meeting ID**: ${meeting.id}`);
-    result.push(
-      `**Start**: ${new Date(meeting.start).toUTCString()} **End:** ${new Date(
-        meeting.end
-      ).toUTCString()}`
-    );
-
-    let attendeesOutput = '**Attendees:**';
-    for (const attendee of meeting.attendees) {
-      attendeesOutput += `\`${attendee.email}\` `;
-    }
-
-    result.push(attendeesOutput);
-    result.push(`**Link:** https://bluejeans.com/${meeting.numericMeetingId}`);
+  } else {
+    result.push(`No upcoming meetings found.`);
   }
 
   return {
@@ -82,8 +88,12 @@ async function _command(params, commandText, secrets) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async ({params = {}, commandText, __secrets = {}}) => ({
-  body: await _command(params, commandText, __secrets).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
