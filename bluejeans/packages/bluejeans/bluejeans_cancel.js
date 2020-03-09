@@ -18,7 +18,7 @@ async function _command(params = {}, commandText, secrets = {}) {
 
   const result = [];
   const baseURL = `https://api.bluejeans.com`;
-  const {meetingId, cancellationMessage = ''} = params;
+  const {meetingId, cancellationMessage} = params;
   const axios = require('axios');
 
   // Fetch access token
@@ -38,11 +38,9 @@ async function _command(params = {}, commandText, secrets = {}) {
 
   // Cancel a meeting
   let requestURL = baseURL + users[0].uri + `/scheduled_meeting/${meetingId}`;
-  requestURL += `?email=true&access_token=${data.access_token}`;
-
-  if (cancellationMessage) {
-    requestURL += `&cancellationMessage=${cancellationMessage}`;
-  }
+  requestURL += `?email=true&cancellationMessage=${encodeURI(
+    cancellationMessage
+  )}&access_token=${data.access_token}`;
 
   const {status} = await axios.delete(requestURL);
   if (status === 200) {
