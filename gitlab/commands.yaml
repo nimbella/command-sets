@@ -23,6 +23,18 @@ commands:
         optional: false
       - name: name
         optional: true
+  gitlab_assign:
+    sourcePath: packages/gitlab/gitlab_assign.js
+    description: 'Assign issues to GitLab users and add labels to them. Labels must be comma deliminated!'
+    parameters:
+      - name: repo
+        optional: false
+      - name: issue_id
+        optional: false
+      - name: assignee_ids
+        optional: false
+      - name: labels
+        optional: true
   gitlab:
     sourcePath: packages/gitlab/gitlab_gitlab.js
     description: 'View gitlab command set documentation'

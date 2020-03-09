@@ -42,3 +42,9 @@ Viewing GitLab command set documentation.
 ```
 /dapp gitlab_gitlab
 ```
+
+Assigning an issue and adding labels.
+Note: Use the gitlab_users command to find a team members id to use for the assignee_id.
+```
+/dapp gitlab_assign <repo> <issue_id> <assignee_ids> [<labels>]
+```
