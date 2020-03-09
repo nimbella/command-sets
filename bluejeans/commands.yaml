@@ -30,4 +30,3 @@ commands:
     parameters:
       - name: meetingId
       - name: cancellationMessage
-        optional: true
