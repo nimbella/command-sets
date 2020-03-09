@@ -15,7 +15,7 @@ commands:
         optional: false
       - name: description
         optional: false
-  gitlab_stats:
+  gitlab_users:
     sourcePath: packages/gitlab/gitlab_users.js
     description: 'View list of users in GitLab project repository. Example repository: username/project'
     parameters:
@@ -23,6 +23,6 @@ commands:
         optional: false
       - name: name
         optional: true
-  gitlab_gitlab:
+  gitlab:
     sourcePath: packages/gitlab/gitlab_gitlab.js
     description: 'View gitlab command set documentation'

@@ -40,8 +40,9 @@ async function _command(params, commandText, secrets = {}) {
     users.forEach((user) => {
       text += `ID: ${user.id} | Name: ${user.name} | Username: ${user.username} | URL: ${user.web_url}\n`;
     });
-    if (!text)
+    if (!text) {
       text = 'No users found.';
+    }
   }
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
