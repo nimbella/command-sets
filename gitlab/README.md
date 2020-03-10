@@ -36,7 +36,7 @@ Viewing list of users in project repository.
 ```
 /dapp gitlab_users <repo> [<name>]
 ```
-![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/usersCommandScreenshot.PNG)
+![GitLab users command](screenshots/usersCommandScreenshot.PNG)
 
 Viewing GitLab project issues.
 Note: Status may be all, opened, or closed.
