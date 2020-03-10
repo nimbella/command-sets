@@ -24,7 +24,7 @@ Viewing community contributions for a GitLab project.
 ```
 /dapp gitlab_stats <repo>
 ```
-![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/statsCommandScreenshot.PNG)
+![GitLab stats command](screenshots/statsCommandScreenshot.PNG)
 
 Creating a ticket for a GitLab project.
 ```
