@@ -30,7 +30,7 @@ Creating a ticket for a GitLab project.
 ```
 /dapp gitlab_create <repo> <title> <description>
 ```
-![](https://raw.githubusercontent.com/nimbella/command-sets/tree/master/gitlab/screenshots/createCommandScreenshot.PNG)
+![GitLab create command](screenshots/createCommandScreenshot.PNG)
 
 Viewing list of users in project repository.
 ```
