@@ -25,10 +25,16 @@ async function _command(params, commandText, secrets = {}) {
   try {
     response = await axios.get(coronaMeter);
     if (response.status !== 200) {
-      throw err;
+      return {
+        response_type: 'in_channel',
+        text: 'Couldn\'t get the stats.',
+      };
     }
   } catch (err) {
-    return null;
+    return {
+      response_type: 'in_channel',
+      text: err.message,
+    };
   }
 
   const result = {};
@@ -38,14 +44,14 @@ async function _command(params, commandText, secrets = {}) {
 
   if (params.countryName) {
     let country = toTitleCase(params.countryName);
-    const countryStat = html(`td:contains(${country})`);
     country = abbrExpand(country);
+    const countryStat = html(`td:contains(${country})`);
     if (countryStat.length) {
       result.cases = countryStat.next().text();
       result.deaths = countryStat.next().next().text();
       msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
     } else {
-      msg = `${country} is safe till now.`;
+      msg = `Couldn\'t get stats for ${country}.`;
     }
   } else {
     const statsElements = html('.maincounter-number');
@@ -53,7 +59,7 @@ async function _command(params, commandText, secrets = {}) {
     result.cases = `${stats[0]}`;
     result.deaths = stats[1];
     result.cured = stats[2];
-    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`corona_stats <countryName>\` e.g. /dapp corona_stats uk`;
+    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`corona_stats <countryName>\` e.g. \`/dapp corona_stats us\``;
   }
 
   return {
@@ -72,6 +78,7 @@ const abbrExpand = (shortName) => {
   let longName = shortName;
   switch (shortName) {
     case 'Us':
+    case 'Usa':
       longName = 'United States';
       break;
     case 'Uk':
@@ -102,7 +109,7 @@ const getFlag = (name) => {
       flag = ':flag-us:';
       break;
     case 'United Kingdom':
-      flag = ':flag-us:';
+      flag = ':flag-gb:';
       break;
     case 'India':
       flag = ':flag-in:';
