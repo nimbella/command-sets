@@ -5,5 +5,14 @@ Coronaviruses (CoV) are a large family of viruses that cause illness ranging fro
 Since information is protection, this command-set gives live stats for the epidemic.
 
 Available commands:
-- `ncovstats`     -- Live stats for the epidemic, worldwide or in a specific country
+- `corona_stats`     -- Live stats for the epidemic, worldwide or in a specific country
  
+# Install
+
+`/nc csm_install corona_stats`
+
+# Run
+
+`/dapp corona_stats`                -- to get worldwide stats.
+
+`/dapp corona_stats <countryName>`  -- to get stats for a specific country.

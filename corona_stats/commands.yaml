@@ -1,6 +1,6 @@
 commands:
-  ncovstats:
-    sourcePath: packages/ncovstats/ncovstats.js
+  corona_stats:
+    sourcePath: packages/corona_stats/corona_stats.js
     description: Live stats for the epidemic, worldwide or in a specific country
     parameters:
       - name: countryName

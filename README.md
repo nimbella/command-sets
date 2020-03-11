@@ -97,3 +97,5 @@ To list EC2 instances under your account:
 `dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)
 
 `run` - Mattermost slash command to execute other slash commands. (To install: `/nc csm_install run`)
+
+`corona_stats` - Live stats for the epidemic, worldwide or in a specific country. (To install: `/nc csm_install corona_stats`)

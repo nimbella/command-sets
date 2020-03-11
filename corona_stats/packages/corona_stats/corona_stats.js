@@ -53,7 +53,7 @@ async function _command(params, commandText, secrets = {}) {
     result.cases = `${stats[0]}`;
     result.deaths = stats[1];
     result.cured = stats[2];
-    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`ncovstats <countryName>\` e.g. /dapp ncovstats uk`;
+    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`corona_stats <countryName>\` e.g. /dapp corona_stats uk`;
   }
 
   return {
