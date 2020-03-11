@@ -21,3 +21,5 @@ command_sets:
     description: Translates text to a given language
   bluejeans:
     description: Bluejeans commands.
+  corona_stats:
+    description: Live stats for the epidemic, worldwide or in a specific country.    
