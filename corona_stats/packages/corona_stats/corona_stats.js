@@ -1,72 +1,12 @@
+/* eslint-disable global-require */
+/* eslint-disable no-underscore-dangle */
 // jshint esversion: 9
 
 let cheerio;
+let cache;
+let tableparser;
 
-
-let coronaMeter = 'https://www.worldometers.info/coronavirus/';
-/**
- * @description Stats for a Country
- * @param {ParamsType} params list of command parameters
- * @param {?string} commandText text message
- * @param {!object} [secrets = {}] list of secrets
- * @return {Promise<SlackBodyType>} Response body
- */
-async function _command(params, commandText, secrets = {}) {
-  const axios = require('axios');
-  if (params.countryName) {
-    coronaMeter += 'countries-where-coronavirus-has-spread/';
-  }
-  if (!cheerio) {
-    await install(['cheerio']);
-    cheerio = require('cheerio');
-  }
-
-  let response;
-  try {
-    response = await axios.get(coronaMeter);
-    if (response.status !== 200) {
-      return {
-        response_type: 'in_channel',
-        text: 'Couldn\'t get the stats.',
-      };
-    }
-  } catch (err) {
-    return {
-      response_type: 'in_channel',
-      text: err.message,
-    };
-  }
-
-  const result = {};
-  const html = cheerio.load(response.data);
-  let msg;
-
-
-  if (params.countryName) {
-    let country = toTitleCase(params.countryName);
-    country = abbrExpand(country);
-    const countryStat = html(`td:contains(${country})`);
-    if (countryStat.length) {
-      result.cases = countryStat.next().text();
-      result.deaths = countryStat.next().next().text();
-      msg = `CoronaVirus :mask: Stats in *${country}* ${getFlag(country)} :\n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths}`;
-    } else {
-      msg = `Couldn\'t get stats for ${country}.`;
-    }
-  } else {
-    const statsElements = html('.maincounter-number');
-    const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
-    result.cases = `${stats[0]}`;
-    result.deaths = stats[1];
-    result.cured = stats[2];
-    msg = `CoronaVirus :mask: Stats Worldwide :world_map: :  \n *Cases:-* ${result.cases} \n *Deaths:-* ${result.deaths} \n *Cured:-* ${result.cured}  \n to see stats for a country type \`corona_stats <countryName>\` e.g. \`/dapp corona_stats us\``;
-  }
-
-  return {
-    response_type: 'in_channel', // or `ephemeral` for private response
-    text: msg,
-  };
-}
+const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 
 const toTitleCase = (phrase) => phrase
   .toLowerCase()
@@ -79,19 +19,19 @@ const abbrExpand = (shortName) => {
   switch (shortName) {
     case 'Us':
     case 'Usa':
-      longName = 'United States';
+      longName = 'USA';
       break;
     case 'Uk':
-      longName = 'United Kingdom';
+      longName = 'UK';
       break;
     case 'Sk':
-      longName = 'South Korea';
+      longName = 'S. Korea';
       break;
     case 'Hk':
       longName = 'Hong Kong';
       break;
     case 'Uae':
-      longName = 'United Arab Emirates';
+      longName = 'UAE';
       break;
     case 'Sl':
       longName = 'Sri Lanka';
@@ -105,22 +45,22 @@ const abbrExpand = (shortName) => {
 const getFlag = (name) => {
   let flag = '';
   switch (name) {
-    case 'United States':
+    case 'USA':
       flag = ':flag-us:';
       break;
-    case 'United Kingdom':
+    case 'UK':
       flag = ':flag-gb:';
       break;
     case 'India':
       flag = ':flag-in:';
       break;
-    case 'South Korea':
+    case 'S. Korea':
       flag = '🇰🇷';
       break;
     case 'Hong Kong':
       flag = '🇭🇰';
       break;
-    case 'United Arab Emirates':
+    case 'UAE':
       flag = '🇦🇪';
       break;
     case 'Sri Lanka':
@@ -144,6 +84,122 @@ const install = (pkgs) => {
     });
   });
 };
+
+const fail = (err, msg) => {
+  console.log(err);
+  return {
+    response_type: 'in_channel',
+    text: msg || 'Couldn\'t get stats.',
+  };
+};
+
+const success = (header, fields, footer) => {
+  const response = {
+    response_type: 'in_channel',
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*${header}*`,
+      },
+    }, {
+      type: 'section',
+      fields: [],
+    },
+    {
+      type: 'context',
+      elements: [{
+        type: 'mrkdwn',
+        text: `${footer || ' '}`,
+      }],
+    },
+    ],
+  };
+
+  for (const property in fields) {
+    response.blocks[1].fields.push({
+      type: 'mrkdwn',
+      text: `*${property}*`,
+
+    }, {
+      type: 'mrkdwn',
+      text: `*${(fields[property] || 0).toString().padStart(12)}*`,
+    });
+  }
+  return response;
+};
+
+/**
+ * @description Live stats for the epidemic, worldwide or in a specific country
+ * @param {ParamsType} params list of command parameters
+ * @param {?string} commandText text message
+ * @param {!object} [secrets = {}] list of secrets
+ * @return {Promise<SlackBodyType>} Response body
+ */
+async function _command(params, commandText, secrets = {}) {
+  const axios = require('axios');
+  if (!cheerio) {
+    await install(['cheerio']);
+    cheerio = require('cheerio');
+  }
+  if (!cache) {
+    await install(['axios-cache-adapter']);
+    cache = require('axios-cache-adapter');
+  }
+  if (!tableparser) {
+    await install(['cheerio-tableparser']);
+    tableparser = require('cheerio-tableparser');
+  }
+  const cacheSetup = cache.setupCache({
+    maxAge: 15 * 60 * 1000, // 15 mins
+  });
+  const api = axios.create({
+    adapter: cacheSetup.adapter,
+  });
+
+  let response;
+  try {
+    response = await api.get(coronaMeter);
+    if (response.status !== 200) {
+      return fail(response);
+    }
+  } catch (err) {
+    return fail(err.message);
+  }
+  if (!response) return fail();
+
+  const fields = {};
+  const html = cheerio.load(response.data);
+  let header; let
+    footer;
+
+  if (params.countryName) {
+    let country = toTitleCase(params.countryName);
+    country = abbrExpand(country);
+    tableparser(html);
+    const countryStat = html('#main_table_countries').parsetable(false, false, true);
+    const recordIndex = countryStat[0].indexOf(country);
+    if (recordIndex > 0) {
+      fields['Total Cases:'] = countryStat[1][recordIndex];
+      fields['New Cases:'] = countryStat[2][recordIndex];
+      fields['Total Recovered:'] = countryStat[5][recordIndex];
+      fields['Active Cases:'] = countryStat[6][recordIndex];
+      fields['Critical Cases:'] = countryStat[7][recordIndex];
+      header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
+    } else {
+      return fail(undefined, `Couldn't get stats for ${country}.`);
+    }
+  } else {
+    const statsElements = html('.maincounter-number');
+    const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
+    fields['Cases:'] = stats[0];
+    fields['Recovered:'] = stats[2];
+    header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
+    footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/dapp corona_stats us`';
+  }
+
+  return success(header, fields, footer);
+}
 
 /**
  * @typedef {object} SlackBodyType
