@@ -11,7 +11,7 @@ A dig clone for Nimbella Commander.
 ## Usage
 
 ```
-/dapp dig <hostname> [<type>]
+/nc dig <hostname> [<type>]
 ```
 
 Supported record types:
