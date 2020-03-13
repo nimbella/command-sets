@@ -195,7 +195,7 @@ async function _command(params, commandText, secrets = {}) {
     fields['Cases:'] = stats[0];
     fields['Recovered:'] = stats[2];
     header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
-    footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/dapp corona_stats us`';
+    footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
   }
 
   return success(header, fields, footer);
