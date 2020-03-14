@@ -92,6 +92,20 @@ To list EC2 instances under your account:
 
 `bluejeans_list` - List meetings of a user.
 
+### GitLab (`gitlab`)
+
+`gitlab` - View gitlab command set documentation.
+
+`gitlab_assign` - Assign issues for a GitLab project.
+
+`gitlab_create` - Create a ticket for a GitLab project.
+
+`gitlab_issues` - View issues on a GitLab project.
+
+`gitlab_stats` - View community contribution stats for GitLab projects.
+
+`gitlab_users` - View list of users in project repository.
+
 ### Misc
 
 `dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)

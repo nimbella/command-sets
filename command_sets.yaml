@@ -32,3 +32,6 @@ command_sets:
   bluejeans:
     sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/bluejeans/commands.yaml
     description: Bluejeans commands.
+  gitlab:
+    sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/commands.yaml
+    description: Command set for interfacing with GitLab.
