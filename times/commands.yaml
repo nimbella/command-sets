@@ -1,0 +1,7 @@
+commands:
+  times:
+    sourcePath: packages/times/times.js
+    description: current time for the given cities
+    parameters:
+      - name: cities
+        optional: true
