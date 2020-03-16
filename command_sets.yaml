@@ -1,14 +1,14 @@
 command_sets:
   billing:
-    description: commands to show cloud service bills
+    description: Commands to show cloud service bills.
   gcloud:
-    description: Google Cloud commands (right now, just billing)
+    description: Google Cloud commands (right now, just billing).
   npm-example:
-    description: Example that installs a package and that lists installed packages
+    description: Example that installs a package and that lists installed packages.
   echo:
-    description: simple echo test
+    description: Simple echo test.
   do:
-    description: DigitalOcean commands
+    description: DigitalOcean commands.
   aws:
     description: AWS commands.
   vultr:
@@ -16,10 +16,12 @@ command_sets:
   run:
     description: Command to run slash commands.
   dig:
-    description: Command to lookup DNS
+    description: Command to lookup DNS.
   translate:
-    description: Translates text to a given language
+    description: Translates text to a given language.
   bluejeans:
     description: Bluejeans commands.
   corona_stats:
-    description: Live stats for the epidemic, worldwide or in a specific country.    
+    description: Live stats for the epidemic, worldwide or in a specific country.
+  times:
+    description: Displays current time in AM/PM format for the given cities.

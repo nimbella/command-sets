@@ -2,12 +2,13 @@
 /* eslint-disable no-underscore-dangle */
 // jshint esversion: 9
 
-let cheerio;
-let
-  tableparser;
+const defaultCities = 'delhi, rome, new york, los angeles';
+
 const worldClock1 = 'https://24timezones.com/current_world_time.php/';
 const worldClock2 = 'https://www.timeanddate.com/worldclock/full.html/';
-const defaultCities = 'delhi, rome, new york, los angeles';
+let cheerio;
+let tableparser;
+
 const toTitleCase = (phrase) => phrase
 .trim()  
 .toLowerCase()
@@ -151,7 +152,3 @@ const main = async (args) => ({
   })),
 });
 module.exports = main;
-
-// main({
-//   params: {cities: 'Abu Dhabi, Hiroshima, Ho Chi Minh'},
-// }).then((r) => console.log(JSON.stringify(r, null, 4)));
