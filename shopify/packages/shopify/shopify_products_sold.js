@@ -63,7 +63,8 @@ function filterItems(search_terms, itemsCount) {
 
 function formatReturnText(filteredItems, itemsCount) {
 
-	var itemsArray = [];
+	const itemsArray = [];
+
 	if (!filteredItems) {
 		itemNames = Object.keys(itemsCount);
 		for (let i = 0; i < itemNames.length; i++) {
