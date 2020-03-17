@@ -25,3 +25,7 @@ command_sets:
     description: Live stats for the epidemic, worldwide or in a specific country.
   times:
     description: Displays current time in AM/PM format for the given cities.
+  gitlab:
+    description: Command set for interfacing with GitLab.
+  shopify:
+    description: Command set for interfacing with Shopify.
