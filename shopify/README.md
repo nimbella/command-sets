@@ -16,7 +16,7 @@ A Nimbella Commander command set for viewing orders, adding notes to orders, get
 ## Requirements
 
 
-In order to use this command set, you must set up an app on Shopify with the following scopes
+In order to use this command set, you need to set up an app on Shopify with the following scopes
 ```
 Inventory (Read access)
 Orders, transactions and fulfillments (Read and write)
