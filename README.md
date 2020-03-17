@@ -101,3 +101,5 @@ To list EC2 instances under your account:
 `corona_stats` - Live stats for the epidemic, worldwide or in a specific country. (To install: `/nc csm_install corona_stats`)
 
 `times` - Displays current time in AM/PM format for the given cities.  (To install: `/nc csm_install times`)
+
+`translate` - translates and show given english text to given language.  (To install: `/nc csm_install translate`)
