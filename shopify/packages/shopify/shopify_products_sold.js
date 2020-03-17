@@ -66,7 +66,8 @@ function formatReturnText(filteredItems, itemsCount) {
 	var itemsArray = [];
 	if (!filteredItems) {
 		itemNames = Object.keys(itemsCount);
-		for (var i = 0; i < itemNames.length; i++) {
+		for (let i = 0; i < itemNames.length; i++) {
+
 			itemsArray.push(`Product: ${itemNames[i]}\t# Sold: ${itemsCount[itemNames[i]]}`);
 		}
 	} else {
