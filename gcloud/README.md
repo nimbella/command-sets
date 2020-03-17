@@ -39,4 +39,4 @@ Since we now have a dataset set up, go ahead and create SQL statements to query 
 - [ ] After clicking create, a JSON file will be downloaded to your computer. Open it to view its contents.
 - [ ] Inside Slack, run `/nc secret_create`. This command lets you enter secrets into a secure web user interface and adds them to your app. [Find out more about secret creation.](https://nimbella.com/resources-commander/guide#secrets)<img align="right" width=440 height=70 src="https://github.com/SambaDialloB/hosted-images-on-github/blob/master/secret_creation_gcloud.png">
 - [ ] Split up the service account key, putting the "private_key" value in a separate secret. Replace that value with an empty string in the JSON. Put the rest of the JSON into a secret. Additionally, create a secret with your dataset and table name.
-- [ ] Run the `gcloudbill` command using `/<your_app_name> gcloudbill` and after a few seconds on initial spin up, you'll receive your current bill information!
+- [ ] Run the `gcloudbill` command using `/nc gcloudbill` and after a few seconds on initial spin up, you'll receive your current bill information!

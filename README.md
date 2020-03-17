@@ -26,7 +26,7 @@ To install AWS command-set, we have to run the below command.
 /nc csm_install aws
 ```
 
-Now, you can access all commands available under `aws` command-set.
+You can use the same `/nc` slash app to run all commands under `aws`.
 
 To list EC2 instances under your account:
 

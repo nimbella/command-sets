@@ -8,13 +8,14 @@ let tableparser;
 
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 
-const toTitleCase = (phrase) => phrase
-  .toLowerCase()
-  .split(' ')
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
+const toTitleCase = phrase =>
+  phrase
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
-const abbrExpand = (shortName) => {
+const abbrExpand = shortName => {
   let longName = shortName;
   switch (shortName) {
     case 'Us':
@@ -42,7 +43,7 @@ const abbrExpand = (shortName) => {
   return longName;
 };
 
-const getFlag = (name) => {
+const getFlag = name => {
   let flag = '';
   switch (name) {
     case 'USA':
@@ -72,12 +73,10 @@ const getFlag = (name) => {
   return flag;
 };
 
-const install = (pkgs) => {
+const install = pkgs => {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const {
-      exec,
-    } = require('child_process');
+    const {exec} = require('child_process');
     exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
       if (err) reject(err);
       else resolve();
@@ -89,42 +88,48 @@ const fail = (err, msg) => {
   console.log(err);
   return {
     response_type: 'in_channel',
-    text: msg || 'Couldn\'t get stats.',
+    text: msg || "Couldn't get stats."
   };
 };
 
 const success = (header, fields, footer) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [{
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*${header}*`,
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*${header}*`
+        }
       },
-    }, {
-      type: 'section',
-      fields: [],
-    },
-    {
-      type: 'context',
-      elements: [{
-        type: 'mrkdwn',
-        text: `${footer || ' '}`,
-      }],
-    },
-    ],
+      {
+        type: 'section',
+        fields: []
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `${footer || ' '}`
+          }
+        ]
+      }
+    ]
   };
 
   for (const property in fields) {
-    response.blocks[1].fields.push({
-      type: 'mrkdwn',
-      text: `*${property}*`,
-
-    }, {
-      type: 'mrkdwn',
-      text: `*${(fields[property] || 0).toString().padStart(12)}*`,
-    });
+    response.blocks[1].fields.push(
+      {
+        type: 'mrkdwn',
+        text: `*${property}*`
+      },
+      {
+        type: 'mrkdwn',
+        text: `*${(fields[property] || 0).toString().padStart(12)}*`
+      }
+    );
   }
   return response;
 };
@@ -151,10 +156,10 @@ async function _command(params, commandText, secrets = {}) {
     tableparser = require('cheerio-tableparser');
   }
   const cacheSetup = cache.setupCache({
-    maxAge: 15 * 60 * 1000, // 15 mins
+    maxAge: 15 * 60 * 1000 // 15 mins
   });
   const api = axios.create({
-    adapter: cacheSetup.adapter,
+    adapter: cacheSetup.adapter
   });
 
   let response;
@@ -170,14 +175,18 @@ async function _command(params, commandText, secrets = {}) {
 
   const fields = {};
   const html = cheerio.load(response.data);
-  let header; let
-    footer;
+  let header;
+  let footer;
 
   if (params.countryName) {
     let country = toTitleCase(params.countryName);
     country = abbrExpand(country);
     tableparser(html);
-    const countryStat = html('#main_table_countries').parsetable(false, false, true);
+    const countryStat = html('#main_table_countries').parsetable(
+      false,
+      false,
+      true
+    );
     const recordIndex = countryStat[0].indexOf(country);
     if (recordIndex > 0) {
       fields['Total Cases:'] = countryStat[1][recordIndex];
@@ -191,11 +200,16 @@ async function _command(params, commandText, secrets = {}) {
     }
   } else {
     const statsElements = html('.maincounter-number');
-    const stats = statsElements.text().trim().replace(/\s\s+/g, ' ').split(' ');
+    const stats = statsElements
+      .text()
+      .trim()
+      .replace(/\s\s+/g, ' ')
+      .split(' ');
     fields['Cases:'] = stats[0];
     fields['Recovered:'] = stats[2];
     header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
-    footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
+    footer =
+      'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
   }
 
   return success(header, fields, footer);
@@ -207,10 +221,14 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`,
-  })),
+    text: `Error: ${error.message}`
+  }))
 });
 module.exports = main;
