@@ -33,33 +33,33 @@ Key: shopifyHostname / Value: Hostname
 
 View list of past orders
 ```
-/dapp shopify_orders
+/nc shopify_orders
 ```
 ![Shopify orders command](screenshots/orders.PNG)
 
 Add a note to a past order
-NOTE: order_id can be found using /dapp shopify_orders
+NOTE: order_id can be found using /nc shopify_orders
 Params: order_id (Unique ID of an order), note (Text to attach to order)
 ```
-/dapp shopify_add_note <order_id> <note>
+/nc shopify_add_note <order_id> <note>
 ```
 ![Shopify add note command](screenshots/addNote.PNG)
 
 View list of products sold
 Params: search_terms (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
 ```
-/dapp shopify_products_sold [<search_terms>]
+/nc shopify_products_sold [<search_terms>]
 ```
 ![Shopify products sold command](screenshots/productsSold.PNG)
 
 View product inventory
 Params: search_words (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
 ```
-/dapp shopify_inventory [<search_words>]
+/nc shopify_inventory [<search_words>]
 ```
 ![Shopify inventory command](screenshots/inventory.PNG)
 
 View command set documentation
 ```
-/dapp shopify
+/nc shopify
 ```
