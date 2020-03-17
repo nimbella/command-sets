@@ -1,0 +1,4 @@
+commands:
+  python_packages:
+    sourcePath: packages/utils/python_packages.py
+    description: Shows the available python packages
