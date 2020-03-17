@@ -33,12 +33,14 @@ function isSecretMissing(secrets) {
 async function _command(params, commandText, secrets = {}) {
 
 	const error = isSecretMissing(secrets);
+
 	if (error) {
 		return {
 			response_type: 'in_channel', // or `ephemeral` for private response
 			text: error
 		};
 	} 
+	
 	const {
 		order_id,
 		note

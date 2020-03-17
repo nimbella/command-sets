@@ -18,14 +18,14 @@ async function getRequest(url) {
 
 function parseItemInfo(item) {
 
-	var variants = item.variants.map(variant => {
+	let variants = item.variants.map(variant => {
 		return {
 			title: variant.title,
 			inventory_quantity: variant.inventory_quantity,
 		};
 	});
 
-	var totalCount = variants.map(variant => {
+	let totalCount = variants.map(variant => {
 		return variant.inventory_quantity;
 	}).reduce((a,b) => a + b, 0);
 
@@ -40,10 +40,10 @@ Variants: ${variants.join(', ')}`;
 
 function filterItems(items, search_terms) {
 
-	var ret = [];
+	const ret = [];
 
-	for (var i = 0; i < items.length; i++) {
-		for (var j = 0; j < search_terms.length; j++) {
+	for (let i = 0; i < items.length; i++) {
+		for (let j = 0; j < search_terms.length; j++) {
 			if (items[i].toLowerCase().includes(search_terms[j].toLowerCase())) {
 				ret.push(items[i]);
 			}
@@ -54,7 +54,7 @@ function filterItems(items, search_terms) {
 
 function isSecretMissing(secrets) {
 
-	var ret = '';
+	let ret = '';
 	if (!secrets.shopifyKey) {
 		ret += 'Shopify API key not found!\n';
 	} if (!secrets.shopifyPassword) {
@@ -68,6 +68,7 @@ function isSecretMissing(secrets) {
 async function _command(params, commandText, secrets = {}) {
 
 	const error = isSecretMissing(secrets);
+
 	if (error) {
 		return {
 			response_type: 'in_channel', // or `ephemeral` for private response
@@ -75,7 +76,7 @@ async function _command(params, commandText, secrets = {}) {
 		};
 	} 
 
-	var {
+	let {
 		search_words = ''
 	} = params;
 
@@ -89,7 +90,7 @@ async function _command(params, commandText, secrets = {}) {
 		};
 	}
 
-	var items = data.products.map(item => {
+	let items = data.products.map(item => {
 		return parseItemInfo(item);
 	});
 

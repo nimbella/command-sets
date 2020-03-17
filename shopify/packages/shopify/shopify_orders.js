@@ -1,7 +1,7 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description Get a detailed list of orders.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -19,7 +19,8 @@ async function getRequest(url) {
 
 function isSecretMissing(secrets) {
 
-	var ret = '';
+	let ret = '';
+
 	if (!secrets.shopifyKey) {
 		ret += 'Shopify API key not found!\n';
 	} if (!secrets.shopifyPassword) {
@@ -30,9 +31,28 @@ function isSecretMissing(secrets) {
 	return ret;
 }
 
+function formatReturnText(orders) {
+
+	let text = '';
+	const pagination = 10;
+
+	for (let i = 0; i < orders.length && i < pagination; i++) {
+		text += `\`\`\`ID: ${orders[i].id}
+Email: ${orders[i].email ? orders[i].email : 'N/A'}
+Items: ${orders[i].line_items.map(item => { return item.name;}).join(' , ')}
+Status: ${orders[i].financial_status}
+Subtotal: ${orders[i].subtotal_price}
+Tax: ${orders[i].total_tax}
+Total price: ${orders[i].total_price}
+Note: ${orders[i].note ? orders[i].note : 'N/A'}\`\`\`\n`;
+	}
+	return text ? text : 'No orders found';
+}
+
 async function _command(params, commandText, secrets = {}) {
 
 	const error = isSecretMissing(secrets);
+
 	if (error) {
 		return {
 			response_type: 'in_channel', // or `ephemeral` for private response
@@ -41,7 +61,7 @@ async function _command(params, commandText, secrets = {}) {
 	}
 
 	const url = `https://${secrets.shopifyKey}:${secrets.shopifyPassword}@${secrets.shopifyHostname}/admin/api/2020-01/orders.json`;
-	var data = await getRequest(url);
+	const data = await getRequest(url);
 
 	if (data.errors) {
 		return {
@@ -50,21 +70,9 @@ async function _command(params, commandText, secrets = {}) {
 		};
 	}
 
-	var text = '';
-	data.orders.forEach(order => {
-		text += `\`\`\`ID: ${order.id}
-Email: ${order.email ? order.email : 'N/A'}
-Items: ${order.line_items.map(item => { return item.name;}).join(' , ')}
-Status: ${order.financial_status}
-Subtotal: ${order.subtotal_price}
-Tax: ${order.total_tax}
-Total price: ${order.total_price}
-Note: ${order.note ? order.note : 'N/A'}\`\`\`\n`;
-	});
-
 	return {
 		response_type: 'in_channel', // or `ephemeral` for private response
-		text: text
+		text: formatReturnText(data.orders)
 	};
 }
 

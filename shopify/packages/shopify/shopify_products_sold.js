@@ -18,7 +18,7 @@ async function getRequest(url) {
 
 function isSecretMissing(secrets) {
 
-	var ret = '';
+	let ret = '';
 
 	if (!secrets.shopifyKey) {
 		ret += 'Shopify API key not found!\n';
@@ -32,7 +32,7 @@ function isSecretMissing(secrets) {
 
 function parseOrdersForItemNames(orders) {
 
-	var itemsCount = [];
+	const itemsCount = [];
 
 	for (var i = 0; i < orders.length; i++) {
 		for (var j = 0; j < orders[i].line_items.length; j++) {
@@ -48,11 +48,11 @@ function parseOrdersForItemNames(orders) {
 
 function filterItems(search_terms, itemsCount) {
 
-	var filteredItems = [];
-	var keys = Object.keys(itemsCount);
+	let filteredItems = [];
+	let keys = Object.keys(itemsCount);
 
-	for (var i = 0; i < keys.length; i++) {
-		for (var j = 0; j < search_terms.length; j++) {
+	for (let i = 0; i < keys.length; i++) {
+		for (let j = 0; j < search_terms.length; j++) {
 			if (keys[i].toLowerCase().includes(search_terms[j].toLowerCase())) {
 				filteredItems.push(keys[i]);
 			}
@@ -64,16 +64,13 @@ function filterItems(search_terms, itemsCount) {
 function formatReturnText(filteredItems, itemsCount) {
 
 	const itemsArray = [];
-
 	if (!filteredItems) {
 		itemNames = Object.keys(itemsCount);
 		for (let i = 0; i < itemNames.length; i++) {
-
 			itemsArray.push(`Product: ${itemNames[i]}\t# Sold: ${itemsCount[itemNames[i]]}`);
 		}
 	} else {
 		for (let j = 0; j < filteredItems.length; j++) {
-
 			itemsArray.push(`Product: ${filteredItems[j]}\t#Sold: ${itemsCount[filteredItems[j]]}`);
 		}
 	}
@@ -104,10 +101,11 @@ async function _command(params, commandText, secrets = {}) {
 		};
 	}
 
-	var itemsCount = parseOrdersForItemNames(data.orders);
+	const itemsCount = parseOrdersForItemNames(data.orders);
+
 	if (search_terms) {
 		search_terms = search_terms.split(', ');
-		var filteredItems = filterItems(search_terms, itemsCount);
+		const filteredItems = filterItems(search_terms, itemsCount);
 		return {
 			response_type: 'in_channel', // or `ephemeral` for private response
 			text: filteredItems.length ? `\`\`\`${formatReturnText(filteredItems, itemsCount)}\`\`\`\n` : 'No matches found!'
