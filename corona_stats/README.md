@@ -13,6 +13,6 @@ Available commands:
 
 # Run
 
-`/dapp corona_stats`                -- to get worldwide stats.
+`/nc corona_stats`                -- to get worldwide stats.
 
-`/dapp corona_stats <countryName>`  -- to get stats for a specific country.
+`/nc corona_stats <countryName>`  -- to get stats for a specific country.
