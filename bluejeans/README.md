@@ -19,33 +19,33 @@ After you've the credentials, we need two secrets named `bluejeansAppKey` & `blu
 
 To start a meeting where anyone with the link can join:
 ```sh
-/dapp bluejeans_create
+/nc bluejeans_create
 ```
 
 To create a meeting with `joe@example.com` & `judy@example.com`:
 ```sh
-/dapp bluejeans_create -title "A new beginning" -emails "joe@example.com,judy@example.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
+/nc bluejeans_create -title "A new beginning" -emails "joe@example.com,judy@example.com" -start "03/01/20 18:00" -end "03/01/20 18:30'
 ```
 Where date is in `mm/dd/yy` format and time is in UTC.
 
 To cancel a meeting:
 ```sh
-/dapp bluejeans_cancel <meetingId> <cancellationMessage>
+/nc bluejeans_cancel <meetingId> <cancellationMessage>
 ```
 Both `meetingId` and `cancellationMessage` are required.
 
 To list all meetings of admin:
 ```sh
-/dapp bluejeans_list
+/nc bluejeans_list
 ```
 
 To include respective meeting id in the list, pass `-detail` option.
 ```sh
-/dapp bluejeans_list -detail
+/nc bluejeans_list -detail
 ```
 
 You can also list meetings of a specific user by passing in their user id:
 ```sh
-/dapp bluejeans_list <userId>
+/nc bluejeans_list <userId>
 ```
 This isn't practical, but it's there if you need it until we have a better version.

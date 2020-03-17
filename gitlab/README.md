@@ -22,36 +22,36 @@ Visit https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html to lea
 ## Usage
 Viewing community contributions for a GitLab project.
 ```
-/dapp gitlab_stats <repo>
+/nc gitlab_stats <repo>
 ```
 ![GitLab stats command](screenshots/statsCommandScreenshot.PNG)
 
 Creating a ticket for a GitLab project.
 ```
-/dapp gitlab_create <repo> <title> <description>
+/nc gitlab_create <repo> <title> <description>
 ```
 ![GitLab create command](screenshots/createCommandScreenshot.PNG)
 
 Viewing list of users in project repository.
 ```
-/dapp gitlab_users <repo> [<name>]
+/nc gitlab_users <repo> [<name>]
 ```
 ![GitLab users command](screenshots/usersCommandScreenshot.PNG)
 
 Viewing GitLab project issues.
 Note: Status may be all, opened, or closed.
 ```
-/dapp gitlab_issues
+/nc gitlab_issues
 ```
 
 Viewing GitLab command set documentation.
 ```
-/dapp gitlab
+/nc gitlab
 ```
 
 Assigning an issue and adding labels.
 Note: Use the gitlab_users command to find a team members id to use for the assignee_id.
 Use gitlab_issues to find an issue id.
 ```
-/dapp gitlab_assign <repo> <issue_id> <assignee_ids> [<labels>]
+/nc gitlab_assign <repo> <issue_id> <assignee_ids> [<labels>]
 ```
