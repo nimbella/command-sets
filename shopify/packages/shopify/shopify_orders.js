@@ -53,13 +53,13 @@ async function _command(params, commandText, secrets = {}) {
 	var text = '';
 	data.orders.forEach(order => {
 		text += `\`\`\`ID: ${order.id}
-		Email: ${order.email ? order.email : 'N/A'}
-		Items: ${order.line_items.map(item => { return item.name;}).join(' , ')}
-		Status: ${order.financial_status}
-		Subtotal: ${order.subtotal_price}
-		Tax: ${order.total_tax}
-		Total price: ${order.total_price}
-		Note: ${order.note ? order.note : 'N/A'}\`\`\`\n`;
+Email: ${order.email ? order.email : 'N/A'}
+Items: ${order.line_items.map(item => { return item.name;}).join(' , ')}
+Status: ${order.financial_status}
+Subtotal: ${order.subtotal_price}
+Tax: ${order.total_tax}
+Total price: ${order.total_price}
+Note: ${order.note ? order.note : 'N/A'}\`\`\`\n`;
 	});
 
 	return {

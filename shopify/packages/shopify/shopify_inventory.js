@@ -34,8 +34,8 @@ function parseItemInfo(item) {
 	});
 
 	return `Title: ${item.title}
-	Inventory count: ${totalCount}
-	Variants: ${variants.join(', ')}`;
+Inventory count: ${totalCount}
+Variants: ${variants.join(', ')}`;
 }
 
 function filterItems(items, search_terms) {

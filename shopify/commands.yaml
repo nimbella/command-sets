@@ -1,10 +1,10 @@
 commands:
   shopify_orders:
     sourcePath: packages/shopify/shopify_orders.js
-    description: Get a detailed list of orders.
+    description: 'Get a detailed list of orders.'
   shopify_add_note:
     sourcePath: packages/shopify/shopify_add_note.js
-    description: Add a note to an existing order.
+    description: 'Add a note to an existing order.'
     parameters:
       - name: order_id
         optional: false
@@ -12,16 +12,16 @@ commands:
         optional: false
   shopify_inventory:
     sourcePath: packages/shopify/shopify_inventory.js
-    description: Get inventory numbers for products.
+    description: 'Get inventory numbers for products.'
     parameters:
       - name: search_words
         optional: true
   shopify_products_sold:
     sourcePath: packages/shopify/shopify_products_sold.js
-    description: 
+    description: 'Get number of products sold.'
     parameters:
       - name: search_terms
         optional: true
   shopify:
     sourcePath: packages/shopify/shopify.js
-    description: View command set documentation
+    description: 'View command set documentation'

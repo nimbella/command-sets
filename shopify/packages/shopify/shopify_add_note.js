@@ -61,13 +61,13 @@ async function _command(params, commandText, secrets = {}) {
 	return {
 		response_type: 'in_channel', // or `ephemeral` for private response
 		text: `\`\`\`ID: ${data.order.id}
-		Email: ${data.order.email ? data.order.email : 'N/A'}
-		Items: ${data.order.line_items.map(item => { return item.name;}).join(' , ')}
-		Status: ${data.order.financial_status}
-		Subtotal: ${data.order.subtotal_price}
-		Tax: ${data.order.total_tax}
-		Total price: ${data.order.total_price}
-		Note: ${data.order.note ? data.order.note : 'N/A'}\`\`\`\n`
+Email: ${data.order.email ? data.order.email : 'N/A'}
+Items: ${data.order.line_items.map(item => { return item.name;}).join(' , ')}
+Status: ${data.order.financial_status}
+Subtotal: ${data.order.subtotal_price}
+Tax: ${data.order.total_tax}
+Total price: ${data.order.total_price}
+Note: ${data.order.note ? data.order.note : 'N/A'}\`\`\`\n`
 	};
 }
 
