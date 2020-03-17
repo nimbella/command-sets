@@ -70,7 +70,8 @@ function formatReturnText(filteredItems, itemsCount) {
 			itemsArray.push(`Product: ${itemNames[i]}\t# Sold: ${itemsCount[itemNames[i]]}`);
 		}
 	} else {
-		for (var j = 0; j < filteredItems.length; j++) {
+		for (let j = 0; j < filteredItems.length; j++) {
+
 			itemsArray.push(`Product: ${filteredItems[j]}\t#Sold: ${itemsCount[filteredItems[j]]}`);
 		}
 	}
