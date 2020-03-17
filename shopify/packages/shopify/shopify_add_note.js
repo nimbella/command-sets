@@ -19,7 +19,7 @@ async function putRequest(url, request) {
 
 function isSecretMissing(secrets) {
 
-	var ret = '';
+	let ret = '';
 	if (!secrets.shopifyKey) {
 		ret += 'Shopify API key not found!\n';
 	} if (!secrets.shopifyPassword) {
