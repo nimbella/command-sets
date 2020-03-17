@@ -27,3 +27,5 @@ command_sets:
     description: Displays current time in AM/PM format for the given cities.
   gitlab:
     description: Command set for interfacing with GitLab.
+  shopify:
+    description: Command set for interfacing with Shopify.
