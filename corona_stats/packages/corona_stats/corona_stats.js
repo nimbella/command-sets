@@ -189,9 +189,9 @@ async function _command(params, commandText, secrets = {}) {
     );
     const recordIndex = countryStat[0].indexOf(country);
     if (recordIndex > 0) {
-      fields['Total Cases:'] = countryStat[1][recordIndex];
-      fields['New Cases:'] = countryStat[2][recordIndex];
-      fields['Total Recovered:'] = countryStat[5][recordIndex];
+      fields['Cases:'] = countryStat[1][recordIndex];
+      fields['Fatalities:'] = countryStat[3][recordIndex];
+      fields['Recovered:'] = countryStat[5][recordIndex];
       fields['Active Cases:'] = countryStat[6][recordIndex];
       fields['Critical Cases:'] = countryStat[7][recordIndex];
       header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
@@ -206,6 +206,7 @@ async function _command(params, commandText, secrets = {}) {
       .replace(/\s\s+/g, ' ')
       .split(' ');
     fields['Cases:'] = stats[0];
+    fields['Fatalities:'] = stats[1];
     fields['Recovered:'] = stats[2];
     header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
     footer =
