@@ -51,9 +51,9 @@ async function _command(params, commandText, secrets = {}) {
 	return {
 		response_type: 'in_channel', // or `ephemeral` for private response
 		text: ret.message ? ret.message : 
-		`\`\`\`Title: ${title}
-		Description: ${description}
-		Ticket URL: ${ret.web_url}\`\`\`\n`
+`\`\`\`Title: ${title}
+Description: ${description}
+Ticket URL: ${ret.web_url}\`\`\`\n`
 	};
 }
 

@@ -24,9 +24,9 @@ Products, variants and collections (Read)
 ```
 Using /nc secret_create create the following keys
 ```
-Key: shopifyKey / Value: API Key
-Key: shopifyPassword / Value: Password
-Key: shopifyHostname / Value: Hostname
+Key: shopify_api_key / Value: API Key
+Key: shopify_secret / Value: Password
+Key: shopify_store_name / Value: Hostname
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ View list of past orders
 ```
 /nc shopify_orders
 ```
-![Shopify orders command](screenshots/orders.PNG)
+![Shopify orders command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/orders.PNG)
 
 Add a note to a past order
 NOTE: order_id can be found using /nc shopify_orders
@@ -43,21 +43,21 @@ Params: order_id (Unique ID of an order), note (Text to attach to order)
 ```
 /nc shopify_add_note <order_id> <note>
 ```
-![Shopify add note command](screenshots/addNote.PNG)
+![Shopify add note command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/addNote.PNG)
 
 View list of products sold
 Params: search_terms (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
 ```
 /nc shopify_products_sold [<search_terms>]
 ```
-![Shopify products sold command](screenshots/productsSold.PNG)
+![Shopify products sold command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/productsSold.PNG)
 
 View product inventory
 Params: search_words (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
 ```
 /nc shopify_inventory [<search_words>]
 ```
-![Shopify inventory command](screenshots/inventory.PNG)
+![Shopify inventory command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/inventory.PNG)
 
 View command set documentation
 ```

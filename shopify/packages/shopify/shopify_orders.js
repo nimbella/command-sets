@@ -21,11 +21,11 @@ function isSecretMissing(secrets) {
 
 	let ret = '';
 
-	if (!secrets.shopifyKey) {
+	if (!secrets.shopify_api_key) {
 		ret += 'Shopify API key not found!\n';
-	} if (!secrets.shopifyPassword) {
+	} if (!secrets.shopify_secret) {
 		ret += 'Shopify password not found!\n';
-	} if (!secrets.shopifyHostname) {
+	} if (!secrets.shopify_store_name) {
 		ret += 'Shopify hostname not found!\n';
 	}
 	return ret;
@@ -60,7 +60,7 @@ async function _command(params, commandText, secrets = {}) {
 		};
 	}
 
-	const url = `https://${secrets.shopifyKey}:${secrets.shopifyPassword}@${secrets.shopifyHostname}/admin/api/2020-01/orders.json`;
+	const url = `https://${secrets.shopify_api_key}:${secrets.shopify_secret}@${secrets.shopify_store_name}/admin/api/2020-01/orders.json`;
 	const data = await getRequest(url);
 
 	if (data.errors) {

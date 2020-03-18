@@ -25,13 +25,13 @@ function formatIssueText(issues) {
 	issues.forEach(issue => {
 		text +=
 			`\`\`\`Issue ID: ${issue.id}
-		Title: ${issue.title}
-		Description: ${issue.description}
-		Status: ${issue.state}
-		Author: ${issue.author ? issue.author.name : 'Unknown'}
-		Assignees: ${issue.assignee ? typeof issues.assignee == Array ? issue.assignee.name.join(' | ') : issue.assignee.name : 'None'}
-		Issue URL: ${issue.web_url}
-		Labels: ${issue.labels.length > 0 ? issue.labels.join(' | ') : 'None'}\`\`\`\n`;
+Title: ${issue.title}
+Description: ${issue.description}
+Status: ${issue.state}
+Author: ${issue.author ? issue.author.name : 'Unknown'}
+Assignees: ${issue.assignee ? typeof issues.assignee == Array ? issue.assignee.name.join(' | ') : issue.assignee.name : 'None'}
+Issue URL: ${issue.web_url}
+Labels: ${issue.labels.length > 0 ? issue.labels.join(' | ') : 'None'}\`\`\`\n`;
 	});
 	return text;
 }

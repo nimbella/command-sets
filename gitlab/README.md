@@ -24,34 +24,36 @@ Viewing community contributions for a GitLab project.
 ```
 /nc gitlab_stats <repo>
 ```
-![GitLab stats command](screenshots/statsCommandScreenshot.PNG)
+![GitLab stats command](https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/screenshots/statsCommandScreenshot.PNG)
 
 Creating a ticket for a GitLab project.
 ```
 /nc gitlab_create <repo> <title> <description>
 ```
-![GitLab create command](screenshots/createCommandScreenshot.PNG)
+![GitLab create command](https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/screenshots/createCommandScreenshot.PNG)
 
 Viewing list of users in project repository.
 ```
 /nc gitlab_users <repo> [<name>]
 ```
-![GitLab users command](screenshots/usersCommandScreenshot.PNG)
+![GitLab users command](https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/screenshots/usersCommandScreenshot.PNG)
 
 Viewing GitLab project issues.
 Note: Status may be all, opened, or closed.
 ```
 /nc gitlab_issues
 ```
-
-Viewing GitLab command set documentation.
-```
-/nc gitlab
-```
+![GitLab issues command](https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/screenshots/issuesCommandScreenshot.PNG)
 
 Assigning an issue and adding labels.
 Note: Use the gitlab_users command to find a team members id to use for the assignee_id.
 Use gitlab_issues to find an issue id.
 ```
 /nc gitlab_assign <repo> <issue_id> <assignee_ids> [<labels>]
+```
+![GitLab assign command](https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/screenshots/assignCommandScreenshot.PNG)
+
+Viewing GitLab command set documentation.
+```
+/nc gitlab
 ```
