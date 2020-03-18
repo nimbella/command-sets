@@ -1,5 +1,5 @@
 import sys
-
+import pkg_resources
 
 """
 @description null
@@ -11,11 +11,13 @@ import sys
 def _command(params, commandText, secrets):
 
   #DESTRUCTURED_ARGS = params[key];
-  print(sys.modules.keys())
+
+  installed_packages_list = sorted(["%s==%s" % (i.key, i.version)
+     for i in pkg_resources.working_set])
 
   return {
     "response_type": 'in_channel', # or `ephemeral` for private response
-    "text": 'List of available python packages: \n' + ' , '.join(sys.modules.keys())
+    "text": 'List of available python packages: \n' + ' , '.join(installed_packages_list)
   }
 
 """
@@ -28,3 +30,4 @@ def main(args):
        return { "body": _command(args['params'], args['commandText'], args['__secrets'])}
     except:
         return { "body": { "response_type": 'ephemeral', "text": 'Error: ' + sys.exc_info()[0] } }
+
