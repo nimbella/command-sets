@@ -92,6 +92,30 @@ To list EC2 instances under your account:
 
 `bluejeans_list` - List meetings of a user.
 
+### GitLab (`gitlab`)
+
+`gitlab_stats` - View community contribution stats for GitLab projects
+
+`gitlab_create` - Create a ticket for a GitLab project
+
+`gitlab_issues` - Assign issues for a GitLab project
+
+`gitlab_users` - View list of users in project repository
+
+`gitlab` - View GitLab command set documentation
+
+### Shopify (`shopify`)
+
+`orders` - Get a detailed list of orders .
+
+`add_note` - Add a note to an existing order.
+
+`inventory` - Get inventory numbers for products.
+
+`products_sold` - Get sale numbers for products in shop.
+
+`shopify` - View command set documentation
+
 ### Misc
 
 `dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`)

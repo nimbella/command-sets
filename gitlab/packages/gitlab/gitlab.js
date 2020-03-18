@@ -13,7 +13,7 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: await axios.get('https://raw.githubusercontent.com/Maljean/command-sets/dev/gitlab/README.md')
+    text: await axios.get('https://raw.githubusercontent.com/nimbella/command-sets/master/gitlab/README.md')
     .then(response => { return response.data; })
     .catch(error => { return error.response.data; })
   };

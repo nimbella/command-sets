@@ -63,16 +63,16 @@ async function _command(params, commandText, secrets = {}) {
 	return {
 		response_type: 'in_channel', // or `ephemeral` for private response
 		text: `\`\`\`${repo} Community Contribution Stats
-		Fetches: ${fetches}
-		Commits: ${commits.length}
-		Issues Opened: ${issuesOpened.length}
-		Issues Closed: ${issuesClosed.length}
-		Total Issues: ${issuesClosed.length + issuesOpened.length}
-		Merge Requests Opened: ${mergeRequestsOpened.length}
-		Merge Requests Closed: ${mergeRequestsClosed.length}
-		Merge Requests Locked: ${mergeRequestsLocked.length}
-		Merge Requests Merged: ${mergeRequestsMerged.length}
-		Merge Requests Total: ${mergeRequestsOpened.length+mergeRequestsClosed.length+mergeRequestsLocked.length+mergeRequestsMerged.length}\`\`\`\n`
+Fetches: ${fetches}
+Commits: ${commits.length}
+Issues Opened: ${issuesOpened.length}
+Issues Closed: ${issuesClosed.length}
+Total Issues: ${issuesClosed.length + issuesOpened.length}
+Merge Requests Opened: ${mergeRequestsOpened.length}
+Merge Requests Closed: ${mergeRequestsClosed.length}
+Merge Requests Locked: ${mergeRequestsLocked.length}
+Merge Requests Merged: ${mergeRequestsMerged.length}
+Merge Requests Total: ${mergeRequestsOpened.length+mergeRequestsClosed.length+mergeRequestsLocked.length+mergeRequestsMerged.length}\`\`\`\n`
 	};
 }
 
