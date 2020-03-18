@@ -76,7 +76,7 @@ const getFlag = name => {
 const install = pkgs => {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const {exec} = require('child_process');
+    const { exec } = require('child_process');
     exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
       if (err) reject(err);
       else resolve();
@@ -106,30 +106,27 @@ const success = (header, fields, footer) => {
       {
         type: 'section',
         fields: []
-      },
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `${footer || ' '}`
-          }
-        ]
       }
     ]
   };
-
   for (const property in fields) {
     response.blocks[1].fields.push(
       {
         type: 'mrkdwn',
-        text: `*${property}*`
-      },
-      {
-        type: 'mrkdwn',
-        text: `*${(fields[property] || 0).toString().padStart(12)}*`
+        text: `${property}:   *${(fields[property] || 0)}*`
       }
     );
+  }
+  if (footer) {
+    response.blocks.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: footer
+        }
+      ]
+    })
   }
   return response;
 };
@@ -189,11 +186,13 @@ async function _command(params, commandText, secrets = {}) {
     );
     const recordIndex = countryStat[0].indexOf(country);
     if (recordIndex > 0) {
-      fields['Cases:'] = countryStat[1][recordIndex];
-      fields['Fatalities:'] = countryStat[3][recordIndex];
-      fields['Recovered:'] = countryStat[5][recordIndex];
-      fields['Active Cases:'] = countryStat[6][recordIndex];
-      fields['Critical Cases:'] = countryStat[7][recordIndex];
+      fields['Total Cases'] = countryStat[1][recordIndex];
+      fields['New Cases'] = countryStat[2][recordIndex];
+      fields['Total Fatalities'] = countryStat[3][recordIndex];
+      fields['Total Recovered'] = countryStat[5][recordIndex];
+      fields['New Fatalities'] = countryStat[4][recordIndex];
+      fields['Active Cases'] = countryStat[6][recordIndex];
+      fields['Critical Cases'] = countryStat[7][recordIndex];
       header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
     } else {
       return fail(undefined, `Couldn't get stats for ${country}.`);
@@ -205,9 +204,9 @@ async function _command(params, commandText, secrets = {}) {
       .trim()
       .replace(/\s\s+/g, ' ')
       .split(' ');
-    fields['Cases:'] = stats[0];
-    fields['Fatalities:'] = stats[1];
-    fields['Recovered:'] = stats[2];
+    fields['Cases'] = stats[0];
+    fields['Recovered'] = stats[2];
+    fields['Fatalities'] = stats[1];
     header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
     footer =
       'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
