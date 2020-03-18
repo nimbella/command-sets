@@ -35,7 +35,7 @@ Since we now have a dataset set up, go ahead and create SQL statements to query 
 
 ### Create gcloud_bill Service Account to Access Data
 
-- [ ] [Create a service account key](console.cloud.google.com/apis/credentials/serviceaccountkey), with the role of Project > Owner and choose the JSON key type.
+- [ ] [Create a service account key](https://console.cloud.google.com/apis/credentials/serviceaccountkey), with the role of Project > Owner and choose the JSON key type.
 - [ ] After clicking create, a JSON file will be downloaded to your computer. Open it to view its contents.
 - [ ] Inside Slack, run `/nc secret_create`. This command lets you enter secrets into a secure web user interface and adds them to your app. [Find out more about secret creation.](https://nimbella.com/resources-commander/guide#secrets)<img align="right" width=440 height=70 src="https://github.com/SambaDialloB/hosted-images-on-github/blob/master/secret_creation_gcloud.png">
 - [ ] Split up the service account key, putting the "private_key" value in a separate secret. Replace that value with an empty string in the JSON. Put the rest of the JSON into a secret. Additionally, create a secret with your dataset and table name.
