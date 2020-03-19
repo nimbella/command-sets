@@ -179,11 +179,12 @@ async function _command(params, commandText, secrets = {}) {
     let country = toTitleCase(params.countryName);
     country = abbrExpand(country);
     tableparser(html);
-    const countryStat = html('#main_table_countries').parsetable(
+    const countryStat = html('#main_table_countries_today').parsetable(
       false,
       false,
       true
     );
+    if (countryStat.length === 0) { return fail(undefined, `Couldn't get stats for ${country}.`); }
     const recordIndex = countryStat[0].indexOf(country);
     if (recordIndex > 0) {
       fields['Total Cases'] = countryStat[1][recordIndex];
