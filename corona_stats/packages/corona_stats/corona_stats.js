@@ -1,83 +1,157 @@
+// jshint esversion: 9
 /* eslint-disable global-require */
 /* eslint-disable no-underscore-dangle */
-// jshint esversion: 9
-
 let cheerio;
 let cache;
-let tableparser;
-
+let tableParser;
+let countryHtml;
+let stateHtml;
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 
-const toTitleCase = phrase =>
-  phrase
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+const toTitleCase = (phrase) => phrase
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
 
-const abbrExpand = shortName => {
-  let longName = shortName;
-  switch (shortName) {
-    case 'Us':
-    case 'Usa':
-      longName = 'USA';
-      break;
-    case 'Uk':
-      longName = 'UK';
-      break;
-    case 'Sk':
-      longName = 'S. Korea';
-      break;
-    case 'Hk':
-      longName = 'Hong Kong';
-      break;
-    case 'Uae':
-      longName = 'UAE';
-      break;
-    case 'Sl':
-      longName = 'Sri Lanka';
-      break;
-    default:
-      break;
-  }
-  return longName;
+const getCountryName = (name) => {
+  const longNames = {
+    Cn: 'China', // Countries
+    It: 'Italy',
+    Es: 'Spain',
+    Ir: 'Iran',
+    De: 'Germany',
+    Us: 'USA',
+    Usa: 'USA',
+    Fr: 'France',
+    Sk: 'S. Korea',
+    Ch: 'Switzerland',
+    Uk: 'UK',
+    Nl: 'Netherlands',
+    Be: 'Belgium',
+    At: 'Austria',
+    No: 'Norway',
+    Se: 'Sweden',
+    Dk: 'Denmark',
+    My: 'Malaysia',
+    Jp: 'Japan',
+    Au: 'Australia',
+    Can: 'Canada',
+    Pt: 'Portugal',
+    Il: 'Israel',
+    Br: 'Brazil',
+    Ie: 'Ireland',
+    Gr: 'Greece',
+    Hk: 'Hong Kong',
+    Uae: 'UAE',
+    Sl: 'Sri Lanka',
+    In: 'India',
+    Iq: 'Iraq',
+    Pk: 'Pakistan',
+    Default: name,
+  };
+  return (longNames[name] || longNames.Default);
 };
 
-const getFlag = name => {
-  let flag = '';
-  switch (name) {
-    case 'USA':
-      flag = ':flag-us:';
-      break;
-    case 'UK':
-      flag = ':flag-gb:';
-      break;
-    case 'India':
-      flag = ':flag-in:';
-      break;
-    case 'S. Korea':
-      flag = '🇰🇷';
-      break;
-    case 'Hong Kong':
-      flag = '🇭🇰';
-      break;
-    case 'UAE':
-      flag = '🇦🇪';
-      break;
-    case 'Sri Lanka':
-      flag = '🇱🇰';
-      break;
-    default:
-      break;
-  }
-  return flag;
+
+const getStateName = (name) => {
+  const longNames = {
+    Al: 'Alabama',
+    Ak: 'Alaska',
+    As: 'American Samoa',
+    Az: 'Arizona',
+    Ar: 'Arkansas',
+    Ca: 'California',
+    Co: 'Colorado',
+    Ct: 'Connecticut',
+    De: 'Delaware',
+    Dc: 'District Of Columbia',
+    Fm: 'Federated States Of Micronesia',
+    Fl: 'Florida',
+    Ga: 'Georgia',
+    Gu: 'Guam',
+    Hi: 'Hawaii',
+    Id: 'Idaho',
+    Il: 'Illinois',
+    In: 'Indiana',
+    Ia: 'Iowa',
+    Ks: 'Kansas',
+    Ky: 'Kentucky',
+    La: 'Louisiana',
+    Me: 'Maine',
+    Mh: 'Marshall Islands',
+    Md: 'Maryland',
+    Ma: 'Massachusetts',
+    Mi: 'Michigan',
+    Mn: 'Minnesota',
+    Ms: 'Mississippi',
+    Mo: 'Missouri',
+    Mt: 'Montana',
+    Ne: 'Nebraska',
+    Nv: 'Nevada',
+    Nh: 'New Hampshire',
+    Nj: 'New Jersey',
+    Nm: 'New Mexico',
+    Ny: 'New York',
+    Nc: 'North Carolina',
+    Nd: 'North Dakota',
+    Mp: 'Northern Mariana Islands',
+    Oh: 'Ohio',
+    Ok: 'Oklahoma',
+    Or: 'Oregon',
+    Pw: 'Palau',
+    Pa: 'Pennsylvania',
+    Pr: 'Puerto Rico',
+    Ri: 'Rhode Island',
+    Sc: 'South Carolina',
+    Sd: 'South Dakota',
+    Tn: 'Tennessee',
+    Tx: 'Texas',
+    Ut: 'Utah',
+    Vt: 'Vermont',
+    Vi: 'Virgin Islands',
+    Va: 'Virginia',
+    Wa: 'Washington',
+    Wv: 'West Virginia',
+    Wi: 'Wisconsin',
+    Wy: 'Wyoming',
+    Default: name,
+  };
+  return (longNames[name] || longNames.Default);
 };
 
-const install = pkgs => {
+const getFlag = (name) => {
+  const flags = {
+    China: '🇨🇳',
+    Italy: '🇮🇹',
+    Spain: '🇪🇸',
+    Iran: '🇮🇷',
+    Germany: '🇩🇪',
+    USA: '🇺🇸',
+    UK: '🇬🇧',
+    France: '🇫🇷',
+    Switzerland: '🇨🇭',
+    Netherlands: '🇳🇱',
+    Austria: '🇦🇹',
+    Australia: '🇦🇺',
+    Canada: '🇨🇦',
+    India: '🇮🇳',
+    'S. Korea': '🇰🇷',
+    'Hong Kong': '🇭🇰',
+    UAE: '🇦🇪',
+    'Sri Lanka': '🇱🇰',
+    Default: '',
+  };
+  return (flags[name] || flags.Default);
+};
+
+const install = (pkgs) => {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
+    const {
+      exec,
+    } = require('child_process');
+    exec(`npm install ${pkgs}`, (err) => {
       if (err) reject(err);
       else resolve();
     });
@@ -88,48 +162,83 @@ const fail = (err, msg) => {
   console.log(err);
   return {
     response_type: 'in_channel',
-    text: msg || "Couldn't get stats."
+    text: msg || "Couldn't get stats.",
   };
 };
 
 const success = (header, fields, footer) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*${header}*`
-        }
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*${header}*`,
       },
-      {
-        type: 'section',
-        fields: []
-      }
-    ]
+    },
+    {
+      type: 'section',
+      fields: [],
+    },
+    ],
   };
   for (const property in fields) {
-    response.blocks[1].fields.push(
-      {
-        type: 'mrkdwn',
-        text: `${property}:   *${(fields[property] || 0)}*`
-      }
-    );
+    response.blocks[1].fields.push({
+      type: 'mrkdwn',
+      text: `${property}:   *${(fields[property] || 0)}*`,
+    });
   }
   if (footer) {
     response.blocks.push({
       type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: footer
-        }
-      ]
-    })
+      elements: [{
+        type: 'mrkdwn',
+        text: footer,
+      }],
+    });
   }
   return response;
 };
+
+
+const getDetails = (name, html, domName) => {
+  const fields = {};
+  try {
+    tableParser(html);
+    const stats = html(`#${domName}`).parsetable(false, false, true);
+    if (stats.length === 0) {
+      return;
+    }
+    const recordIndex = stats[0].indexOf(name);
+    if (recordIndex > 0) {
+      fields['Total Cases'] = stats[1][recordIndex];
+      fields['New Cases'] = stats[2][recordIndex];
+      fields['Total Fatalities'] = stats[3][recordIndex];
+      fields['Total Recovered'] = stats[5][recordIndex];
+      fields['New Fatalities'] = stats[4][recordIndex];
+      fields['Active Cases'] = stats[6][recordIndex];
+      fields['Critical Cases'] = stats[7][recordIndex];
+    }
+  } catch (e) {
+    fail(e.message);
+  }
+  return fields;
+};
+
+async function getData(api, url) {
+  let response;
+  try {
+    response = await api.get(url);
+    if (response.status !== 200) {
+      return;
+    }
+  } catch (err) {
+    return fail(err.message);
+  }
+  if (!response) return;
+  return cheerio.load(response.data);
+}
+
 
 /**
  * @description Live stats for the epidemic, worldwide or in a specific country
@@ -138,7 +247,8 @@ const success = (header, fields, footer) => {
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function _command(params, commandText, secrets = {}) {
+
+async function _command(params) {
   const axios = require('axios');
   if (!cheerio) {
     await install(['cheerio']);
@@ -148,71 +258,61 @@ async function _command(params, commandText, secrets = {}) {
     await install(['axios-cache-adapter']);
     cache = require('axios-cache-adapter');
   }
-  if (!tableparser) {
+  if (!tableParser) {
     await install(['cheerio-tableparser']);
-    tableparser = require('cheerio-tableparser');
+    tableParser = require('cheerio-tableparser');
   }
   const cacheSetup = cache.setupCache({
-    maxAge: 15 * 60 * 1000 // 15 mins
+    maxAge: 15 * 60 * 1000, // 15 mins
   });
   const api = axios.create({
-    adapter: cacheSetup.adapter
+    adapter: cacheSetup.adapter,
   });
 
-  let response;
-  try {
-    response = await api.get(coronaMeter);
-    if (response.status !== 200) {
-      return fail(response);
-    }
-  } catch (err) {
-    return fail(err.message);
-  }
-  if (!response) return fail();
 
-  const fields = {};
-  const html = cheerio.load(response.data);
+  let fields = {};
   let header;
   let footer;
-
-  if (params.countryName) {
-    let country = toTitleCase(params.countryName);
-    country = abbrExpand(country);
-    tableparser(html);
-    const countryStat = html('#main_table_countries_today').parsetable(
-      false,
-      false,
-      true
-    );
-    if (countryStat.length === 0) { return fail(undefined, `Couldn't get stats for ${country}.`); }
-    const recordIndex = countryStat[0].indexOf(country);
-    if (recordIndex > 0) {
-      fields['Total Cases'] = countryStat[1][recordIndex];
-      fields['New Cases'] = countryStat[2][recordIndex];
-      fields['Total Fatalities'] = countryStat[3][recordIndex];
-      fields['Total Recovered'] = countryStat[5][recordIndex];
-      fields['New Fatalities'] = countryStat[4][recordIndex];
-      fields['Active Cases'] = countryStat[6][recordIndex];
-      fields['Critical Cases'] = countryStat[7][recordIndex];
-      header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
-    } else {
-      return fail(undefined, `Couldn't get stats for ${country}.`);
+  const country = getCountryName(toTitleCase(params.countryName || ''));
+  if (country === 'USA' && params.region) {
+    const state = getStateName(toTitleCase(params.region));
+    if (!stateHtml) {
+      stateHtml = await getData(api, `${coronaMeter}country/us/`);
+      if (!stateHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
     }
-  } else {
-    const statsElements = html('.maincounter-number');
-    const stats = statsElements
-      .text()
-      .trim()
-      .replace(/\s\s+/g, ' ')
-      .split(' ');
-    fields['Cases'] = stats[0];
-    fields['Recovered'] = stats[2];
-    fields['Fatalities'] = stats[1];
-    header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
-    footer =
-      'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
+    header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
+    fields = getDetails(state, stateHtml, 'usa_table_countries_today');
+    if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
+    return success(header, fields, footer);
   }
-
+  if (!countryHtml) {
+    countryHtml = await getData(api, coronaMeter);
+    if (!countryHtml) { return fail(undefined, 'Couldn\'t get the stats'); }
+  }
+  if (country) {
+    if (country === 'USA') {
+      footer = 'to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
+    }
+    header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
+    fields = getDetails(country, countryHtml, 'main_table_countries_today');
+    if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
+  } else {
+    try {
+      const statsElements = countryHtml('.maincounter-number');
+      const stats = statsElements
+        .text()
+        .trim()
+        .replace(/\s\s+/g, ' ')
+        .split(' ');
+      fields.Cases = stats[0];
+      fields.Recovered = stats[2];
+      fields.Fatalities = stats[1];
+      header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
+      footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
+    } catch (e) {
+      return fail(undefined, 'Couldn\'t get the stats.');
+    }
+  }
   return success(header, fields, footer);
 }
 
@@ -222,14 +322,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async args => ({
+const main = async (args) => ({
   body: await _command(
     args.params,
-    args.commandText,
-    args.__secrets || {}
-  ).catch(error => ({
+  ).catch((error) => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`
-  }))
+    text: `Error: ${error.message}`,
+  })),
 });
 module.exports = main;
