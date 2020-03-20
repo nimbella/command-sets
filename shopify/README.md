@@ -46,14 +46,14 @@ Params: order_id (Unique ID of an order), note (Text to attach to order)
 ![Shopify add note command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/addNote.PNG)
 
 View list of products sold
-Params: search_terms (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
+Params: search_terms (Comma delimited list of text to filter by) EX: "textone, text two, text three four"
 ```
 /nc shopify_products_sold [<search_terms>]
 ```
 ![Shopify products sold command](https://raw.githubusercontent.com/nimbella/command-sets/master/shopify/screenshots/productsSold.PNG)
 
 View product inventory
-Params: search_words (Comma deliminated list of text to filter by) EX: "textone, text two, text three four"
+Params: search_words (Comma delimited list of text to filter by) EX: "textone, text two, text three four"
 ```
 /nc shopify_inventory [<search_words>]
 ```

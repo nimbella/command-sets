@@ -20,15 +20,15 @@ To use the GCloud Billing command provided in this repo, you need to enable Clou
 
 - [ ] Make sure you have the **Billing Account Administrator** role, a project, and a linked billing account.
 - [ ] Navigate to the [BigQuery page](https://console.cloud.google.com/bigquery) and make sure your project is selected in the drop-down in the top left.
-      ![select_project_gcloud.png](https://github.com/SambaDialloB/hosted-images-on-github/blob/master/select_project_gcloud.png)
-- [ ] Add a dataset using the button under the resources tab on the left. Fill in the required information <img align="right" width=200 height=50 src="https://github.com/SambaDialloB/hosted-images-on-github/blob/master/create_dataset_gcloud.png">
+      ![select_project_gcloud.png](https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/screenshots/select_project_gcloud.png)
+- [ ] Add a dataset using the button under the resources tab on the left. Fill in the required information <img align="right" width=200 height=50 src="https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/screenshots/create_dataset_gcloud.png">
 - [ ] Now you have a dataset that you can access with the gcloud_bill command.
 
 ### Connect Cloud Billing to the BigQuery dataset
 
 - [ ] Access your [Billing Cloud Console](https://console.cloud.google.com/billing/) and choose your Billing Account.
 - [ ] Click Billing Export on the left and make sure BigQuery is selected near the top.
-- [ ] If your Daily cost detail is disabled, edit the settings and choose your new dataset to export your bills to. <img align="right" width=300 height=200 src="https://github.com/SambaDialloB/hosted-images-on-github/blob/master/export_dataset_gcloud.png">
+- [ ] If your Daily cost detail is disabled, edit the settings and choose your new dataset to export your bills to. <img align="right" width=300 height=200 src="https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/screenshots/export_dataset_gcloud.png">
 - [ ] After clicking "Save", your data will take a while to load into BigQuery. After a few hours, you should see data loaded into your dataset!
 
 Since we now have a dataset set up, go ahead and create SQL statements to query it!
@@ -37,6 +37,6 @@ Since we now have a dataset set up, go ahead and create SQL statements to query 
 
 - [ ] [Create a service account key](https://console.cloud.google.com/apis/credentials/serviceaccountkey), with the role of Project > Owner and choose the JSON key type.
 - [ ] After clicking create, a JSON file will be downloaded to your computer. Open it to view its contents.
-- [ ] Inside Slack, run `/nc secret_create`. This command lets you enter secrets into a secure web user interface and adds them to your app. [Find out more about secret creation.](https://nimbella.com/resources-commander/guide#secrets)<img align="right" width=440 height=70 src="https://github.com/SambaDialloB/hosted-images-on-github/blob/master/secret_creation_gcloud.png">
+- [ ] Inside Slack, run `/nc secret_create`. This command lets you enter secrets into a secure web user interface and adds them to your app. [Find out more about secret creation.](https://nimbella.com/resources-commander/guide#secrets)<img align="right" width=440 height=70 src="https://raw.githubusercontent.com/nimbella/command-sets/master/gcloud/screenshots/secret_creation_gcloud.png">
 - [ ] Split up the service account key, putting the "private_key" value in a separate secret. Replace that value with an empty string in the JSON. Put the rest of the JSON into a secret. Additionally, create a secret with your dataset and table name.
 - [ ] Run the `gcloudbill` command using `/nc gcloudbill` and after a few seconds on initial spin up, you'll receive your current bill information!
