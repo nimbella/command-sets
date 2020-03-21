@@ -5,3 +5,6 @@ commands:
     parameters:
       - name: countryName
         optional: true
+    options:
+      - name: r
+        value: region
