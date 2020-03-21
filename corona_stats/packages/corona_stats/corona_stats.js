@@ -2,11 +2,35 @@
 /* eslint-disable global-require */
 /* eslint-disable no-underscore-dangle */
 let cheerio;
-let cache;
 let tableParser;
 let countryHtml;
 let stateHtml;
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
+const axios = require('axios');
+
+const install = (pkgs) => {
+  pkgs = pkgs.join(' ');
+  return new Promise((resolve, reject) => {
+    const {
+      exec,
+    } = require('child_process');
+    exec(`npm install ${pkgs}`, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+};
+
+async function checkDependencies() {
+  if (!cheerio) {
+    await install(['cheerio']);
+    cheerio = require('cheerio');
+  }
+  if (!tableParser) {
+    await install(['cheerio-tableparser']);
+    tableParser = require('cheerio-tableparser');
+  }
+}
 
 const toTitleCase = (phrase) => phrase
   .toLowerCase()
@@ -16,108 +40,107 @@ const toTitleCase = (phrase) => phrase
 
 const getCountryName = (name) => {
   const longNames = {
-    Cn: 'China', // Countries
-    It: 'Italy',
-    Es: 'Spain',
-    Ir: 'Iran',
-    De: 'Germany',
-    Us: 'USA',
-    Usa: 'USA',
-    Fr: 'France',
-    Sk: 'S. Korea',
-    Ch: 'Switzerland',
-    Uk: 'UK',
-    Nl: 'Netherlands',
-    Be: 'Belgium',
-    At: 'Austria',
-    No: 'Norway',
-    Se: 'Sweden',
-    Dk: 'Denmark',
-    My: 'Malaysia',
-    Jp: 'Japan',
-    Au: 'Australia',
-    Can: 'Canada',
-    Pt: 'Portugal',
-    Il: 'Israel',
-    Br: 'Brazil',
-    Ie: 'Ireland',
-    Gr: 'Greece',
-    Hk: 'Hong Kong',
-    Uae: 'UAE',
-    Sl: 'Sri Lanka',
-    In: 'India',
-    Iq: 'Iraq',
-    Pk: 'Pakistan',
+    CN: 'China',
+    IT: 'Italy',
+    ES: 'Spain',
+    IR: 'Iran',
+    DE: 'Germany',
+    US: 'USA',
+    USA: 'USA',
+    FR: 'France',
+    SK: 'S. Korea',
+    CH: 'Switzerland',
+    UK: 'UK',
+    NL: 'Netherlands',
+    BE: 'Belgium',
+    AT: 'Austria',
+    NO: 'Norway',
+    SE: 'Sweden',
+    DK: 'Denmark',
+    MY: 'Malaysia',
+    JP: 'Japan',
+    AU: 'Australia',
+    CAN: 'Canada',
+    PT: 'Portugal',
+    IL: 'Israel',
+    BR: 'Brazil',
+    IE: 'Ireland',
+    GR: 'Greece',
+    HK: 'Hong Kong',
+    UAE: 'UAE',
+    SL: 'Sri Lanka',
+    IN: 'India',
+    IQ: 'Iraq',
+    PK: 'Pakistan',
     Default: name,
   };
-  return (longNames[name] || longNames.Default);
+  return (longNames[name] || toTitleCase(longNames.Default));
 };
-
 
 const getStateName = (name) => {
   const longNames = {
-    Al: 'Alabama',
-    Ak: 'Alaska',
-    As: 'American Samoa',
-    Az: 'Arizona',
-    Ar: 'Arkansas',
-    Ca: 'California',
-    Co: 'Colorado',
-    Ct: 'Connecticut',
-    De: 'Delaware',
-    Dc: 'District Of Columbia',
-    Fm: 'Federated States Of Micronesia',
-    Fl: 'Florida',
-    Ga: 'Georgia',
-    Gu: 'Guam',
-    Hi: 'Hawaii',
-    Id: 'Idaho',
-    Il: 'Illinois',
-    In: 'Indiana',
-    Ia: 'Iowa',
-    Ks: 'Kansas',
-    Ky: 'Kentucky',
-    La: 'Louisiana',
-    Me: 'Maine',
-    Mh: 'Marshall Islands',
-    Md: 'Maryland',
-    Ma: 'Massachusetts',
-    Mi: 'Michigan',
-    Mn: 'Minnesota',
-    Ms: 'Mississippi',
-    Mo: 'Missouri',
-    Mt: 'Montana',
-    Ne: 'Nebraska',
-    Nv: 'Nevada',
-    Nh: 'New Hampshire',
-    Nj: 'New Jersey',
-    Nm: 'New Mexico',
-    Ny: 'New York',
-    Nc: 'North Carolina',
-    Nd: 'North Dakota',
-    Mp: 'Northern Mariana Islands',
-    Oh: 'Ohio',
-    Ok: 'Oklahoma',
-    Or: 'Oregon',
-    Pw: 'Palau',
-    Pa: 'Pennsylvania',
-    Pr: 'Puerto Rico',
-    Ri: 'Rhode Island',
-    Sc: 'South Carolina',
-    Sd: 'South Dakota',
-    Tn: 'Tennessee',
-    Tx: 'Texas',
-    Ut: 'Utah',
-    Vt: 'Vermont',
-    Vi: 'Virgin Islands',
-    Va: 'Virginia',
-    Wa: 'Washington',
-    Wv: 'West Virginia',
-    Wi: 'Wisconsin',
-    Wy: 'Wyoming',
+    AL: 'Alabama',
+    AK: 'Alaska',
+    AS: 'American Samoa',
+    AZ: 'Arizona',
+    AR: 'Arkansas',
+    CA: 'California',
+    CO: 'Colorado',
+    CT: 'Connecticut',
+    DE: 'Delaware',
+    DC: 'District Of Columbia',
+    FM: 'Federated States Of Micronesia',
+    FL: 'Florida',
+    GA: 'Georgia',
+    GU: 'Guam',
+    HI: 'Hawaii',
+    ID: 'Idaho',
+    IL: 'Illinois',
+    IN: 'Indiana',
+    IA: 'Iowa',
+    KS: 'Kansas',
+    KY: 'Kentucky',
+    LA: 'Louisiana',
+    ME: 'Maine',
+    MH: 'Marshall Islands',
+    MD: 'Maryland',
+    MA: 'Massachusetts',
+    MI: 'Michigan',
+    MN: 'Minnesota',
+    MS: 'Mississippi',
+    MO: 'Missouri',
+    MT: 'Montana',
+    NE: 'Nebraska',
+    NV: 'Nevada',
+    NH: 'New Hampshire',
+    NJ: 'New Jersey',
+    NM: 'New Mexico',
+    NY: 'New York',
+    NC: 'North Carolina',
+    ND: 'North Dakota',
+    MP: 'Northern Mariana Islands',
+    OH: 'Ohio',
+    OK: 'Oklahoma',
+    OR: 'Oregon',
+    PW: 'Palau',
+    PA: 'Pennsylvania',
+    PR: 'Puerto Rico',
+    RI: 'Rhode Island',
+    SC: 'South Carolina',
+    SD: 'South Dakota',
+    TN: 'Tennessee',
+    TX: 'Texas',
+    UT: 'Utah',
+    VT: 'Vermont',
+    VI: 'Virgin Islands',
+    VA: 'Virginia',
+    WA: 'Washington',
+    WV: 'West Virginia',
+    WI: 'Wisconsin',
+    WY: 'Wyoming',
     Default: name,
   };
-  return (longNames[name] || longNames.Default);
+  return (longNames[name] || toTitleCase(longNames.Default));
 };
 
 const getFlag = (name) => {
@@ -145,18 +168,6 @@ const getFlag = (name) => {
   return (flags[name] || flags.Default);
 };
 
-const install = (pkgs) => {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const {
-      exec,
-    } = require('child_process');
-    exec(`npm install ${pkgs}`, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-};
 
 const fail = (err, msg) => {
   console.log(err);
@@ -225,10 +236,10 @@ const getDetails = (name, html, domName) => {
   return fields;
 };
 
-async function getData(api, url) {
+async function getData(url) {
   let response;
   try {
-    response = await api.get(url);
+    response = await axios.get(url);
     if (response.status !== 200) {
       return;
     }
@@ -239,7 +250,6 @@ async function getData(api, url) {
   return cheerio.load(response.data);
 }
 
-
 /**
  * @description Live stats for the epidemic, worldwide or in a specific country
  * @param {ParamsType} params list of command parameters
@@ -247,46 +257,25 @@ async function getData(api, url) {
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-
 async function _command(params) {
-  const axios = require('axios');
-  if (!cheerio) {
-    await install(['cheerio']);
-    cheerio = require('cheerio');
-  }
-  if (!cache) {
-    await install(['axios-cache-adapter']);
-    cache = require('axios-cache-adapter');
-  }
-  if (!tableParser) {
-    await install(['cheerio-tableparser']);
-    tableParser = require('cheerio-tableparser');
-  }
-  const cacheSetup = cache.setupCache({
-    maxAge: 15 * 60 * 1000, // 15 mins
-  });
-  const api = axios.create({
-    adapter: cacheSetup.adapter,
-  });
-
-
   let fields = {};
   let header;
   let footer;
-  const country = getCountryName(toTitleCase(params.countryName || ''));
+  await checkDependencies();
+  const country = getCountryName((params.countryName || '').toUpperCase());
   if (country === 'USA' && params.region) {
-    const state = getStateName(toTitleCase(params.region));
+    const state = getStateName(params.region.toUpperCase());
     if (!stateHtml) {
-      stateHtml = await getData(api, `${coronaMeter}country/us/`);
+      stateHtml = await getData(`${coronaMeter}country/us/`);
       if (!stateHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
     }
     header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
-    fields = getDetails(state, stateHtml, 'usa_table_countries_today');
+    fields = getDetails(toTitleCase(state), stateHtml, 'usa_table_countries_today');
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
     return success(header, fields, footer);
   }
   if (!countryHtml) {
-    countryHtml = await getData(api, coronaMeter);
+    countryHtml = await getData(coronaMeter);
     if (!countryHtml) { return fail(undefined, 'Couldn\'t get the stats'); }
   }
   if (country) {
