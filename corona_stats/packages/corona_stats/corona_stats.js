@@ -6,6 +6,7 @@ let tableParser;
 let countryHtml;
 let stateHtml;
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
+const countryDomId = 'table_countries_today';
 const axios = require('axios');
 
 const install = (pkgs) => {
@@ -212,6 +213,7 @@ const success = (header, fields, footer) => {
 };
 
 
+
 const getDetails = (name, html, domName) => {
   const fields = {};
   try {
@@ -228,7 +230,7 @@ const getDetails = (name, html, domName) => {
       fields['Total Recovered'] = stats[5][recordIndex];
       fields['New Fatalities'] = stats[4][recordIndex];
       fields['Active Cases'] = stats[6][recordIndex];
-      fields['Critical Cases'] = stats[7][recordIndex];
+      if (domName.startsWith('main')) { fields['Critical Cases'] = stats[7][recordIndex]; }
     }
   } catch (e) {
     fail(e.message);
@@ -270,7 +272,7 @@ async function _command(params) {
       if (!stateHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
     }
     header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
-    fields = getDetails(toTitleCase(state), stateHtml, 'usa_table_countries_today');
+    fields = getDetails(toTitleCase(state), stateHtml, `usa_${countryDomId}`);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
     return success(header, fields, footer);
   }
@@ -283,7 +285,7 @@ async function _command(params) {
       footer = 'to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
     }
     header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
-    fields = getDetails(country, countryHtml, 'main_table_countries_today');
+    fields = getDetails(country, countryHtml, `main_${countryDomId}`);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
   } else {
     try {
