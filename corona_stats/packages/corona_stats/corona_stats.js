@@ -212,8 +212,6 @@ const success = (header, fields, footer) => {
   return response;
 };
 
-
-
 const getDetails = (name, html, domName) => {
   const fields = {};
   try {
@@ -227,10 +225,15 @@ const getDetails = (name, html, domName) => {
       fields['Total Cases'] = stats[1][recordIndex];
       fields['New Cases'] = stats[2][recordIndex];
       fields['Total Fatalities'] = stats[3][recordIndex];
-      fields['Total Recovered'] = stats[5][recordIndex];
-      fields['New Fatalities'] = stats[4][recordIndex];
-      fields['Active Cases'] = stats[6][recordIndex];
-      if (domName.startsWith('main')) { fields['Critical Cases'] = stats[7][recordIndex]; }
+      if (domName.startsWith('main')) {
+        fields['Total Recovered'] = stats[5][recordIndex];
+        fields['New Fatalities'] = stats[4][recordIndex];
+        fields['Active Cases'] = stats[6][recordIndex];
+        fields['Critical Cases'] = stats[7][recordIndex];
+      } else {
+        fields['New Fatalities'] = stats[4][recordIndex];
+        fields['Active Cases'] = stats[5][recordIndex];
+      }
     }
   } catch (e) {
     fail(e.message);
