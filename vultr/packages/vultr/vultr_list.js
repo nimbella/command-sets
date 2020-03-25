@@ -7,8 +7,8 @@
 async function install(pkgs) {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err) => {
+    const {exec} = require('child_process');
+    exec(`npm install ${pkgs}`, err => {
       if (err) reject(err);
       else resolve();
     });
@@ -67,39 +67,47 @@ async function _command(params, commandText, secrets = {}) {
     } catch {
       await install(['@vultr/vultr-node']);
       Vultr = require('@vultr/vultr-node');
-    }   
+    }
 
     const {server} = Vultr.initialize({apiKey: vultrApiKey});
 
     const data = await server.list();
-    for (const [key, value] of Object.entries(data)) {
-      const {main_ip, status, label} = value;
-      result.push(
-        mui(
-          {
-            type: 'context',
-            elements: [
-              {
-                type: 'mrkdwn',
-                text: `ID: ${key}`
-              },
-              {
-                type: 'mrkdwn',
-                text: `IP: \`${main_ip}\``
-              },
-              {
-                type: 'mrkdwn',
-                text: `Status: *${status}*`
-              },
-              {
-                type: 'mrkdwn',
-                text: `${label}`
-              }
-            ]
-          },
-          client
-        )
-      );
+    if (data.error) {
+      result.push({
+        type: 'section',
+        text: {type: 'mrkdwn', text: `*Error*: ${data.message}`}
+      });
+    } else {
+      for (const [key, value] of Object.entries(data)) {
+        const {main_ip, status, label} = value;
+
+        const output = {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `ID: ${key}`
+            },
+            {
+              type: 'mrkdwn',
+              text: `IP: \`${main_ip}\``
+            },
+            {
+              type: 'mrkdwn',
+              text: `Status: *${status}*`
+            }
+          ]
+        };
+
+        if (label) {
+          output.elements.push({
+            type: 'mrkdwn',
+            text: `${label}`
+          });
+        }
+
+        result.push(mui(output, client));
+      }
     }
   } catch (error) {
     result.push(
@@ -130,8 +138,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
