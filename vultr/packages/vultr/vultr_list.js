@@ -72,7 +72,12 @@ async function _command(params, commandText, secrets = {}) {
     const {server} = Vultr.initialize({apiKey: vultrApiKey});
 
     const data = await server.list();
-    if (data.error) {
+    if (data.length === 0) {
+      result.push({
+        type: 'section',
+        text: {type: 'mrkdwn', text: `No servers found under your account. `}
+      });
+    } else if (data.error) {
       result.push({
         type: 'section',
         text: {type: 'mrkdwn', text: `*Error*: ${data.message}`}
