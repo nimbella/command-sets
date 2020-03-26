@@ -94,19 +94,19 @@ To list EC2 instances under your account:
 
 ### GitLab (`gitlab`)
 
-`gitlab_stats` - View community contribution stats for GitLab projects
+`gitlab_stats` - View community contribution stats for GitLab projects.
 
-`gitlab_create` - Create a ticket for a GitLab project
+`gitlab_create` - Create a ticket for a GitLab project.
 
-`gitlab_issues` - Assign issues for a GitLab project
+`gitlab_issues` - Assign issues for a GitLab project.
 
-`gitlab_users` - View list of users in project repository
+`gitlab_users` - View list of users in project repository.
 
-`gitlab` - View GitLab command set documentation
+`gitlab` - View GitLab command set documentation.
 
 ### Shopify (`shopify`)
 
-`orders` - Get a detailed list of orders .
+`orders` - Get a detailed list of orders.
 
 `add_note` - Add a note to an existing order.
 
@@ -114,7 +114,27 @@ To list EC2 instances under your account:
 
 `products_sold` - Get sale numbers for products in shop.
 
-`shopify` - View command set documentation
+`shopify` - View command set documentation.
+
+### Github (`github`)
+
+`github_close_issue` - Close an issue.
+
+`github_create_issue` - Create an issue.
+
+`github_find_pr` Find pull requests by date.
+
+`github_label` - Label an issue/pull request.
+
+`github_reopen_issue` - Reopen an issue.
+
+`github_request_review` - Request someone to review a pull request.
+
+`github_stats` - View repository community statistics.
+
+`github_view_pr` - View recent pull requests.
+
+`github` - View Github command set documentation.
 
 ### Misc
 
