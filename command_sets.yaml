@@ -29,3 +29,5 @@ command_sets:
     description: Command set for interfacing with GitLab.
   shopify:
     description: Command set for interfacing with Shopify.
+  github:
+    description: Command set for interfacing with GitHub.
