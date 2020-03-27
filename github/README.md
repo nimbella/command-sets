@@ -1,5 +1,6 @@
 # Nimbella Commander Github Command Set
-A Nimbella Commander command set for interfacing with Github
+A Nimbella Commander command set for interfacing with GitHub.
+
 
 ## Features
 - Create an issue
