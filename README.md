@@ -116,7 +116,7 @@ To list EC2 instances under your account:
 
 `shopify` - View command set documentation.
 
-### Github (`github`)
+### GitHub (`github`)
 
 `github_close_issue` - Close an issue.
 
