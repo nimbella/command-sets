@@ -1,5 +1,5 @@
 commands:
-    github_close_issue:
+  github_close_issue:
     sourcePath: packages/github/github_close_issue.js
     description: 'Close an issue'
     parameters:
