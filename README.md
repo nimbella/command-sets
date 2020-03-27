@@ -134,7 +134,7 @@ To list EC2 instances under your account:
 
 `github_view_pr` - View recent pull requests.
 
-`github` - View Github command set documentation.
+`github` - View GitHub command set documentation.
 
 ### Misc
 

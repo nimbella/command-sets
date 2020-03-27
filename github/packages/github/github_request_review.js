@@ -30,7 +30,7 @@ async function _command(params, commandText, secrets = {}) {
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
-      text: 'Missing Github Personal Access Token!'
+      text: 'Missing GitHub Personal Access Token!'
     };
   }
   const {

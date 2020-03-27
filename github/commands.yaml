@@ -67,7 +67,7 @@ commands:
         optional: false
   github:
     sourcePath: packages/github/github.js
-    description: 'View Github command set documentation'
+    description: 'View GitHub command set documentation'
     parameters:
       - name: repo
         optional: false
