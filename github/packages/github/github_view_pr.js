@@ -51,7 +51,7 @@ async function _command(params, commandText, secrets = {}) {
           pretext: `Issue #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`
         });
     }
-    return { attachments: attachments };
+    return { attachments };
   }
 }
 
