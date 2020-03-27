@@ -21,7 +21,7 @@ async function getRequest(url) {
 
 function formatDate(d) {
     
-  date = new Date(d);
+  const date = new Date(d);
   let dd = date.getDate(); 
   let mm = date.getMonth()+1;
   let yyyy = date.getFullYear();
