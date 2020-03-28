@@ -1,11 +1,18 @@
 // jshint esversion: 9
 /* eslint-disable global-require */
+/* eslint-disable guard-for-in */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable consistent-return */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
 let cheerio;
 let tableParser;
 let countryHtml;
-let stateHtml;
+let usStatesHtml;
+let inStatesData;
+let inDistrictData;
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
+const covid19India = 'https://api.covid19india.org/';
 const countryDomId = 'table_countries_today';
 const axios = require('axios');
 
@@ -78,7 +85,7 @@ const getCountryName = (name) => {
   return (longNames[name] || toTitleCase(longNames.Default));
 };
 
-const getStateName = (name) => {
+const getUSStateName = (name) => {
   const longNames = {
     AL: 'Alabama',
     AK: 'Alaska',
@@ -139,6 +146,46 @@ const getStateName = (name) => {
     WV: 'West Virginia',
     WI: 'Wisconsin',
     WY: 'Wyoming',
+    Default: name,
+  };
+  return (longNames[name] || toTitleCase(longNames.Default));
+};
+
+const getIndianStateName = (name) => {
+  const longNames = {
+    AP: 'Andhra Pradesh',
+    AR: 'Arunachal Pradesh',
+    AS: 'Assam',
+    BR: 'Bihar',
+    CG: 'Chhattisgarh',
+    CH: 'Chandigarh',
+    DD: 'Daman and Diu',
+    DH: 'Dadra and Nagar Haveli',
+    DL: 'Delhi',
+    GA: 'Goa',
+    GJ: 'Gujarat',
+    HP: 'Himachal Pradesh',
+    HR: 'Haryana',
+    JK: 'Jammu and Kashmir',
+    JH: 'Jharkhand',
+    KA: 'Karnataka',
+    KL: 'Kerala',
+    LD: 'Lakshadweep',
+    MH: 'Maharashtra',
+    ML: 'Meghalaya',
+    MN: 'Manipur',
+    MP: 'Madhya Pradesh',
+    MZ: 'Mizoram',
+    NL: 'Nagaland',
+    OR: 'Orissa',
+    PJ: 'Punjab',
+    RJ: 'Rajasthan',
+    SK: 'Sikkim',
+    TN: 'Tamil Nadu',
+    TR: 'Tripura',
+    UK: 'Uttarakhand',
+    UP: 'Uttar Pradesh',
+    WB: 'West Bengal',
     Default: name,
   };
   return (longNames[name] || toTitleCase(longNames.Default));
@@ -212,34 +259,20 @@ const success = (header, fields, footer) => {
   return response;
 };
 
-const getDetails = (name, html, domName) => {
-  const fields = {};
+async function getHTMLData(url) {
+  let response;
   try {
-    tableParser(html);
-    const stats = html(`#${domName}`).parsetable(false, false, true);
-    if (stats.length === 0) {
+    response = await axios.get(url);
+    if (response.status !== 200) {
       return;
     }
-    const recordIndex = stats[0].indexOf(name);
-    if (recordIndex > 0) {
-      fields['Total Cases'] = stats[1][recordIndex];
-      fields['New Cases'] = stats[2][recordIndex];
-      fields['Total Fatalities'] = stats[3][recordIndex];
-      if (domName.startsWith('main')) {
-        fields['Total Recovered'] = stats[5][recordIndex];
-        fields['New Fatalities'] = stats[4][recordIndex];
-        fields['Active Cases'] = stats[6][recordIndex];
-        fields['Critical Cases'] = stats[7][recordIndex];
-      } else {
-        fields['New Fatalities'] = stats[4][recordIndex];
-        fields['Active Cases'] = stats[5][recordIndex];
-      }
-    }
-  } catch (e) {
-    fail(e.message);
+  } catch (err) {
+    fail(err.message);
+    return;
   }
-  return fields;
-};
+  if (!response) return;
+  return cheerio.load(response.data);
+}
 
 async function getData(url) {
   let response;
@@ -249,11 +282,95 @@ async function getData(url) {
       return;
     }
   } catch (err) {
-    return fail(err.message);
+    fail(err.message);
+    return;
   }
   if (!response) return;
-  return cheerio.load(response.data);
+  return response.data;
 }
+
+const getDetails = (name, html, domName) => {
+  const fields = {};
+  try {
+    tableParser(html);
+    const stats = html(`#main_${countryDomId}`).parsetable(false, false, true);
+    if (stats.length === 0) {
+      return;
+    }
+    const recordIndex = stats[0].indexOf(name);
+    if (recordIndex > 0) {
+      fields['Total Cases'] = stats[1][recordIndex];
+      fields['New Cases'] = stats[2][recordIndex];
+      fields['Total Fatalities'] = stats[3][recordIndex];
+      fields['Total Recovered'] = stats[5][recordIndex];
+      fields['New Fatalities'] = stats[4][recordIndex];
+      fields['Active Cases'] = stats[6][recordIndex];
+      fields['Critical Cases'] = stats[7][recordIndex];
+    }
+  } catch (e) {
+    fail(e.message);
+  }
+  return fields;
+};
+
+const getDetailsForUS = (name, html) => {
+  const fields = {};
+  try {
+    tableParser(html);
+    const stats = html(`#usa_${countryDomId}`).parsetable(false, false, true);
+    if (stats.length === 0) {
+      return;
+    }
+    const recordIndex = stats[0].indexOf(name);
+    if (recordIndex > 0) {
+      fields['Total Cases'] = stats[1][recordIndex];
+      fields['New Cases'] = stats[2][recordIndex];
+      fields['Total Fatalities'] = stats[3][recordIndex];
+      fields['New Fatalities'] = stats[4][recordIndex];
+      fields['Active Cases'] = stats[5][recordIndex];
+    }
+  } catch (e) {
+    fail(e.message);
+  }
+  return fields;
+};
+
+const getDetailsForIndia = async (name) => {
+  if (!inStatesData) {
+    const stateData = await getData(`${covid19India}data.json`);
+    inStatesData = stateData.statewise;
+  }
+
+  const fields = {};
+  try {
+    const stats = inStatesData;
+    if (!stats) {
+      return;
+    }
+    const record = stats.find((o) => o.state === name);
+    if (record) {
+      fields.Active = record.active;
+      fields['New Active'] = record.delta.active;
+      fields.Confirmed = record.confirmed;
+      fields['New Confirmed'] = record.delta.confirmed;
+      fields.Fatalities = record.deaths;
+      fields['New Fatalities'] = record.delta.deaths;
+      fields.Recovered = record.recovered;
+      fields['New Recovered'] = record.delta.recovered;
+    } else {
+      if (!inDistrictData) {
+        inDistrictData = await getData(`${covid19India}state_district_wise.json`);
+      }
+      const record = Object.values(inDistrictData).find((e) => e.districtData[name]);
+      if (record) {
+        fields.Confirmed = record.districtData[name].confirmed;
+      }
+    }
+  } catch (e) {
+    fail(e.message);
+  }
+  return fields;
+};
 
 /**
  * @description Live stats for the epidemic, worldwide or in a specific country
@@ -268,27 +385,37 @@ async function _command(params) {
   let footer;
   await checkDependencies();
   const country = getCountryName((params.countryName || '').toUpperCase());
-  if (country === 'USA' && params.region) {
-    const state = getStateName(params.region.toUpperCase());
-    if (!stateHtml) {
-      stateHtml = await getData(`${coronaMeter}country/us/`);
-      if (!stateHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
+  let state = params.region;
+  if (params.region) {
+    if (country === 'USA') {
+      state = getUSStateName(params.region.toUpperCase());
+      if (!usStatesHtml) {
+        usStatesHtml = await getHTMLData(`${coronaMeter}country/us/`);
+        if (!usStatesHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
+      }
+      fields = getDetailsForUS(state, usStatesHtml);
+    }
+    if (country === 'India') {
+      state = getIndianStateName(params.region.toUpperCase());
+      fields = await getDetailsForIndia(state);
     }
     header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
-    fields = getDetails(toTitleCase(state), stateHtml, `usa_${countryDomId}`);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
     return success(header, fields, footer);
   }
   if (!countryHtml) {
-    countryHtml = await getData(coronaMeter);
+    countryHtml = await getHTMLData(coronaMeter);
     if (!countryHtml) { return fail(undefined, 'Couldn\'t get the stats'); }
   }
   if (country) {
     if (country === 'USA') {
       footer = 'to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
     }
+    if (country === 'India') {
+      footer = 'to see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
+    }
     header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
-    fields = getDetails(country, countryHtml, `main_${countryDomId}`);
+    fields = getDetails(country, countryHtml);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
   } else {
     try {
