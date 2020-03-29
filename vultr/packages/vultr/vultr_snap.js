@@ -7,8 +7,8 @@
 async function install(pkgs) {
   pkgs = pkgs.join(' ');
   return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err) => {
+    const {exec} = require('child_process');
+    exec(`npm install ${pkgs}`, err => {
       if (err) reject(err);
       else resolve();
     });
@@ -68,25 +68,31 @@ async function _command(params, commandText, secrets = {}) {
       await install(['@vultr/vultr-node']);
       Vultr = require('@vultr/vultr-node');
     }
-    
+
     const {snapshot} = Vultr.initialize({apiKey: vultrApiKey});
 
-    const {SNAPSHOTID} = await snapshot.create({SUBID: Number(subid)});
-
-    result.push(
-      mui(
-        {
-          type: 'context',
-          elements: [
-            {
-              type: 'mrkdwn',
-              text: `Snapshot with ID \`${SNAPSHOTID}\` is initiated for \`${subid}\``
-            }
-          ]
-        },
-        client
-      )
-    );
+    const data = await snapshot.create({SUBID: Number(subid)});
+    if (data.error) {
+      result.push({
+        type: 'section',
+        text: {type: 'mrkdwn', text: `*Error*: ${data.message}`}
+      });
+    } else {
+      result.push(
+        mui(
+          {
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `Snapshot with ID \`${data.SNAPSHOTID}\` is initiated for \`${subid}\``
+              }
+            ]
+          },
+          client
+        )
+      );
+    }
   } catch (error) {
     result.push(
       mui(
@@ -116,8 +122,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
