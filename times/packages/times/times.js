@@ -67,6 +67,15 @@ const success = (fields) => {
       text: `*${fields[key].split('\n')[0]}*`,
     });
   });
+
+ response.blocks.push({
+  type: 'context',
+  elements: [{
+    type: 'mrkdwn',
+    text: 'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>'
+  }],
+});
+
   return response;
 };
 

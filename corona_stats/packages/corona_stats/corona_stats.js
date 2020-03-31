@@ -242,7 +242,7 @@ const success = (header, fields, footer) => {
       type: 'context',
       elements: [{
         type: 'mrkdwn',
-        text: 'sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india> | add corona_stats to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
+        text: 'add _corona_stats_ to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
       }],
     },
     ],
@@ -325,7 +325,7 @@ const help = () => {
     type: 'context',
     elements: [{
       type: 'mrkdwn',
-      text: 'add corona_stats to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
+      text: 'add _corona_stats_ to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander> | data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>',
     }],
   });
 
