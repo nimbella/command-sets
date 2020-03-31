@@ -1,0 +1,7 @@
+commands:
+  translate:
+    sourcePath: packages/translate/translate.js
+    description: Translate text using IBM Watson Language Translator
+    parameters:
+      - name: text
+      - name: targetLanguage
