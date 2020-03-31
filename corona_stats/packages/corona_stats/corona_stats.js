@@ -216,7 +216,6 @@ const getFlag = (name) => {
   return (flags[name] || flags.Default);
 };
 
-
 const fail = (err, msg) => {
   console.log(err);
   return {
@@ -239,6 +238,13 @@ const success = (header, fields, footer) => {
       type: 'section',
       fields: [],
     },
+    {
+      type: 'context',
+      elements: [{
+        type: 'mrkdwn',
+        text: 'sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india> | add corona_stats to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
+      }],
+    },
     ],
   };
   for (const property in fields) {
@@ -248,14 +254,81 @@ const success = (header, fields, footer) => {
     });
   }
   if (footer) {
-    response.blocks.push({
-      type: 'context',
-      elements: [{
+    response.blocks[2].elements.push(
+      {
         type: 'mrkdwn',
         text: footer,
-      }],
-    });
+      },
+    );
   }
+  return response;
+};
+
+const help = () => {
+  const response = {
+    response_type: 'in_channel',
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '*Using these commands, see stats for any country/region or worldwide.*',
+      },
+    },
+    {
+      type: 'section',
+      text:
+         {
+           type: 'mrkdwn',
+           text: '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`',
+         },
+    },
+    {
+      type: 'section',
+      text:
+         {
+           type: 'mrkdwn',
+           text: '*examples:*',
+         },
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '`/nc corona_stats` : Worldwide stats',
+      },
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '`/nc corona_stats in` : stats for India',
+      },
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '`/nc corona_stats in -r up` : stats for Uttar Pradesh, India',
+      },
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '`/nc corona_stats in -r agra` : stats for Agra District, India',
+      },
+    },
+    ],
+  };
+
+  response.blocks.push({
+    type: 'context',
+    elements: [{
+      type: 'mrkdwn',
+      text: 'add corona_stats to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
+    }],
+  });
+
   return response;
 };
 
@@ -373,7 +446,7 @@ const getDetailsForIndia = async (name) => {
 };
 
 /**
- * @description Live stats for the epidemic, worldwide or in a specific country
+ * @description Live stats for the pandemic, worldwide or in a specific country
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -385,6 +458,9 @@ async function _command(params) {
   let footer;
   await checkDependencies();
   const country = getCountryName((params.countryName || '').toUpperCase());
+  if (params.h) {
+    return help();
+  }
   let state = params.region;
   if (params.region) {
     if (country === 'USA') {
@@ -442,7 +518,6 @@ async function _command(params) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-
 const main = async (args) => ({
   body: await _command(
     args.params,

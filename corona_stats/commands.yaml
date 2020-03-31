@@ -1,10 +1,11 @@
 commands:
   corona_stats:
     sourcePath: packages/corona_stats/corona_stats.js
-    description: Live stats for the epidemic, worldwide or in a specific country
+    description: Live stats for the pandemic, worldwide or in a specific country/state/district.
     parameters:
       - name: countryName
         optional: true
     options:
       - name: r
         value: region
+      - name: h
