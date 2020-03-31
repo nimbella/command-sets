@@ -7,6 +7,11 @@ commands:
       - name: targetLanguage
   tone:
     sourcePath: packages/tone_analyzer/tone.js
+    description: Analyze the tone of a text using IBM Watson Tone Analyzer
+    parameters:
+      - name: text
+  tone_cs:
+    sourcePath: packages/tone_analyzer/tone_cs.js
     description: Analyze the tone of your customer using IBM Watson Tone Analyzer
     parameters:
       - name: text

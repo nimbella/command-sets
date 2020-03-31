@@ -20,9 +20,9 @@ async function _command(params, commandText, secrets = {}) {
   const axios = require('axios');
 
   const {data} = await axios.post(
-    url + '/v3/tone?version=2017-09-21',
+    url + '/v3/tone_chat?version=2017-09-21',
     {
-      text
+      utterances: [{text}]
     },
     {
       auth: {
@@ -35,66 +35,24 @@ async function _command(params, commandText, secrets = {}) {
     }
   );
 
-  result.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: 'Overall'
-    }
-  });
+  const toneData = data.utterances_tone;
 
-  const documentTone = {
+  const toneResult = {
     type: 'context',
     elements: []
   };
 
-  for (const tone of data.document_tone.tones) {
-    documentTone.elements.push({
+  for (const tone of toneData[0].tones) {
+    toneResult.elements.push({
       type: 'mrkdwn',
       text: `*${tone.tone_name}* score: \`${tone.score}\``
     });
   }
 
-  result.push(documentTone);
-
-  result.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: 'Breakdown'
-    }
-  });
-
-  for (const sentence of data.sentences_tone) {
-    const sentenceOutput = [];
-
-    sentenceOutput.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `*Sentence:* ${sentence.text}`
-        }
-      ]
-    });
-
-    for (const tone of sentence.tones) {
-      sentenceOutput.push({
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `*Tone*: ${tone.tone_name} score: \`${tone.score}\``
-          }
-        ]
-      });
-    }
-
-    result.push(...sentenceOutput);
-  }
+  result.push(toneResult);
 
   return {
-    response_type: 'in_channel',
+    response_type: 'in_channel', // or `ephemeral` for private response
     blocks: result
   };
 }
