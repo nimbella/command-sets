@@ -18,3 +18,9 @@ commands:
   namespaces:
     sourcePath: packages/functions/namespaces.js
     description: List your IBM IAM and Cloud Foundry-based namespaces.
+  activations:
+    sourcePath: packages/functions/activations.js
+    description: List activation records in a namespace.
+    parameters:
+      - name: namespaceId
+        optional: true

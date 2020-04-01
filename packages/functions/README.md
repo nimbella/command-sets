@@ -10,6 +10,8 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 
 - `namespaces` - List your IBM IAM and Cloud Foundry-based namespaces.
 
+- `activations` - List activation records in a namespace.
+
 ## Usage
 
 #### namespaces
@@ -17,3 +19,11 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 ```sh
 /nc namespaces
 ```
+
+#### activations
+
+```sh
+/nc activations [<namespaceId>]
+```
+
+You can create a secret named `ibmNamespaceId` to avoid passing the same id on every invocation. And the parameter is given precedence when both are present.
