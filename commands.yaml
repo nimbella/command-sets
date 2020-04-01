@@ -24,3 +24,10 @@ commands:
     parameters:
       - name: namespaceId
         optional: true
+  act_log:
+    sourcePath: packages/functions/act_log.js
+    description: Get the logs for an activation.
+    parameters:
+      - name: activationId
+      - name: namespaceId
+        optional: true

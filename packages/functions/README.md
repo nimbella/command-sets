@@ -12,6 +12,8 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 
 - `activations` - List activation records in a namespace.
 
+- `act_log` - Get the logs for an activation.
+
 ## Usage
 
 #### namespaces
@@ -27,3 +29,9 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 ```
 
 You can create a secret named `ibmNamespaceId` to avoid passing the same id on every invocation. And the parameter is given precedence when both are present.
+
+#### act_log
+
+```sh
+/nc act_log <activationId> [<namespaceId>]
+```
