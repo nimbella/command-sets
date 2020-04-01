@@ -15,3 +15,6 @@ commands:
     description: Analyze the tone of your customer using IBM Watson Tone Analyzer
     parameters:
       - name: text
+  namespaces:
+    sourcePath: packages/functions/namespaces.js
+    description: List your IBM IAM and Cloud Foundry-based namespaces.
