@@ -6,23 +6,37 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {ibmIAMToken} = secrets;
-  if (!ibmIAMToken) {
+  const {ibmApiKey} = secrets;
+  if (!ibmApiKey) {
     return {
       response_type: 'ephemeral',
-      text: `We need a secret named \`ibmIAMToken\` to run this command. Create one using \`/nc secret_create\``
+      text: `We need a secret named \`ibmApiKey\` to run this command. Create one using \`/nc secret_create\``
     };
   }
 
-  // TODO: Support different regions.
-  const baseURL = 'https://eu-gb.functions.cloud.ibm.com/api/v1';
   const result = [];
   const axios = require('axios');
+
+  // Get the access token.
+  const body = `grant_type=${encodeURIComponent(
+    'urn:ibm:params:oauth:grant-type:apikey'
+  )}&apikey=${encodeURIComponent(ibmApiKey)}`;
+  const {
+    data: {access_token, token_type}
+  } = await axios.post('https://iam.cloud.ibm.com/identity/token', body, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    }
+  });
+
+  // TODO: Support different regions.
+  const baseURL = 'https://eu-gb.functions.cloud.ibm.com/api/v1';
   const {
     data: {namespaces}
   } = await axios.get(baseURL + `/namespaces`, {
     headers: {
-      authorization: ibmIAMToken,
+      authorization: token_type + ' ' + access_token,
       accept: 'application/json'
     }
   });
