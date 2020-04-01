@@ -5,8 +5,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
-let cheerio;
-let tableParser;
 let countryHtml;
 let usStatesHtml;
 let inStatesData;
@@ -15,6 +13,8 @@ const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 const covid19India = 'https://api.covid19india.org/';
 const countryDomId = 'table_countries_today';
 const axios = require('axios');
+const cheerio = require('cheerio');
+const tableParser = require('cheerio-tableparser');
 
 const install = (pkgs) => {
   pkgs = pkgs.join(' ');
@@ -28,17 +28,6 @@ const install = (pkgs) => {
     });
   });
 };
-
-async function checkDependencies() {
-  if (!cheerio) {
-    await install(['cheerio']);
-    cheerio = require('cheerio');
-  }
-  if (!tableParser) {
-    await install(['cheerio-tableparser']);
-    tableParser = require('cheerio-tableparser');
-  }
-}
 
 const toTitleCase = (phrase) => phrase
   .toLowerCase()
@@ -413,7 +402,6 @@ const getDetailsForIndia = async (name) => {
     const stateData = await getData(`${covid19India}data.json`);
     inStatesData = stateData.statewise;
   }
-
   const fields = {};
   try {
     const stats = inStatesData;
@@ -456,11 +444,10 @@ async function _command(params) {
   let fields = {};
   let header;
   let footer;
-  await checkDependencies();
-  const country = getCountryName((params.countryName || '').toUpperCase());
   if (params.h) {
     return help();
   }
+  const country = getCountryName((params.countryName || '').toUpperCase());
   let state = params.region;
   if (params.region) {
     if (country === 'USA') {
