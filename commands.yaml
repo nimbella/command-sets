@@ -38,3 +38,10 @@ commands:
       - name: activationId
       - name: namespaceId
         optional: true
+  invoke:
+    sourcePath: packages/functions/invoke.js
+    description: Invoke an action, web action, or action sequence.
+    parameters:
+      - name: actionName
+      - name: namespaceId
+        optional: true

@@ -16,6 +16,8 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 
 - `act_result` - Get the results of an activation.
 
+- `invoke` - Invoke an action, web action, or action sequence.
+
 ## Usage
 
 #### namespaces
@@ -42,4 +44,10 @@ You can create a secret named `ibmNamespaceId` to avoid passing the same id on e
 
 ```sh
 /nc act_result <activationId> [<namespaceId>]
+```
+
+#### invoke
+
+```sh
+/nc invoke <actionName> [<namespaceId>]
 ```
