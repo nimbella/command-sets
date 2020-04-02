@@ -36,16 +36,16 @@ async function _command(params, commandText, secrets = {}) {
   let response;
   try {
     if (targetLang.length != 2) {
-      let packages = [ 'iso-639-1' ];
+      let packages = ['iso-639-1'];
       await install(packages);
       const ISO6391 = require('iso-639-1');
       targetLang = ISO6391.getCode(targetLang);
     }
-    
+
     if (targetLang == '') {
       return { response_type: 'in_channel', text: 'Unknown language. Language can be a <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|2 character ISO6931 code> or a language name such as Spanish, Chinese, etc.' };
     }
-    
+
     const url = `${translator}?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q="${encodeURI(sourceText)}"`;
     response = await axios.get(url);
     if (response.status !== 200) {
@@ -61,7 +61,20 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: translatedText
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: translatedText,
+        },
+      }, {
+        type: 'context',
+        elements: [{
+          type: 'mrkdwn',
+          text: 'add _translate_ to your Slack with <https://nimbella.com/blog/greet-your-friends-in-their-native-language-in-slack-with-nimbella-commander/ | Commander>'
+        }]
+      }],
   };
 }
 

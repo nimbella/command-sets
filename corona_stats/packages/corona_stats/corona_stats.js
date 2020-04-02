@@ -5,29 +5,16 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
-let countryHtml;
-let usStatesHtml;
-let inStatesData;
-let inDistrictData;
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 const covid19India = 'https://api.covid19india.org/';
 const countryDomId = 'table_countries_today';
 const axios = require('axios');
 const cheerio = require('cheerio');
 const tableParser = require('cheerio-tableparser');
-
-const install = (pkgs) => {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const {
-      exec,
-    } = require('child_process');
-    exec(`npm install ${pkgs}`, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-};
+let countryHtml;
+let usStatesHtml;
+let inStatesData;
+let inDistrictData;
 
 const toTitleCase = (phrase) => phrase
   .toLowerCase()
@@ -266,18 +253,18 @@ const help = () => {
     {
       type: 'section',
       text:
-         {
-           type: 'mrkdwn',
-           text: '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`',
-         },
+      {
+        type: 'mrkdwn',
+        text: '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`',
+      },
     },
     {
       type: 'section',
       text:
-         {
-           type: 'mrkdwn',
-           text: '*examples:*',
-         },
+      {
+        type: 'mrkdwn',
+        text: '*examples:*',
+      },
     },
     {
       type: 'section',
@@ -322,18 +309,8 @@ const help = () => {
 };
 
 async function getHTMLData(url) {
-  let response;
-  try {
-    response = await axios.get(url);
-    if (response.status !== 200) {
-      return;
-    }
-  } catch (err) {
-    fail(err.message);
-    return;
-  }
-  if (!response) return;
-  return cheerio.load(response.data);
+  const response = await getData(url);
+  return cheerio.load(response);
 }
 
 async function getData(url) {
@@ -351,7 +328,7 @@ async function getData(url) {
   return response.data;
 }
 
-const getDetails = (name, html, domName) => {
+const getDetails = (name, html) => {
   const fields = {};
   try {
     tableParser(html);
@@ -408,7 +385,7 @@ const getDetailsForIndia = async (name) => {
     if (!stats) {
       return;
     }
-    const record = stats.find((o) => o.state === name);
+    let record = stats.find((o) => o.state === name);
     if (record) {
       fields.Active = record.active;
       fields['New Active'] = record.delta.active;
@@ -422,7 +399,7 @@ const getDetailsForIndia = async (name) => {
       if (!inDistrictData) {
         inDistrictData = await getData(`${covid19India}state_district_wise.json`);
       }
-      const record = Object.values(inDistrictData).find((e) => e.districtData[name]);
+      record = Object.values(inDistrictData).find((e) => e.districtData[name]);
       if (record) {
         fields.Confirmed = record.districtData[name].confirmed;
       }
@@ -444,7 +421,7 @@ async function _command(params) {
   let fields = {};
   let header;
   let footer;
-  if (params.h) {
+  if (params.h || params.countryName === 'help') {
     return help();
   }
   const country = getCountryName((params.countryName || '').toUpperCase());
