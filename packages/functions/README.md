@@ -16,6 +16,8 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 
 - `act_result` - Get the results of an activation.
 
+- `actions` -  List all actions, web actions, and action sequences in a namespaces.
+
 - `invoke` - Invoke an action, web action, or action sequence.
 
 ## Usage

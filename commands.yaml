@@ -45,3 +45,9 @@ commands:
       - name: actionName
       - name: namespaceId
         optional: true
+  actions:
+    sourcePath: packages/functions/actions.js
+    description: List all actions, web actions, and action sequences in a namespaces.
+    parameters:
+      - name: namespaceId
+        optional: true
