@@ -1,7 +1,7 @@
 
 ## IBM Command Set
 
-WIP.
+Interact with IBM services from Slack using Nimbella Commander.
 
 ## Available commands
 
@@ -10,3 +10,11 @@ WIP.
 - [`tone`](packages/tone_analyzer) - Analyze general tone using IBM Watson Tone Analyzer.
 
 - [`tone_cs`](packages/tone_analyzer) - Analyze customer tone using IBM Watson Tone Analyzer.
+
+- [`namespaces`](packages/functions) - Get your IBM IAM and Cloud Foundry-based namespaces.
+
+- [`activations`](packages/functions) - Get activation records in a namespace.
+
+- [`act_log`](packages/functions) - Get the logs for an activation.
+
+- [`act_result`](packages/functions) - Get the results of an activation.
