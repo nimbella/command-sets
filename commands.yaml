@@ -31,3 +31,10 @@ commands:
       - name: activationId
       - name: namespaceId
         optional: true
+  act_result:
+    sourcePath: packages/functions/act_result.js
+    description: Get the results of an activation.
+    parameters:
+      - name: activationId
+      - name: namespaceId
+        optional: true

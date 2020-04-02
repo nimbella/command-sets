@@ -14,6 +14,8 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 
 - `act_log` - Get the logs for an activation.
 
+- `act_result` - Get the results of an activation.
+
 ## Usage
 
 #### namespaces
@@ -34,4 +36,10 @@ You can create a secret named `ibmNamespaceId` to avoid passing the same id on e
 
 ```sh
 /nc act_log <activationId> [<namespaceId>]
+```
+
+#### act_result
+
+```sh
+/nc act_result <activationId> [<namespaceId>]
 ```
