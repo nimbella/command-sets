@@ -83,7 +83,7 @@ async function _command(params, commandText, secrets = {}) {
     }
     month = parseInt(arr[0]) - 1;
     year = parseInt(arr[1]);
-    if (month < 1 || month > 12 || year < 1900 || year > 2800) {
+    if (month < 0 || month > 11 || year < 1900 || year > 2800) {
       return {
         response_type: 'ephemeral', // eslint-disable-line camelcase
         text: 'Month or year out of range. Example: 11/2019 for November 2019'
