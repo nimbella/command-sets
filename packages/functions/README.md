@@ -53,3 +53,9 @@ You can create a secret named `ibmNamespaceId` to avoid passing the same id on e
 ```sh
 /nc invoke <actionName> [<namespaceId>]
 ```
+
+#### actions
+
+```sh
+/nc actions [<namespaceId>]
+```

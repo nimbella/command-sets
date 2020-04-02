@@ -18,3 +18,7 @@ Interact with IBM services from Slack using Nimbella Commander.
 - [`act_log`](packages/functions) - Get the logs for an activation.
 
 - [`act_result`](packages/functions) - Get the results of an activation.
+
+- [`actions`](packages/functions) -  List all actions, web actions, and action sequences in a namespaces.
+
+- [`invoke`](packages/functions) - Invoke an action, web action, or action sequence.
