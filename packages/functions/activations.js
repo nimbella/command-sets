@@ -49,38 +49,26 @@ async function _command(params, commandText, secrets = {}) {
   );
 
   for (const activation of data) {
-    const activationOutput = {
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `ID: \`${activation.activationId}\``
-        },
-        {
-          type: 'mrkdwn',
-          text: `statusCode: \`${activation.statusCode}\``
-        },
-        {
-          type: 'mrkdwn',
-          text: `duration: \`${activation.duration}ms\``
-        },
-        {
-          type: 'mrkdwn',
-          text: `name: \`${activation.name}\``
-        },
-        {
-          type: 'mrkdwn',
-          text: `kind: \`${activation.annotations[2].value}\``
-        }
-      ]
-    };
+    const output = `\`${
+      new Date(activation.start)
+        .toISOString()
+        .replace('T', ' ')
+        .split('.')[0]
+    }\` ID: \`${activation.activationId}\` duration: \`${
+      activation.duration
+    }ms\`\nstatus: \`${activation.statusCode}\` name: \`${
+      activation.name
+    }\` runtime: \`${activation.annotations[2].value}\``;
 
-    result.push(activationOutput);
+    result.push({
+      text: output,
+      color: activation.statusCode === 0 ? 'good' : 'danger'
+    });
   }
 
   return {
     response_type: 'in_channel',
-    blocks: result
+    attachments: result
   };
 }
 
