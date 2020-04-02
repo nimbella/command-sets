@@ -6,12 +6,13 @@ const defaultCities = 'delhi, rome, new york, los angeles';
 
 const worldClock1 = 'https://24timezones.com/current_world_time.php/';
 const worldClock2 = 'https://www.timeanddate.com/worldclock/full.html/';
-let cheerio;
-let tableparser;
+const axios = require('axios');
+const cheerio = require('cheerio');
+const tableparser = require('cheerio-tableparser');
 
 const toTitleCase = (phrase) => phrase
-.trim()  
-.toLowerCase()
+  .trim()
+  .toLowerCase()
   .split(' ')
   .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
   .join(' ');
@@ -26,19 +27,6 @@ const abbrExpand = (shortName) => {
       break;
   }
   return longName;
-};
-
-const install = (pkgs) => {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const {
-      exec,
-    } = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
 };
 
 const fail = (err, msg) => {
@@ -68,14 +56,13 @@ const success = (fields) => {
     });
   });
 
- response.blocks.push({
-  type: 'context',
-  elements: [{
-    type: 'mrkdwn',
-    text: 'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>'
-  }],
-});
-
+  response.blocks.push({
+    type: 'context',
+    elements: [{
+      type: 'mrkdwn',
+      text: 'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>'
+    }],
+  });
   return response;
 };
 
@@ -87,15 +74,6 @@ const success = (fields) => {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const axios = require('axios');
-  if (!cheerio) {
-    await install(['cheerio']);
-    cheerio = require('cheerio');
-  }
-  if (!tableparser) {
-    await install(['cheerio-tableparser']);
-    tableparser = require('cheerio-tableparser');
-  }
   let response;
   try {
     response = await axios.get(worldClock1, {
