@@ -204,7 +204,9 @@ async function _command(params, commandText, secrets = {}) {
     ];
 
     let title = totalCostString + ' ';
-    if (monthYear != null) {
+    if (groups.length == 0) {
+      title = '*Cost information is not available for this month yet*';
+    } else if (monthYear != null) {
       title += '*AWS Cost for ' + months[month] + ' ' + year + '*';
     } else {
       title += '*AWS Cost Month-to-Date*';
