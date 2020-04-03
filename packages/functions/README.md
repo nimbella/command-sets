@@ -60,6 +60,13 @@ By default, first 20 activation records are shown. You can skip through the list
 /nc invoke <actionName> [<namespaceId>]
 ```
 
+You can pass params to your function as flags.
+
+Example:
+```sh
+`/nc invoke <actionName> [<namespaceId>] -name "Nimbella"`. # { name: "Nimbella" }
+```
+
 #### actions
 
 ```sh

@@ -1,4 +1,36 @@
 /**
+ * Parse the given string to return a parameters object.
+ * @example
+ * // returns { name: 'Satya', human: true}
+ * getParams('-name Satya -human');
+ * @param {varArgs} string
+ */
+function getParams(string = '') {
+  const object = {};
+
+  for (const str of string.split('-')) {
+    if (str === '') {
+      continue;
+    }
+
+    // `name "Satya Rohith"` => ["name", "Satya Rohith"]
+    const [key, value] = str
+      .trim()
+      .replace(' ', '<kvseperator>')
+      .split('<kvseperator>');
+    if (value === undefined) {
+      object[key] = true;
+    } else if (value.startsWith('"') || value.startsWith("'")) {
+      object[key] = value.slice(1, -1);
+    } else {
+      object[key] = value;
+    }
+  }
+
+  return object;
+}
+
+/**
  * @description null
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
@@ -6,7 +38,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {ibmApiKey, ibmNamespaceId} = secrets;
+  const {ibmApiKey, ibmNamespaceId, ibmRegionCode = 'eu-gb'} = secrets;
   if (!ibmApiKey) {
     return {
       response_type: 'ephemeral',
@@ -14,7 +46,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {namespaceId = ibmNamespaceId, actionName} = params;
+  const {namespaceId = ibmNamespaceId, actionName, varArgs} = params;
   if (!namespaceId) {
     return {
       response_type: 'ephemeral',
@@ -38,10 +70,10 @@ async function _command(params, commandText, secrets = {}) {
   });
 
   // Invoke the function
-  const baseURL = `https://eu-gb.functions.cloud.ibm.com/api/v1`;
+  const baseURL = `https://${ibmRegionCode}.functions.cloud.ibm.com/api/v1`;
   const {data} = await axios.post(
     `${baseURL}/namespaces/${namespaceId}/actions/${actionName}?blocking=true&result=true`,
-    {},
+    getParams(varArgs),
     {
       headers: {
         authorization: token_type + ' ' + access_token,
