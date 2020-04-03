@@ -14,6 +14,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  const {skip = 0} = params;
   const result = [];
   const axios = require('axios');
 
@@ -34,7 +35,7 @@ async function _command(params, commandText, secrets = {}) {
   const baseURL = 'https://eu-gb.functions.cloud.ibm.com/api/v1';
   const {
     data: {namespaces}
-  } = await axios.get(baseURL + `/namespaces`, {
+  } = await axios.get(baseURL + `/namespaces?limit=20&offset=${Number(skip)}`, {
     headers: {
       authorization: token_type + ' ' + access_token,
       accept: 'application/json'

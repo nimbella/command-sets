@@ -18,12 +18,18 @@ commands:
   namespaces:
     sourcePath: packages/functions/namespaces.js
     description: List your IBM IAM and Cloud Foundry-based namespaces.
+    options:
+      - name: skip
+        value: skip
   activations:
     sourcePath: packages/functions/activations.js
     description: List activation records in a namespace.
     parameters:
       - name: namespaceId
         optional: true
+    options:
+      - name: skip
+        value: skip
   act_log:
     sourcePath: packages/functions/act_log.js
     description: Get the logs for an activation.
@@ -51,3 +57,6 @@ commands:
     parameters:
       - name: namespaceId
         optional: true
+    options:
+      - name: skip
+        value: skip

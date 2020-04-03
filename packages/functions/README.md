@@ -6,6 +6,8 @@ Commands related to IBM Cloud Functions.
 
 Create a secret named `ibmApiKey` using `/nc secret_create` with the value being an IBM API key which can be obtained at https://cloud.ibm.com/iam/apikeys.
 
+The default region is London (`eu-gb`). You can set your region by creating a secret named `ibmRegionCode`.
+
 ## Available Commands
 
 - `namespaces` - List your IBM IAM and Cloud Foundry-based namespaces.
@@ -25,16 +27,20 @@ Create a secret named `ibmApiKey` using `/nc secret_create` with the value being
 #### namespaces
 
 ```sh
-/nc namespaces
+/nc namespaces [-skip <skip>]
 ```
+
+By default, first 20 namespaces are shown. You can skip through the list by using `-skip`.
 
 #### activations
 
 ```sh
-/nc activations [<namespaceId>]
+/nc activations [<namespaceId>] [-skip <skip>]
 ```
 
 You can create a secret named `ibmNamespaceId` to avoid passing the same id on every invocation. And the parameter is given precedence when both are present.
+
+By default, first 20 activation records are shown. You can skip through the list by using `-skip`.
 
 #### act_log
 
@@ -57,5 +63,7 @@ You can create a secret named `ibmNamespaceId` to avoid passing the same id on e
 #### actions
 
 ```sh
-/nc actions [<namespaceId>]
+/nc actions [<namespaceId>] [-skip <skip>]
 ```
+
+By default, first 20 actions are shown. You can skip through the list by using `-skip`.
