@@ -40,7 +40,7 @@ By default, first 20 namespaces are shown. You can skip through the list by usin
 
 You can create a secret named `ibmNamespaceId` to avoid passing the same id on every invocation. And the parameter is given precedence when both are present.
 
-By default, first 20 activation records are shown. You can skip through the list by using `-skip`.
+By default, first 9 activation records are shown. You can skip through the list by using `-skip`.
 
 #### act_log
 

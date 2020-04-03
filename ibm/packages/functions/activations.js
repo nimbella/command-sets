@@ -40,7 +40,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const baseURL = `https://${ibmRegionCode}.functions.cloud.ibm.com/api/v1`;
   const {data} = await axios.get(
-    `${baseURL}/namespaces/${namespaceId}/activations?limit=20&skip=${Number(
+    `${baseURL}/namespaces/${namespaceId}/activations?limit=9&skip=${Number(
       skip
     )}`,
     {
