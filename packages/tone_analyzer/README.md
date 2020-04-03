@@ -1,3 +1,6 @@
+## Tone Analyzer
+
+Analyze tone of a text right from your Slack workspace using Nimbella Commander and IBM Watson Tone Analyzer.
 
 ## Requirements
 
@@ -16,3 +19,14 @@ This is how the values might look:
 ```
 
 Head over to the Secret Creator (type `/nc secret_create` in your workspace to get the link) and fill in the *Name* field with `ibmToneAnalyzerCredentials` and paste the copied values in the corresponding *Value* field. Press **Make Secrets** button and follow the instructions.
+
+## Usage
+
+```sh
+/nc tone "How are you doing?"
+```
+
+To analyze customer tone:
+```sh
+/nc tone_cs "Please fix the issue!"
+```
