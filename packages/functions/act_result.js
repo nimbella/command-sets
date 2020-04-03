@@ -6,7 +6,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {ibmApiKey, ibmNamespaceId} = secrets;
+  const {ibmApiKey, ibmNamespaceId, ibmRegionCode = 'eu-gb'} = secrets;
   if (!ibmApiKey) {
     return {
       response_type: 'ephemeral',
@@ -37,8 +37,9 @@ async function _command(params, commandText, secrets = {}) {
     }
   });
 
+  const baseURL = `https://${ibmRegionCode}.functions.cloud.ibm.com/api/v1`;
   const {data} = await axios.get(
-    `https://eu-gb.functions.cloud.ibm.com/api/v1/namespaces/${namespaceId}/activations/${activationId}/result`,
+    `${baseURL}/namespaces/${namespaceId}/activations/${activationId}/result`,
     {
       headers: {
         authorization: token_type + ' ' + access_token,
