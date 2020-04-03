@@ -85,7 +85,24 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel',
-    text: `\`\`\`${JSON.stringify(data, null, 2)} \`\`\``
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `\`\`\`${JSON.stringify(data, null, 2)} \`\`\``
+        }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`
+          }
+        ]
+      }
+    ]
   };
 }
 

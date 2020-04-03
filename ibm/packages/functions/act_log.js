@@ -73,7 +73,27 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel',
-    text: logsOutput.length >= 1 ? `\`\`\`${logsOutput.join('\n')}\`\`\`` : ''
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text:
+            logsOutput.length >= 1
+              ? `\`\`\`${logsOutput.join('\n')}\`\`\``
+              : '.'
+        }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`
+          }
+        ]
+      }
+    ]
   };
 }
 

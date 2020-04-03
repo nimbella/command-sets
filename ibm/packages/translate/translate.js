@@ -37,7 +37,24 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: data.translations[0].translation
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: data.translations[0].translation
+        }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`
+          }
+        ]
+      }
+    ]
   };
 }
 

@@ -93,6 +93,16 @@ async function _command(params, commandText, secrets = {}) {
     result.push(...sentenceOutput);
   }
 
+  result.push({
+    type: 'context',
+    elements: [
+      {
+        type: 'mrkdwn',
+        text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`
+      }
+    ]
+  });
+
   return {
     response_type: 'in_channel',
     blocks: result
