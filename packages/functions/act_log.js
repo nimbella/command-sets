@@ -6,7 +6,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {ibmApiKey, ibmNamespaceId} = secrets;
+  const {ibmApiKey, ibmNamespaceId, ibmRegionCode = 'eu-gb'} = secrets;
   if (!ibmApiKey) {
     return {
       response_type: 'ephemeral',
@@ -37,10 +37,11 @@ async function _command(params, commandText, secrets = {}) {
     }
   });
 
+  const baseURL = `https://${ibmRegionCode}.functions.cloud.ibm.com/api/v1`;
   const {
     data: {logs}
   } = await axios.get(
-    `https://eu-gb.functions.cloud.ibm.com/api/v1/namespaces/${namespaceId}/activations/${activationId}/logs`,
+    `${baseURL}/namespaces/${namespaceId}/activations/${activationId}/logs`,
     {
       headers: {
         authorization: token_type + ' ' + access_token,
@@ -48,6 +49,13 @@ async function _command(params, commandText, secrets = {}) {
       }
     }
   );
+
+  if (logs.length === 0) {
+    return {
+      response_type: 'in_channel',
+      text: "We couldn't find any logs under this activation."
+    };
+  }
 
   let logsOutput = [];
   for (let i = 0; i < logs.length; i++) {
@@ -65,7 +73,7 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel',
-    text: logsOutput.length > 1 ? `\`\`\`${logsOutput.join('\n')}\`\`\`` : ''
+    text: logsOutput.length >= 1 ? `\`\`\`${logsOutput.join('\n')}\`\`\`` : ''
   };
 }
 
