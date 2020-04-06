@@ -10,7 +10,7 @@ Vultr Server Command set
 
 ## Requirements
 
-To run this command set, we need a secret named `vultrApiKey`. This can be obtained by following ["This link"](https://docs.ansible.com/ansible/latest/scenario_guides/guide_vultr.html#authentication).
+To run this command set, we need a secret named `vultrApiKey`. This can be obtained by following this [guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_vultr.html#authentication).
 
 ## Usage
 
