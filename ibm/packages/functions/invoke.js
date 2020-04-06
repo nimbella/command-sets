@@ -1,8 +1,8 @@
 /**
  * Parse the given string to return a parameters object.
  * @example
- * // returns { name: 'Satya', human: true}
- * getParams('-name Satya -human');
+ * // returns { name: 'Bob', human: true}
+ * getParams('-name Bob -human');
  * @param {varArgs} string
  */
 function getParams(string = '') {
@@ -13,7 +13,7 @@ function getParams(string = '') {
       continue;
     }
 
-    // `name "Satya Rohith"` => ["name", "Satya Rohith"]
+    // `name "Bob"` => ["name", "Bob"]
     const [key, value] = str
       .trim()
       .replace(' ', '<kvseperator>')
@@ -42,7 +42,7 @@ async function _command(params, commandText, secrets = {}) {
   if (!ibmApiKey) {
     return {
       response_type: 'ephemeral',
-      text: `We need a secret named \`ibmApiKey\` to run this command. Create one using \`/nc secret_create\``
+      text: `We need a secret named \`ibmApiKey\` to run this command. Create one using \`/nc secret_create\``,
     };
   }
 
@@ -50,7 +50,7 @@ async function _command(params, commandText, secrets = {}) {
   if (!namespaceId) {
     return {
       response_type: 'ephemeral',
-      text: `Namespace ID couldn't be found. Please pass the namespace as parameter to the command or create a secret named \`ibmNamespaceId\`.`
+      text: `Namespace ID couldn't be found. Please pass the namespace as parameter to the command or create a secret named \`ibmNamespaceId\`.`,
     };
   }
 
@@ -61,12 +61,12 @@ async function _command(params, commandText, secrets = {}) {
     'urn:ibm:params:oauth:grant-type:apikey'
   )}&apikey=${encodeURIComponent(ibmApiKey)}`;
   const {
-    data: {access_token, token_type}
+    data: {access_token, token_type},
   } = await axios.post('https://iam.cloud.ibm.com/identity/token', body, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json'
-    }
+      Accept: 'application/json',
+    },
   });
 
   // Invoke the function
@@ -78,8 +78,8 @@ async function _command(params, commandText, secrets = {}) {
       headers: {
         authorization: token_type + ' ' + access_token,
         accept: 'application/json',
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     }
   );
 
@@ -90,19 +90,19 @@ async function _command(params, commandText, secrets = {}) {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `\`\`\`${JSON.stringify(data, null, 2)} \`\`\``
-        }
+          text: `\`\`\`${JSON.stringify(data, null, 2)} \`\`\``,
+        },
       },
       {
         type: 'context',
         elements: [
           {
             type: 'mrkdwn',
-            text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`
-          }
-        ]
-      }
-    ]
+            text: `Powered by <https://nimbella.com/product/commander|Nimbella Commander>.`,
+          },
+        ],
+      },
+    ],
   };
 }
 
@@ -111,14 +111,14 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async args => ({
+const main = async (args) => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch(error => ({
+  ).catch((error) => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`
-  }))
+    text: `Error: ${error.message}`,
+  })),
 });
 module.exports = main;
