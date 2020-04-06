@@ -122,4 +122,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

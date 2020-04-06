@@ -142,7 +142,7 @@ async function _command(params, commandText, secrets = {}) {
         serviceFieldCount = 0;
       }
       serviceFieldCount++;
-      
+
       // Object key is the search value & object value is the replace value.
       const replaceDict = {
         'Elastic Compute Cloud': 'Elastic Compute',
@@ -261,4 +261,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

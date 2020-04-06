@@ -75,4 +75,4 @@ const main = async ({__secrets = {}, commandText, ...params}) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

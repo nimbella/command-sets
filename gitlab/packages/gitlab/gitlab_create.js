@@ -50,7 +50,7 @@ async function _command(params, commandText, secrets = {}) {
 
 	return {
 		response_type: 'in_channel', // or `ephemeral` for private response
-		text: ret.message ? ret.message : 
+		text: ret.message ? ret.message :
 `\`\`\`Title: ${title}
 Description: ${description}
 Ticket URL: ${ret.web_url}\`\`\`\n`
@@ -69,4 +69,4 @@ const main = async (args) => ({
 		text: `Error: ${error.message}`
 	}))
 });
-module.exports = main;
+module.exports.main = main;

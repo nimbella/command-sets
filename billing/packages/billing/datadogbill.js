@@ -95,7 +95,7 @@ function calcHostsCosts(json) {
     return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
-  const hostsByHour = []; 
+  const hostsByHour = [];
   const apmHostsByHour = [];
 
   let recentHostCount = 0;
@@ -360,4 +360,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

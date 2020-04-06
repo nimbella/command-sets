@@ -32,4 +32,4 @@ const main = async (args) => ({
 	}))
 });
 
-module.exports = main;
+module.exports.main = main;

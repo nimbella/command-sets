@@ -20,12 +20,12 @@ async function getRequest(url) {
 }
 
 function formatDate(d) {
-    
+
   const date = new Date(d);
-  let dd = date.getDate(); 
+  let dd = date.getDate();
   let mm = date.getMonth()+1;
   let yyyy = date.getFullYear();
-  
+
   if (dd < 10) {
     dd = `0${dd}`;
   }
@@ -36,7 +36,7 @@ function formatDate(d) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
+
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
@@ -60,7 +60,7 @@ async function _command(params, commandText, secrets = {}) {
   } else {
     const pr = data.text;
     const attachments = [];
-    
+
     for (let i = 0, j = 0; i < pr.length; i++) {
       if (formatDate(pr[i].updated_at) == date) {
         attachments.push({
@@ -93,4 +93,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

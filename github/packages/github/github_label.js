@@ -24,7 +24,7 @@ async function patchRequest(url, secrets, labels) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
+
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
@@ -38,7 +38,7 @@ async function _command(params, commandText, secrets = {}) {
   } = params;
   const url = `https://api.github.com/repos/${repo}/issues/${number}`;
   const data = await patchRequest(url, secrets, labels.split(', '));
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
@@ -66,4 +66,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

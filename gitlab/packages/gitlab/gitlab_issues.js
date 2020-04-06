@@ -11,7 +11,7 @@
 const axios = require('axios');
 
 async function fetchIssues(url) {
-	
+
 	return await axios.get(url)
 		.then((response) => { return response.data; })
 		.catch((error) => { return error.response.data; });
@@ -73,4 +73,4 @@ const main = async (args) => ({
 		text: `Error: ${error.message}`
 	}))
 });
-module.exports = main;
+module.exports.main = main;

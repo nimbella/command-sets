@@ -24,7 +24,7 @@ async function closeIssue(url, secrets) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-  
+
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
@@ -37,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
   } = params;
   const url = `https://api.github.com/repos/${repo}/issues/${issue_number}`;
   const data = await closeIssue(url, secrets);
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
@@ -65,4 +65,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

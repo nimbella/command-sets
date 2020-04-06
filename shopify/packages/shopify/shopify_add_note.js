@@ -39,8 +39,8 @@ async function _command(params, commandText, secrets = {}) {
 			response_type: 'in_channel', // or `ephemeral` for private response
 			text: error
 		};
-	} 
-	
+	}
+
 	const {
 		order_id,
 		note
@@ -85,4 +85,4 @@ const main = async (args) => ({
 		text: `Error: ${error.message}`
 	}))
 });
-module.exports = main;
+module.exports.main = main;

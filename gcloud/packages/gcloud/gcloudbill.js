@@ -138,7 +138,7 @@ function setEV(google_app_cred) {
 async function query(projectId, tableName, month, year) {
     const bqClient = new bq.BigQuery({ projectId: projectId, keyFilename: path });
 
-    //adds up all from the cost column of this test dataset 
+    //adds up all from the cost column of this test dataset
     const sqlQuery = 'select service.description as service,  SUM(cost) as cost  from  ' + tableName + ' where EXTRACT(YEAR from usage_start_time) = ' + year + ' AND EXTRACT(MONTH from usage_start_time) = ' + month + ' group by service;';
     // For all options, see https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
     const options = {
@@ -172,4 +172,4 @@ const main = async (args) => ({
       text: `Error: ${error.message}`
     }))
   });
-module.exports = main;
+module.exports.main = main;

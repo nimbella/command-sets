@@ -20,7 +20,7 @@ async function getRequest(url) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
+
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
@@ -32,17 +32,17 @@ async function _command(params, commandText, secrets = {}) {
   } = params;
   const url = `https://api.github.com/repos/${repo}/pulls?state=all`;
   const data = await getRequest(url);
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
       text: data.response.headers.status
     };
   } else {
-    
+
     const pr = data.text;
     const attachments = [];
-    
+
     for (let i = 0; i < pr.length && i < 10; i++) {
         attachments.push({
           color: pr[i].state == 'open' ? 'good' : 'danger',
@@ -67,4 +67,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

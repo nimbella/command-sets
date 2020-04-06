@@ -26,7 +26,7 @@ async function postRequest(url, secrets, reviewers) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
+
   if (!secrets.github_token) {
     return {
       response_type: 'in_channel',
@@ -38,10 +38,10 @@ async function _command(params, commandText, secrets = {}) {
     pr_number,
     reviewers
   } = params;
-  
+
   const url = `https://api.github.com/repos/${repo}/pulls/${pr_number}/requested_reviewers`;
   const data = await postRequest(url, secrets, reviewers.split(', '));
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
@@ -53,7 +53,7 @@ async function _command(params, commandText, secrets = {}) {
       title: data.body && !data.body.includes('http') ? data.body : 'Link',
       title_link: data.html_url,
       pretext: `${reviewers} has been requested to review pull request #${data.number}: ${data.title}`
-    }] };    
+    }] };
   }
 }
 
@@ -69,4 +69,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;
