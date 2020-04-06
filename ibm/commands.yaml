@@ -1,0 +1,63 @@
+commands:
+  traducir:
+    sourcePath: packages/traducir/traducir.js
+    description: Translate text using IBM Watson Language Translator
+    parameters:
+      - name: text
+      - name: targetLanguage
+  tone:
+    sourcePath: packages/tone_analyzer/tone.js
+    description: Analyze the tone of a text using IBM Watson Tone Analyzer
+    parameters:
+      - name: text
+  tone_cs:
+    sourcePath: packages/tone_analyzer/tone_cs.js
+    description: Analyze the tone of your customer using IBM Watson Tone Analyzer
+    parameters:
+      - name: text
+  namespaces:
+    sourcePath: packages/functions/namespaces.js
+    description: List your IBM IAM and Cloud Foundry-based namespaces.
+    options:
+      - name: skip
+        value: skip
+  activations:
+    sourcePath: packages/functions/activations.js
+    description: List activation records in a namespace.
+    parameters:
+      - name: namespaceId
+        optional: true
+    options:
+      - name: skip
+        value: skip
+  act_log:
+    sourcePath: packages/functions/act_log.js
+    description: Get the logs for an activation.
+    parameters:
+      - name: activationId
+      - name: namespaceId
+        optional: true
+  act_result:
+    sourcePath: packages/functions/act_result.js
+    description: Get the results of an activation.
+    parameters:
+      - name: activationId
+      - name: namespaceId
+        optional: true
+  invoke:
+    sourcePath: packages/functions/invoke.js
+    description: Invoke an action, web action, or action sequence.
+    parameters:
+      - name: actionName
+      - name: namespaceId
+        optional: true
+      - name: "..."
+  actions:
+    sourcePath: packages/functions/actions.js
+    description: List all actions, web actions, and action sequences in a namespaces.
+    parameters:
+      - name: namespaceId
+        optional: true
+    options:
+      - name: skip
+        value: skip
