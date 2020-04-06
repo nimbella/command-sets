@@ -1,0 +1,13 @@
+{
+  "name": "Vultr",
+  "version": "1.0.0",
+  "description": "Vultr Command Set",
+  "license": "Apache",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimbella/command-sets.git"
+  },
+  "dependencies": {
+    "@vultr/vultr-node": "^0.2.1"
+  }
+}
