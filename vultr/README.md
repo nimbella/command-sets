@@ -14,7 +14,7 @@ To run this command set, we need a secret named `vultrApiKey`. This can be obtai
 
 ## Usage
 
-To list all the instances of the Vultr server:
+To list all the instances under your Vultr account:
 ```sh
 /nc vultr_list
 ```
