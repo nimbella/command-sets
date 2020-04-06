@@ -1,6 +1,8 @@
-## Translate
+## Traducir
 
 Translate text right from your Slack workspace using Nimbella Commander & IBM Watson Langauge Translator.
+
+> Traducir means 'translate' in Spanish.
 
 ## Requirements
 
@@ -23,14 +25,14 @@ Head over to the Secret Creator (type `/nc secret_create` in your workspace to g
 ## Usage
 
 ```sh
-/nc translate <text> <targetLanguage>
+/nc traducir <text> <targetLanguage>
 ```
 
 You need to use language code instead of language name for `targetLanguage`.
 
 Example:
 ```sh
-/nc translate "Hello, Developers!" es # es -> Spanish
+/nc traducir "Hello, Developers!" es # es -> Spanish
 ```
 
 Refer [this](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) page for language codes.

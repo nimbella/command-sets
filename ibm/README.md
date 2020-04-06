@@ -5,7 +5,7 @@ Interact with IBM services from Slack using Nimbella Commander.
 
 ## Available commands
 
-- [`translate`](packages/translate) - Translate text into different languages using IBM Watson Language Translator.
+- [`traducir`](packages/traducir) - Translate text into different languages using IBM Watson Language Translator.
 
 - [`tone`](packages/tone_analyzer) - Analyze general tone using IBM Watson Tone Analyzer.
 
