@@ -29,4 +29,4 @@ To create a snapshot of Vultr server instance:
 ```sh
 /nc vultr_snap <subid>
 ```
-where subid is id of server.
+Where `subid` is the id of your server.
