@@ -1,16 +1,5 @@
 // jshint esversion: 9
 
-async function install(pkgs) {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
 const translator = 'https://translate.googleapis.com/translate_a/single';
 /**
  * @description Translates text to a given language
@@ -36,8 +25,6 @@ async function _command(params, commandText, secrets = {}) {
   let response;
   try {
     if (targetLang.length != 2) {
-      let packages = ['iso-639-1'];
-      await install(packages);
       const ISO6391 = require('iso-639-1');
       targetLang = ISO6391.getCode(targetLang);
     }
@@ -91,4 +78,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;
