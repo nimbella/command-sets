@@ -388,13 +388,13 @@ const getDetailsForIndia = async (name) => {
     let record = stats.find((o) => o.state === name);
     if (record) {
       fields.Active = record.active;
-      fields['New Active'] = record.delta.active;
+      fields['New Active'] = record.deltaactive;
       fields.Confirmed = record.confirmed;
-      fields['New Confirmed'] = record.delta.confirmed;
+      fields['New Confirmed'] = record.deltaconfirmed;
       fields.Fatalities = record.deaths;
-      fields['New Fatalities'] = record.delta.deaths;
+      fields['New Fatalities'] = record.deltadeaths;
       fields.Recovered = record.recovered;
-      fields['New Recovered'] = record.delta.recovered;
+      fields['New Recovered'] = record.deltarecovered;
     } else {
       if (!inDistrictData) {
         inDistrictData = await getData(`${covid19India}state_district_wise.json`);
