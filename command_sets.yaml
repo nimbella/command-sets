@@ -33,3 +33,5 @@ command_sets:
     description: Command set for interfacing with GitHub.
   ibm:
     description: Commands to interact with IBM Cloud Functions & IBM Watson services.
+  weather:
+    description: Get weather conditions for a city.
