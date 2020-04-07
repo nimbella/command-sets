@@ -46,11 +46,12 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {namespaceId = ibmNamespaceId, actionName, varArgs} = params;
-  if (!namespaceId) {
+  const {actionName, varArgs} = params;
+  const {nsId = ibmNamespaceId, ...actionParams} = getParams(varArgs);
+  if (!nsId) {
     return {
       response_type: 'ephemeral',
-      text: `Namespace ID couldn't be found. Please pass the namespace as parameter to the command or create a secret named \`ibmNamespaceId\`.`,
+      text: `Namespace ID couldn't be found. Please pass the namespace by using \`-nsId\` flag to the command or create a secret named \`ibmNamespaceId\`.`,
     };
   }
 
@@ -72,8 +73,8 @@ async function _command(params, commandText, secrets = {}) {
   // Invoke the function
   const baseURL = `https://${ibmRegionCode}.functions.cloud.ibm.com/api/v1`;
   const {data} = await axios.post(
-    `${baseURL}/namespaces/${namespaceId}/actions/${actionName}?blocking=true&result=true`,
-    getParams(varArgs),
+    `${baseURL}/namespaces/${nsId}/actions/${actionName}?blocking=true&result=true`,
+    actionParams,
     {
       headers: {
         authorization: token_type + ' ' + access_token,
@@ -111,12 +112,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
+const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch((error) => ({
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
