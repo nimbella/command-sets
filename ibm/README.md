@@ -6,6 +6,14 @@ Interact with IBM services from Slack using Nimbella Commander.
 - [IBM Watson Language Translator](#Traducir)
 - [IBM Watson Tone Analyzer](#Tone-Analyzer)
 
+## Install
+
+After you've [Nimbella Commander](https://nimbella.com/product/commander) installed, run the following command in your workspace to install IBM command set.
+
+```sh
+/nc csm_install ibm
+```
+
 ## IBM Cloud Functions
 
 Commands related to IBM Cloud Functions.
