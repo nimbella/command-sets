@@ -17,7 +17,7 @@ def _command(params, commandText, secrets):
 
   return {
     "response_type": 'in_channel', # or `ephemeral` for private response
-    "text": 'List of available python packages: \n' + ' , '.join(installed_packages_list)
+    "text": 'List of available python packages: \n' + '\n'.join(installed_packages_list)
   }
 
 """
