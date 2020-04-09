@@ -1,0 +1,7 @@
+commands:
+  weather:
+    sourcePath: packages/weather/weather.js
+    description: weather conditions for a city
+    parameters:
+      - name: city
+        optional: false

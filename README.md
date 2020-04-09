@@ -146,4 +146,6 @@ To list EC2 instances under your account:
 
 `times` - Displays current time in AM/PM format for the given cities.  (To install: `/nc csm_install times`)
 
-`translate` - translates text to a specified language.  (To install: `/nc csm_install translate`)
+`translate` - Translates text to a specified language.  (To install: `/nc csm_install translate`)
+
+`weather` - Get weather conditions for a city.  (To install: `/nc csm_install weather`)
