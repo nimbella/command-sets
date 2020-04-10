@@ -149,3 +149,5 @@ To list EC2 instances under your account:
 `translate` - Translates text to a specified language.  (To install: `/nc csm_install translate`)
 
 `weather` - Get weather conditions for a city.  (To install: `/nc csm_install weather`)
+
+`utils` - Utitility commands for Commander
