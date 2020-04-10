@@ -3,8 +3,6 @@ command_sets:
     description: Commands to show cloud service bills.
   gcloud:
     description: Google Cloud commands (right now, just billing).
-  npm-example:
-    description: Example that installs a package and that lists installed packages.
   echo:
     description: Simple echo test.
   do:
@@ -35,3 +33,5 @@ command_sets:
     description: Commands to interact with IBM Cloud Functions & IBM Watson services.
   weather:
     description: Get weather conditions for a city.
+  utils:
+    description: Set of utility commands for Commander

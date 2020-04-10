@@ -2,18 +2,6 @@
 
 let readInstalled;
 
-// installs a set of npm packges
-async function install(pkgs) {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const { exec } = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
 async function get_package_list() {
   return new Promise((resolve, reject) => {
     readInstalled('/', { depth: 0, dev: true }, (err, pkgs) => {
@@ -30,7 +18,6 @@ async function _command(params, commandText, secrets = {}) {
   // a container is initialized
 
   if (!readInstalled) {
-    await install([ 'read-installed' ]);
     readInstalled = require('read-installed');
   }
 
@@ -47,4 +34,4 @@ const main = async (args) => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

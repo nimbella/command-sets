@@ -1,21 +1,6 @@
 'use strict';
 
 /**
- * A small function to install dependency.
- * @param {[string]} pkgs - array of nim packages
- */
-async function install(pkgs) {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const {exec} = require('child_process');
-    exec(`npm install ${pkgs}`, err => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
-/**
  * A small function that converts slack elements `context` and `section` to mattermost compatible markdown.
  * @param {object} element - Slack element
  * @param {string} client - name of the client
@@ -61,13 +46,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     let Vultr;
-    // to isntall @vultr/vultr-node dependency
-    try {
-      Vultr = require('@vultr/vultr-node');
-    } catch {
-      await install(['@vultr/vultr-node']);
-      Vultr = require('@vultr/vultr-node');
-    }
+    Vultr = require('@vultr/vultr-node');
 
     const {snapshot} = Vultr.initialize({apiKey: vultrApiKey});
 
@@ -132,4 +111,4 @@ const main = async args => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;

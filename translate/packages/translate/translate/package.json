@@ -1,0 +1,14 @@
+{
+  "name": "translate",
+  "version": "1.0.0",
+  "description": "Translate Command Set",
+  "license": "Apache",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimbella/command-sets.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "iso-639-1": "^2.1.1"
+  }
+}
