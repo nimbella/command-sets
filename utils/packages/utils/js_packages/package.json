@@ -1,7 +1,7 @@
 {
-  "name": "npmexample",
+  "name": "jspackage",
   "version": "1.0.0",
-  "description": "npm-example Command Set",
+  "description": "List installed js packages in Commander container",
   "license": "Apache",
   "repository": {
     "type": "git",

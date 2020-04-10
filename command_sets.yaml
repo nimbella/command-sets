@@ -3,8 +3,6 @@ command_sets:
     description: Commands to show cloud service bills.
   gcloud:
     description: Google Cloud commands (right now, just billing).
-  npm-example:
-    description: Example that installs a package and that lists installed packages.
   echo:
     description: Simple echo test.
   do:
