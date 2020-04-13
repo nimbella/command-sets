@@ -1,5 +1,5 @@
 /**
- * @description null
+ * @description Analyze the tone of a text using IBM Watson Tone Analyzer
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -34,6 +34,21 @@ async function _command(params, commandText, secrets = {}) {
       }
     }
   );
+
+  if (data.document_tone.tones.length === 0) {
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'No dominant tones detected in the document.'
+      }
+    });
+
+    return {
+      response_type: 'in_channel',
+      blocks: result
+    };
+  }
 
   result.push({
     type: 'section',
@@ -115,12 +130,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async args => ({
+const main = async (args) => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch(error => ({
+  ).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))

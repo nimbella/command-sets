@@ -51,15 +51,24 @@ async function _command(params, commandText, secrets = {}) {
     }
   );
 
+  const getStatusMessage = (code) => {
+    if (code === 0) {
+      return 'sucess';
+    } else if (code === 1) {
+      return 'application error';
+    } else if (code === 2) {
+      return 'developer error';
+    } else {
+      return 'system error';
+    }
+  };
+
   for (const activation of data) {
     const output = `\`${
-      new Date(activation.start)
-        .toISOString()
-        .replace('T', ' ')
-        .split('.')[0]
+      new Date(activation.start).toISOString().replace('T', ' ').split('.')[0]
     }\` ID: \`${activation.activationId}\` duration: \`${
       activation.duration
-    }ms\`\nstatus: \`${activation.statusCode}\` name: \`${
+    }ms\`\nstatus: \`${getStatusMessage(activation.statusCode)}\` name: \`${
       activation.name
     }\` runtime: \`${activation.annotations[2].value}\``;
 
@@ -94,12 +103,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async args => ({
+const main = async (args) => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch(error => ({
+  ).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
