@@ -89,7 +89,7 @@ You can pass params to your function as flags. To pass namespace ID, use `-nsId`
 Example:
 
 ```sh
-`/nc invoke <actionName> [<namespaceId>] -name "Nimbella"`. # { name: "Nimbella" }
+/nc invoke <actionName> [<namespaceId>] -name "Nimbella". # { name: "Nimbella" }
 ```
 
 ## Traducir
