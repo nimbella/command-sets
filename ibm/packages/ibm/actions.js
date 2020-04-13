@@ -1,5 +1,5 @@
 /**
- * @description null
+ * @description List all actions, web actions, and action sequences in a namespaces.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -57,7 +57,7 @@ async function _command(params, commandText, secrets = {}) {
       elements: [
         {
           type: 'mrkdwn',
-          text: `Name: ${action.name}`
+          text: `\`${action.name}\``
         },
         {
           type: 'mrkdwn',
@@ -65,16 +65,16 @@ async function _command(params, commandText, secrets = {}) {
         },
         {
           type: 'mrkdwn',
-          text: `Last updated: \`${
+          text: `${
             new Date(action.updated)
               .toISOString()
               .replace('T', ' ')
               .split('.')[0]
-          }\``
+          }`
         },
         {
           type: 'mrkdwn',
-          text: `Limits: \`timeout: ${action.limits.timeout}ms memory: ${action.limits.memory}MB\``
+          text: `timeout: ${action.limits.timeout}ms memory: ${action.limits.memory}MB`
         }
       ]
     });
@@ -101,12 +101,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async args => ({
+const main = async (args) => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch(error => ({
+  ).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
