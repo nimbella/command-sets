@@ -251,7 +251,7 @@ const success = (header, fields, footer) => {
   for (const property in fields) {
     response.blocks[1].fields.push({
       type: 'mrkdwn',
-      text: `${property}:  ${fields[property]?`*${fields[property]}*`:''}`,
+      text: `${property}:  *${(fields[property] || 0)}*`,
     });
   }
   if (footer) {
