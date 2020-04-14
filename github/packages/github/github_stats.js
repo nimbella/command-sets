@@ -15,43 +15,38 @@ async function getRequest(url) {
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
     text: await axios.get(url)
-    .then(response => { return response.data; })
-    .catch(error => { return error.response.data; })
+      .then(response => { return response.data; })
+      .catch(error => { return error.response.data; })
   };
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
-    return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
-    };
-  }
   const {
     repo
   } = params;
   const url = `https://api.github.com/repos/${repo}`;
   const data = await getRequest(url);
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
       text: data.response.headers.status
     };
   } else {
-    return { attachments: [{
-      color: 'good',
-      title: `Most used langauge: ${data.text.language}
+    return {
+      attachments: [{
+        color: 'good',
+        title: `Most used langauge: ${data.text.language}
 Default Branch: ${data.text.default_branch}
 Collaborators: ${data.text.network_count}
 Open Issues Count: ${data.text.open_issues_count}
 Forks: ${data.text.forks}
 Watchers: ${data.text.subscribers_count}
 Stars: ${data.text.stargazers_count}`,
-      title_link: data.text.html_url,
-      pretext: `${data.text.full_name} statistics`
-    }] };
+        title_link: data.text.html_url,
+        pretext: `${data.text.full_name} statistics`
+      }]
+    };
   }
 }
 

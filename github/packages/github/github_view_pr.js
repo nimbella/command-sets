@@ -14,42 +14,35 @@ async function getRequest(url) {
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
     text: await axios.get(url)
-    .then(response => { return response.data; })
-    .catch(error => { return error.response.data; })
+      .then(response => { return response.data; })
+      .catch(error => { return error.response.data; })
   };
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
-    return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
-    };
-  }
   const {
     repo
   } = params;
   const url = `https://api.github.com/repos/${repo}/pulls?state=all`;
   const data = await getRequest(url);
-  
+
   if (data.response) {
     return {
       response_type: 'in_channel',
       text: data.response.headers.status
     };
   } else {
-    
+
     const pr = data.text;
     const attachments = [];
-    
+
     for (let i = 0; i < pr.length && i < 10; i++) {
-        attachments.push({
-          color: pr[i].state == 'open' ? 'good' : 'danger',
-          title: pr[i].body && !pr[i].body.includes('http') ? pr[i].body : 'Link',
-          title_link: pr[i].html_url,
-          pretext: `Issue #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`
-        });
+      attachments.push({
+        color: pr[i].state == 'open' ? 'good' : 'danger',
+        title: pr[i].body && !pr[i].body.includes('http') ? pr[i].body : 'Link',
+        title_link: pr[i].html_url,
+        pretext: `Issue #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`
+      });
     }
     return { attachments };
   }

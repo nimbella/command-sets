@@ -14,18 +14,18 @@ async function getRequest(url) {
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
     text: await axios.get(url)
-    .then(response => { return response.data; })
-    .catch(error => { return error.response.data; })
+      .then(response => { return response.data; })
+      .catch(error => { return error.response.data; })
   };
 }
 
 function formatDate(d) {
-    
+
   const date = new Date(d);
-  let dd = date.getDate(); 
-  let mm = date.getMonth()+1;
+  let dd = date.getDate();
+  let mm = date.getMonth() + 1;
   let yyyy = date.getFullYear();
-  
+
   if (dd < 10) {
     dd = `0${dd}`;
   }
@@ -36,16 +36,8 @@ function formatDate(d) {
 }
 
 async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
-    return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
-    };
-  }
   const {
     repo,
-    state,
     date
   } = params;
 
@@ -60,7 +52,7 @@ async function _command(params, commandText, secrets = {}) {
   } else {
     const pr = data.text;
     const attachments = [];
-    
+
     for (let i = 0, j = 0; i < pr.length; i++) {
       if (formatDate(pr[i].updated_at) == date) {
         attachments.push({
