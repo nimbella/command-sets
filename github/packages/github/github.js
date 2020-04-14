@@ -30,10 +30,12 @@ async function _command(params, commandText, secrets = {}) {
           \n• View recent pull requests\
           \n• View GitHub command set documentation\
           \n\n*Requirements*:\
-          \nYou need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with the key `github_token`\
-          \ntype `/nc secret_create` to create secrets.\
+          \nSet up a Personal Access Token on GitHub with repo access.\
+          \nSave the token as a secret with the key `github_token`\
+          \nCreate secrets using.\
+          \n `/nc secret_create`\
           \n<https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|Click> to learn how to setup a Personal Access Token on GitHub\
-          \n\n*Usage*:"
+          \n\n\n*Usage*:"
         }
       },
       // 
@@ -41,7 +43,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Creating an issue:* /n`/nc github_create_issue <repo> <title> <body>`"
+          "text": "*Creating an issue:* \n`/nc github_create_issue <repo> <title> <body>`"
         }
       },
       {
@@ -59,7 +61,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Closing an issue:* /n`/nc github_close_issue <repo> <issue_number>`"
+          "text": "*Closing an issue:* \n`/nc github_close_issue <repo> <issue_number>`"
         },
       },
       {
@@ -69,7 +71,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github close issue command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/bhageena/command-sets/github/github/screenshots/close_issue.png",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/close_issue.png",
         "alt_text": "github close issue command"
       },
       
@@ -77,7 +79,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Reopening an issue:* /n`/nc github_reopen_issue <repo> <issue_number>`"
+          "text": "*Reopening an issue:* \n`/nc github_reopen_issue <repo> <issue_number>`"
         }
       },
       {
@@ -95,7 +97,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Finding a pull request by date:* /n`/nc github_find_pr <repo> <date>`"
+          "text": "*Finding a pull request by date:* \n`/nc github_find_pr <repo> <date>`"
         }
       },
       {
@@ -113,7 +115,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Labeling an issue or pull request:* /n`/nc github_label <repo> <number> <labels>`"
+          "text": "*Labeling an issue or pull request:* \n`/nc github_label <repo> <number> <labels>`"
         }
       },
       {
@@ -131,7 +133,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Getting repository statistics:* /n`/nc github_stats <repo>`"
+          "text": "*Getting repository statistics:* \n`/nc github_stats <repo>`"
         }
       },
       {
