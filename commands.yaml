@@ -1,0 +1,7 @@
+commands:
+  assign_issue:
+    sourcePath: packages/jira/assign_issue.js
+    description: Assign issue to a user.
+    parameters:
+      - name: issueId
+      - name: userName
