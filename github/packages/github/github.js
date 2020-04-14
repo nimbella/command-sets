@@ -1,7 +1,7 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description View GitHub command set documentation
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -29,8 +29,6 @@ async function _command(params, commandText, secrets = {}) {
           \n• View repository community statistics\
           \n• View recent pull requests\
           \n• View GitHub command set documentation\
-          \n\n*Install*:\
-          \n`/nc csm_install github`\
           \n\n*Requirements*:\
           \nYou need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with the key `github_token`\
           \ntype `/nc secret_create` to create secrets.\
@@ -43,7 +41,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Creating an issue.*. Type `/nc github_create_issue <repo> <title> <body>`"
+          "text": "*Creating an issue:* /n`/nc github_create_issue <repo> <title> <body>`"
         }
       },
       {
@@ -53,7 +51,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github create issue command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.PNG",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.png",
         "alt_text": "github create issue command"
       },
       // 
@@ -61,14 +59,8 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Closing an issue.*. Type `/nc github_close_issue <repo> <issue_number>`"
-        }
-        // TODO: try these side accessory settings with cropped smaller images ,
-        // accessory: {
-        //   type: 'image',
-        //   image_url: `https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/close_issue.png`,
-        //   alt_text: "github create issue command"
-        // },
+          "text": "*Closing an issue:* /n`/nc github_close_issue <repo> <issue_number>`"
+        },
       },
       {
         "type": "image",
@@ -77,15 +69,15 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github close issue command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/close_issue.PNG",
+        "image_url": "https://raw.githubusercontent.com/bhageena/command-sets/github/github/screenshots/close_issue.png",
         "alt_text": "github close issue command"
       },
-      // 
+      
       {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Reopening an issue.*. Type `/nc github_reopen_issue <repo> <issue_number>`"
+          "text": "*Reopening an issue:* /n`/nc github_reopen_issue <repo> <issue_number>`"
         }
       },
       {
@@ -95,7 +87,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github reopen issue command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/reopen_issue.PNG",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/reopen_issue.png",
         "alt_text": "github reopen issue command"
       },
       // 
@@ -103,7 +95,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Finding a pull request by date.*. Type `/nc github_find_pr <repo> <date>`"
+          "text": "*Finding a pull request by date:* /n`/nc github_find_pr <repo> <date>`"
         }
       },
       {
@@ -113,7 +105,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github find_pr command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.PNG",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.png",
         "alt_text": "github find_pr command"
       },
       // 
@@ -121,7 +113,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Labeling an issue or pull request.*. Type `/nc github_label <repo> <number> <labels>`"
+          "text": "*Labeling an issue or pull request:* /n`/nc github_label <repo> <number> <labels>`"
         }
       },
       {
@@ -131,7 +123,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github label command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/label.PNG",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/label.png",
         "alt_text": "github label command"
       },
       // 
@@ -139,7 +131,7 @@ async function _command(params, commandText, secrets = {}) {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "*Getting repository statistics.*. Type `/nc github_stats <repo>`"
+          "text": "*Getting repository statistics:* /n`/nc github_stats <repo>`"
         }
       },
       {
@@ -149,7 +141,7 @@ async function _command(params, commandText, secrets = {}) {
           "text": "github stats command",
           "emoji": true
         },
-        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/stats.PNG",
+        "image_url": "https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/stats.png",
         "alt_text": "github stats command"
       },
       //      
