@@ -24,38 +24,63 @@ const toTitleCase = (phrase) => phrase
 
 const getCountryName = (name) => {
   const longNames = {
-    CN: 'China',
-    IT: 'Italy',
-    ES: 'Spain',
-    IR: 'Iran',
-    DE: 'Germany',
     US: 'USA',
     USA: 'USA',
+    ES: 'Spain',
+    IT: 'Italy',
     FR: 'France',
-    SK: 'S. Korea',
-    CH: 'Switzerland',
+    DE: 'Germany',
     UK: 'UK',
-    NL: 'Netherlands',
+    CN: 'China',
+    IR: 'Iran',
+    TR: 'Turkey',
     BE: 'Belgium',
-    AT: 'Austria',
-    NO: 'Norway',
-    SE: 'Sweden',
-    DK: 'Denmark',
-    MY: 'Malaysia',
-    JP: 'Japan',
-    AU: 'Australia',
+    NL: 'Netherlands',
+    CH: 'Switzerland',
     CAN: 'Canada',
-    PT: 'Portugal',
-    IL: 'Israel',
     BR: 'Brazil',
+    RU: 'Russia',
+    PT: 'Portugal',
+    AT: 'Austria',
+    IL: 'Israel',
+    SK: 'S. Korea',
+    SE: 'Sweden',
     IE: 'Ireland',
-    GR: 'Greece',
-    HK: 'Hong Kong',
-    UAE: 'UAE',
-    SL: 'Sri Lanka',
     IN: 'India',
-    IQ: 'Iraq',
+    PE: 'Peru',
+    EC: 'Ecuador',
+    JP: 'Japan',
+    CL: 'Chile',
+    PL: 'Poland',
+    NO: 'Norway',
+    AU: 'Australia',
+    RO: 'Romania',
+    DK: 'Denmark',
+    CZ: 'Czechia',
     PK: 'Pakistan',
+    PH: 'Philippines',
+    MY: 'Malaysia',
+    MX: 'Mexico',
+    SA: 'Saudi Arabia',
+    ID: 'Indonesia',
+    RS: 'Serbia',
+    PA: 'Panama',
+    LU: 'Luxembourg',
+    UA: 'Ukraine',
+    QA: 'Qatar',
+    FI: 'Finland',
+    DO: 'Dominican Republic',
+    CO: 'Colombia',
+    TH: 'Thailand',
+    BY: 'Belarus',
+    SG: 'Singapore',
+    AR: 'Argentina',
+    ZA: 'South Africa',
+    GR: 'Greece',
+    EG: 'Egypt',
+    HK: 'Hong Kong',
+    SL: 'Sri Lanka',
+    IQ: 'Iraq',
     Default: name,
   };
   return (longNames[name] || toTitleCase(longNames.Default));
@@ -226,7 +251,7 @@ const success = (header, fields, footer) => {
   for (const property in fields) {
     response.blocks[1].fields.push({
       type: 'mrkdwn',
-      text: `${property}:   *${(fields[property] || 0)}*`,
+      text: `${property}:  *${(fields[property] || 0)}*`,
     });
   }
   if (footer) {
@@ -338,10 +363,11 @@ const getDetails = (name, html) => {
     }
     const recordIndex = stats[0].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = stats[1][recordIndex];
-      fields['New Cases'] = stats[2][recordIndex];
-      fields['Total Fatalities'] = stats[3][recordIndex];
+      fields['Total Cases'] = `${stats[1][recordIndex]} _(per M. ${stats[8][recordIndex]})_`;
+      fields['Total Fatalities'] = `${stats[3][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
+      fields['Total Tests'] = `${stats[10][recordIndex]} _(per M. ${stats[11][recordIndex]})_`;
       fields['Total Recovered'] = stats[5][recordIndex];
+      fields['New Cases'] = stats[2][recordIndex];
       fields['New Fatalities'] = stats[4][recordIndex];
       fields['Active Cases'] = stats[6][recordIndex];
       fields['Critical Cases'] = stats[7][recordIndex];
@@ -362,9 +388,10 @@ const getDetailsForUS = (name, html) => {
     }
     const recordIndex = stats[0].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = stats[1][recordIndex];
+      fields['Total Cases'] = `${stats[1][recordIndex]} _(per M. ${stats[6][recordIndex]})_`;
+      fields['Total Fatalities'] = `${stats[3][recordIndex]} _(per M. ${stats[7][recordIndex]})_`;
+      fields['Total Tests'] = `${stats[8][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
       fields['New Cases'] = stats[2][recordIndex];
-      fields['Total Fatalities'] = stats[3][recordIndex];
       fields['New Fatalities'] = stats[4][recordIndex];
       fields['Active Cases'] = stats[5][recordIndex];
     }
