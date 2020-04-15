@@ -14,7 +14,9 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {issueId, userName} = params;
+  const result = [];
+  let {issueId, userName} = params;
+  issueId = issueId.toUpperCase();
 
   const axios = require('axios');
   const headers = {
@@ -27,19 +29,22 @@ async function _command(params, commandText, secrets = {}) {
   // Get the accountId of the user
   const {data: users} = await axios.get(
     jiraOrgUrl +
-      `/rest/api/3/user/assignable/search?query=${userName}&issueKey=${String(
-        issueId
-      ).toUpperCase()}`,
+      `/rest/api/3/user/assignable/search?query=${userName}&issueKey=${issueId}`,
     {headers}
   );
 
-  if (users.length > 1) {
+  if (users.length === 0) {
+    return {
+      response_type: 'ephemeral',
+      text: `We couldn't find any user with the provided name: *${userName}*`
+    };
+  } else if (users.length > 1) {
     const output = ['We found more than one user with the provided name:'];
     for (const user of users) {
       output.push(`\`${user.displayName}\``);
     }
     output.push(
-      'Please provide full name of the user to narrow down the result.'
+      'Please provide full display name of the user to narrow down the result.'
     );
 
     return {
@@ -50,7 +55,7 @@ async function _command(params, commandText, secrets = {}) {
 
   // Assign issue to the user.
   const {status} = await axios.put(
-    jiraOrgUrl + `/rest/api/3/issue/${String(issueId).toUpperCase()}/assignee`,
+    jiraOrgUrl + `/rest/api/3/issue/${issueId}/assignee`,
     {
       accountId: users[0].accountId
     },
@@ -58,11 +63,31 @@ async function _command(params, commandText, secrets = {}) {
   );
 
   if (status === 204) {
-    return {
-      response_type: 'in_channel',
-      text: `Assigned \`${issueId}\` to \`${users[0].displayName}\`.`
-    };
+    result.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `Assigned <${jiraOrgUrl}/browse/${issueId}|${issueId}> to *${users[0].displayName}*`
+        }
+      ]
+    });
+  } else {
+    result.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `Failed to assign <${jiraOrgUrl}/browse/${issueId}|${issueId}> to *${users[0].displayName}*`
+        }
+      ]
+    });
   }
+
+  return {
+    response_type: 'in_channel', // or `ephemeral` for private response
+    blocks: result
+  };
 }
 
 /**

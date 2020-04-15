@@ -42,6 +42,13 @@ async function _command(params, commandText, secrets = {}) {
     }
   }
 
+  if (transitions.length === 0) {
+    return {
+      response_type: 'ephemeral',
+      text: `We couldn't find any columns with the provided name: *${tranName}*`
+    };
+  }
+
   // Transistion the issue.
   const {status} = await axios.post(
     jiraOrgUrl + `/rest/api/3/issue/${issueId}/transitions`,
@@ -62,6 +69,16 @@ async function _command(params, commandText, secrets = {}) {
         {
           type: 'mrkdwn',
           text: `Transitioned <${jiraOrgUrl}/browse/${issueId}|${issueId}> to *${transitionDetails.name}*`
+        }
+      ]
+    });
+  } else {
+    result.push({
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `Failed to transition <${jiraOrgUrl}/browse/${issueId}|${issueId}> to *${transitionDetails.name}*`
         }
       ]
     });
