@@ -1,7 +1,7 @@
-// jshint esversion: 9
+'use strict';
 
 /**
- * @description undefined
+ * @description Create an issue.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets

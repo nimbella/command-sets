@@ -1,7 +1,7 @@
 commands:
   assign_issue:
     sourcePath: packages/jira/assign_issue.js
-    description: Assign issue to a user.
+    description: Assign an issue to a user.
     parameters:
       - name: issueId
       - name: userName
@@ -17,3 +17,9 @@ commands:
         value: desc
       - name: project
         value: project
+  transition:
+    sourcePath: packages/jira/transition.js
+    description: Transition an issue.
+    parameters:
+      - name: issueId
+      - name: columnName

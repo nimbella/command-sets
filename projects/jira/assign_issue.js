@@ -1,5 +1,7 @@
+'use strict';
+
 /**
- * @description Assigns an issue to a user.
+ * @description Assign an issue to a user.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets

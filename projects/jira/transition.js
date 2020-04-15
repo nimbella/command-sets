@@ -1,5 +1,7 @@
+'use strict';
+
 /**
- * @description undefined
+ * @description Transition an issue.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -15,7 +17,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const result = [];
-  let {issueId, tranName} = params;
+  let {issueId, columnName} = params;
   issueId = issueId.toUpperCase();
 
   const axios = require('axios');
@@ -35,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
   });
   for (const transition of transitions) {
     if (
-      tranName.toLowerCase().trim() === transition.name.toLowerCase() &&
+      columnName.toLowerCase().trim() === transition.name.toLowerCase() &&
       transition.isAvailable
     ) {
       transitionDetails = transition;
@@ -45,7 +47,7 @@ async function _command(params, commandText, secrets = {}) {
   if (transitions.length === 0) {
     return {
       response_type: 'ephemeral',
-      text: `We couldn't find any columns with the provided name: *${tranName}*`
+      text: `We couldn't find any columns with the provided name: *${columnName}*`
     };
   }
 
