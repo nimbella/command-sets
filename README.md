@@ -26,16 +26,36 @@ Assuming that you've [Nimbella Commander](https://nimbella.com/product/commander
 
 Assign an issue to a user
 
-```sh
+```
 /nc assign_issue <issueId> <userName>
 ```
+
+The `userName` can be first name of the user or full name.
 
 #### `create_issue`
 
 Create an issue.
 
-```sh
+```
 /nc create_issue -type <issueType> -title <issueTitle> -desc <issueDescription> -project <jiraProjectKey>
 ```
 
 You can avoid `-project` by creating `jiraDefaultProject` secret with the value being your project key.
+
+Example:
+```
+/nc create_issue -type story -title "Create Jira Command Set" -desc "Slack slash commands to interact with jira."
+```
+
+#### `transition`
+
+Transition an issue.
+
+```
+/nc transition <issueId> <columnName>
+```
+
+Example:
+```
+/nc transition JN-5 done
+```
