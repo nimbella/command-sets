@@ -5,3 +5,15 @@ commands:
     parameters:
       - name: issueId
       - name: userName
+  create_issue:
+    sourcePath: packages/jira/create_issue.js
+    description: Create an issue.
+    options:
+      - name: title
+        value: title
+      - name: type
+        value: type
+      - name: desc
+        value: desc
+      - name: project
+        value: project

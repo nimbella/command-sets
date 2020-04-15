@@ -24,8 +24,18 @@ Assuming that you've [Nimbella Commander](https://nimbella.com/product/commander
 
 #### `assign_issue`
 
-Assigns an issue to a user
+Assign an issue to a user
 
 ```sh
 /nc assign_issue <issueId> <userName>
 ```
+
+#### `create_issue`
+
+Create an issue.
+
+```sh
+/nc create_issue -type <issueType> -title <issueTitle> -desc <issueDescription> -project <jiraProjectKey>
+```
+
+You can avoid `-project` by creating `jiraDefaultProject` secret with the value being your project key.
