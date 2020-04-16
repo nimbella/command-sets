@@ -10,7 +10,7 @@
 async function _command(params, commandText, secrets = {}) {
   const axios = require('axios');
   const {data} = await axios.get(
-    'https://raw.githubusercontent.com/nimbella/command-sets/jira/jira/README.md'
+    'https://raw.githubusercontent.com/nimbella/command-sets/master/jira/README.md'
   );
 
   return {
