@@ -1,4 +1,7 @@
 commands:
+  jira:
+    sourcePath: packages/jira/jira.js
+    description: Display help for Jira command set.
   jira_assign_issue:
     sourcePath: packages/jira/assign_issue.js
     description: Assign an issue to a user.
