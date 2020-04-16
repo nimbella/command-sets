@@ -1,11 +1,11 @@
 commands:
-  assign_issue:
+  jira_assign_issue:
     sourcePath: packages/jira/assign_issue.js
     description: Assign an issue to a user.
     parameters:
       - name: issueId
       - name: userName
-  create_issue:
+  jira_create_issue:
     sourcePath: packages/jira/create_issue.js
     description: Create an issue.
     options:
@@ -17,7 +17,7 @@ commands:
         value: desc
       - name: project
         value: project
-  transition:
+  jira_transition:
     sourcePath: packages/jira/transition.js
     description: Transition an issue.
     parameters:
