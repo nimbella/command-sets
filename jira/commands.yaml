@@ -3,13 +3,13 @@ commands:
     sourcePath: packages/jira/jira.js
     description: Display help for Jira command set.
   jira_assign_issue:
-    sourcePath: packages/jira/assign_issue.js
+    sourcePath: packages/jira/jira_assign_issue.js
     description: Assign an issue to a user.
     parameters:
       - name: issueId
       - name: userName
   jira_create_issue:
-    sourcePath: packages/jira/create_issue.js
+    sourcePath: packages/jira/jira_create_issue.js
     description: Create an issue.
     options:
       - name: title
@@ -21,7 +21,7 @@ commands:
       - name: project
         value: project
   jira_transition:
-    sourcePath: packages/jira/transition.js
+    sourcePath: packages/jira/jira_transition.js
     description: Transition an issue.
     parameters:
       - name: issueId
