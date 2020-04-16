@@ -20,7 +20,7 @@ async function _command(params, commandText, secrets = {}) {
   const result = [];
   const {title, body} = params;
   const repo = params.repo === false ? defaultRepo : params.repo;
-  if (!repo) {
+  if (!repo && !defaultRepo) {
     return {
       response_type: 'ephemeral',
       text:
@@ -51,7 +51,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     result.push({
       color: 'danger',
-      text: `Error: ${error.response.headers.status} ${error.response.data.message}`
+      text: `Error: ${error.response.status} ${error.response.data.message}`
     });
   }
 
