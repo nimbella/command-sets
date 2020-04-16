@@ -3,10 +3,11 @@ commands:
     sourcePath: packages/github/github_close_issue.js
     description: 'Close an issue'
     parameters:
+      - name: issueNumber
+        optional: false
+    options:
       - name: repo
-        optional: false
-      - name: issue_number
-        optional: false
+        value: repo
   github_create_issue:
     sourcePath: packages/github/github_create_issue.js
     description: 'Create an issue'
