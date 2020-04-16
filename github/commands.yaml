@@ -11,12 +11,13 @@ commands:
     sourcePath: packages/github/github_create_issue.js
     description: 'Create an issue'
     parameters:
-      - name: repo
-        optional: false
       - name: title
         optional: false
       - name: body
         optional: false
+    options:
+      - name: repo
+      - value: repo
   github_find_pr:
     sourcePath: packages/github/github_find_pr.js
     description: 'Find pull requests by date'
