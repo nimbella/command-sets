@@ -1,57 +1,68 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description Label an issue.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-const axios = require('axios');
-
-async function patchRequest(url, secrets, labels) {
-
-    return (axios({
-        method: "patch",
-        url: url,
-        data: {labels: labels},
-        headers: {
-            Authorization: `Bearer ${secrets.github_token}`,
-            "Content-Type": "application/json"
-        }})
-        .then(res => { return res.data; })
-        .catch(err => { return err; }));
-}
-
 async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
+  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
+  if (!githubToken) {
     return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
+      response_type: 'ephemeral',
+      text:
+        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token. '
     };
   }
-  const {
-    repo,
-    number,
-    labels
-  } = params;
-  const url = `https://api.github.com/repos/${repo}/issues/${number}`;
-  const data = await patchRequest(url, secrets, labels.split(', '));
-  
-  if (data.response) {
+
+  const result = [];
+  const {issueNumber, labels} = params;
+  const repo = params.repo === false ? defaultRepo : params.repo;
+  if (!repo && !defaultRepo) {
     return {
-      response_type: 'in_channel',
-      text: data.response.headers.status
+      response_type: 'ephemeral',
+      text:
+        'Please create `github_default_repo` secret to avoid passing the repository.'
     };
-  } else {
-    return { attachments: [{
+  }
+
+  try {
+    const url = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
+    const axios = require('axios');
+    const {data} = await axios({
+      method: 'PATCH',
+      url: url,
+      data: {
+        labels: labels.split(',').map(label => label.trim())
+      },
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    result.push({
       color: 'good',
-      title: `${data.title}\n${data.body && !data.body.includes('http') ? data.body : 'Link'}\nLabels: ${labels}`,
+      title: `${data.title}`,
+      text: `${data.body}\nLabels: ${data.labels
+        .map(label => label.name)
+        .join(' ')}`,
       title_link: data.html_url,
-      pretext: `${labels.split(', ').length} Labels created for ${repo} issue #${number}`
-    }] };
+      pretext: `${data.labels.length} lables added to <${data.html_url}|#${data.number}>`
+    });
+  } catch (error) {
+    result.push({
+      color: 'danger',
+      text: `Error: ${error.response.status} ${error.response.data.message}`
+    });
   }
+
+  return {
+    response_type: 'in_channel',
+    attachments: result
+  };
 }
 
 /**
@@ -60,8 +71,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
