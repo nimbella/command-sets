@@ -1,7 +1,7 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description Close a GitHub issue.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -18,7 +18,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const result = [];
-  const {issueNumber = 7} = params;
+  const {issueNumber} = params;
   const repo = params.repo === false ? defaultRepo : params.repo;
   if (!repo && !defaultRepo) {
     return {
