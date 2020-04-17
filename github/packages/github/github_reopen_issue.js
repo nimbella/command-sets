@@ -45,7 +45,13 @@ async function _command(params, commandText, secrets = {}) {
     const html = new RegExp(/<.*>.*<\/.*>/);
     const body = html.test(data.body)
       ? `_couldn't render body of issue_`
-      : data.body;
+      : data.body
+          // Convert markdown links to slack format.
+          .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
+          // Covert Issues mentions to links
+          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`)
+          // Replace markdown headings with slack bold
+          .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
     result.push({
       color: 'good',

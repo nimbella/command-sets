@@ -49,9 +49,11 @@ async function _command(params, commandText, secrets = {}) {
       ? `_couldn't render body of issue_`
       : data.body
           // Convert markdown links to slack format.
-          .replace(/\[(.*)\]\((.*)\)/g, '<$2|$1>')
+          .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
           // Covert Issues mentions to links
-          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`);
+          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`)
+          // Replace markdown headings with slack bold
+          .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
     // output formatted text
     const getReviewers = reviewers => {
