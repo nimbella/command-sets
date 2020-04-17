@@ -54,10 +54,10 @@ async function _command(params, commandText, secrets = {}) {
         : data.body;
 
       result.push({
-        color: pr[i].state == 'open' ? 'good' : 'danger',
+        color: pr.state == 'open' ? 'good' : 'danger',
         title: body,
-        title_link: pr[i].html_url,
-        pretext: `Issue #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`,
+        title_link: pr.html_url,
+        pretext: `Issue #${pr.number}: ${pr.title}\nID: ${pr.id} Date Created: ${pr.created_at}`,
       });
     }
   } catch (error) {
