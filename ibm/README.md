@@ -1,4 +1,4 @@
-# IBM Command Set
+# IBM Cloud Command Set
 
 Interact with IBM services from Slack using Nimbella Commander.
 
