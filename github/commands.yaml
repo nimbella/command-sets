@@ -6,7 +6,7 @@ commands:
       - name: issueNumber
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
   github_create_issue:
     sourcePath: packages/github/github_create_issue.js
@@ -17,7 +17,7 @@ commands:
       - name: body
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
   github_find_pr:
     sourcePath: packages/github/github_find_pr.js
@@ -26,7 +26,7 @@ commands:
       - name: date
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
       - name: state
         value: state
@@ -39,7 +39,7 @@ commands:
       - name: labels
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
   github_reopen_issue:
     sourcePath: packages/github/github_reopen_issue.js
@@ -48,7 +48,7 @@ commands:
       - name: issueNumber
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
   github_request_review:
     sourcePath: packages/github/github_request_review.js
@@ -59,7 +59,7 @@ commands:
       - name: reviewers
         optional: false
     options:
-      - name: repo
+      - name: r
         value: repo
   github_stats:
     sourcePath: packages/github/github_stats.js
