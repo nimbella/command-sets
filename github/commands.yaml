@@ -18,7 +18,7 @@ commands:
         optional: false
     options:
       - name: repo
-      - value: repo
+        value: repo
   github_find_pr:
     sourcePath: packages/github/github_find_pr.js
     description: Find pull requests by date
@@ -27,9 +27,9 @@ commands:
         optional: false
     options:
       - name: repo
-      - value: repo
+        value: repo
       - name: state
-      - value: state
+        value: state
   github_label:
     sourcePath: packages/github/github_label.js
     description: Label an issue/pull request
@@ -48,7 +48,7 @@ commands:
         optional: false
     options:
       - name: repo
-      - value: repo
+        value: repo
   github_request_review:
     sourcePath: packages/github/github_request_review.js
     description: Request someone to review a pull request
@@ -59,7 +59,7 @@ commands:
         optional: false
     options:
       - name: repo
-      - value: repo
+        value: repo
   github_stats:
     sourcePath: packages/github/github_stats.js
     description: View repository community statistics
