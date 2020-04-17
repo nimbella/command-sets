@@ -23,10 +23,13 @@ commands:
     sourcePath: packages/github/github_find_pr.js
     description: Find pull requests by date
     parameters:
-      - name: repo
-        optional: false
       - name: date
         optional: false
+    options:
+      - name: repo
+      - value: repo
+      - name: state
+      - value: state
   github_label:
     sourcePath: packages/github/github_label.js
     description: Label an issue/pull request
