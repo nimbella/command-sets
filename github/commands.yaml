@@ -21,7 +21,7 @@ commands:
         value: repo
   github_find_pr:
     sourcePath: packages/github/github_find_pr.js
-    description: Find pull requests by date
+    description: Find pull requests by last update date
     parameters:
       - name: date
         optional: false

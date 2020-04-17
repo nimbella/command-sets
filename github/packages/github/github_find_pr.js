@@ -66,15 +66,21 @@ async function _command(params, commandText, secrets = {}) {
     const html = new RegExp(/<.*>.*<\/.*>/);
     for (const pr of data) {
       if (formatDate(pr.updated_at) == date) {
-        const body = html.test(data.body)
+        const body = html.test(pr.body)
           ? `_couldn't render body of pr_`
-          : data.body;
+          : pr.body
+              // Convert markdown links to slack format.
+              .replace(/\[(.*)\]\((.*)\)/g, '<$2|$1>')
+              // Covert Issues mentions to links
+              .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`);
 
         result.push({
           color: pr.state == 'open' ? 'good' : 'danger',
-          text: body,
+          text: `_Last updated on <!date^${
+            new Date(pr.updated_at).getTime() / 1000
+          }^{date_short} at {time}|${pr.updated_at}>_\n${body}`,
           title_link: pr.html_url,
-          title: `Pull Request #${pr.number}: ${pr.title} Date Created: ${pr.created_at}`,
+          title: `PR #${pr.number}: ${pr.title}`,
         });
       }
     }
