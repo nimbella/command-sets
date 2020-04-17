@@ -13,7 +13,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token. '
+        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
 
@@ -24,7 +24,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'Please create `github_default_repo` secret to avoid passing the repository.'
+        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
     };
   }
 
