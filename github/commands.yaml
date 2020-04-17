@@ -48,14 +48,15 @@ commands:
       - value: repo
   github_request_review:
     sourcePath: packages/github/github_request_review.js
-    description: Request someone to review pull a request
+    description: Request someone to review a pull request
     parameters:
-      - name: repo
-        optional: false
-      - name: pr_number
+      - name: prNumber
         optional: false
       - name: reviewers
         optional: false
+    options:
+      - name: repo
+      - value: repo
   github_stats:
     sourcePath: packages/github/github_stats.js
     description: 'View repository community statistics'

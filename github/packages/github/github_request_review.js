@@ -1,60 +1,73 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description Request someone to review a pull request
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-const axios = require('axios');
-
-async function postRequest(url, secrets, reviewers) {
-
-    return (axios({
-        method: "post",
-        url: url,
-        data: {
-            reviewers: reviewers
-        },
-        headers: {
-            Authorization: `Bearer ${secrets.github_token}`,
-            "Content-Type": "application/json"
-        }})
-        .then(res => { return res.data; })
-        .catch(err => { return err; }));
-}
-
 async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
+  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
+  if (!githubToken) {
     return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
+      response_type: 'ephemeral',
+      text:
+        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token. '
     };
   }
-  const {
-    repo,
-    pr_number,
-    reviewers
-  } = params;
-  
-  const url = `https://api.github.com/repos/${repo}/pulls/${pr_number}/requested_reviewers`;
-  const data = await postRequest(url, secrets, reviewers.split(', '));
-  
-  if (data.response) {
+
+  const result = [];
+  const {prNumber, reviewers} = params;
+  const repo = params.repo === false ? defaultRepo.trim() : params.repo.trim();
+  if (!repo && !defaultRepo) {
     return {
-      response_type: 'in_channel',
-      text: data.response.headers.status
+      response_type: 'ephemeral',
+      text:
+        'Please create `github_default_repo` secret to avoid passing the repository.'
     };
-  } else {
-    return { attachments: [{
+  }
+
+  try {
+    const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/requested_reviewers`;
+    const axios = require('axios');
+    const {data} = await axios({
+      method: 'POST',
+      url: url,
+      data: {
+        reviewers: reviewers.split(',').map(reviewer => reviewer.trim())
+      },
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    result.push({
       color: 'good',
-      title: data.body && !data.body.includes('http') ? data.body : 'Link',
+      title: data.title,
+      text: data.body,
       title_link: data.html_url,
-      pretext: `${reviewers} has been requested to review pull request #${data.number}: ${data.title}`
-    }] };    
+      pretext: `${reviewers} has been requested to review <${data.html_url}|#${data.number}>:`
+    });
+  } catch (error) {
+    if (error.response.status === 404) {
+      result.push({
+        color: 'danger',
+        text: `PR #${prNumber} not found for <https://github.com/${repo}|${repo}>.`
+      });
+    } else {
+      result.push({
+        color: 'danger',
+        text: `Error: ${error.response.status} ${error.response.data.message}`
+      });
+    }
   }
+
+  return {
+    response_type: 'in_channel',
+    attachments: result
+  };
 }
 
 /**
@@ -62,9 +75,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
