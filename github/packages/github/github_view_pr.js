@@ -9,7 +9,7 @@
  */
 async function _command(params, commandText, secrets = {}) {
   const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
-  const {repo = defaultRepo} = params;
+  const {repo = defaultRepo, state = 'open'} = params;
   if (!repo) {
     return {
       response_type: 'ephemeral',
@@ -25,7 +25,7 @@ async function _command(params, commandText, secrets = {}) {
     : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
 
   try {
-    const url = `https://api.github.com/repos/${repo}/pulls?state=all`;
+    const url = `https://api.github.com/repos/${repo}/pulls?state=${state}`;
     const axios = require('axios');
     const {data} = await axios({
       method: 'GET',
@@ -49,15 +49,22 @@ async function _command(params, commandText, secrets = {}) {
     // Matches html tags
     const html = new RegExp(/<.*>.*<\/.*>/);
     for (const pr of data) {
-      const body = html.test(data.body)
+      const body = html.test(pr.body)
         ? `_couldn't render body of pr_`
-        : data.body;
+        : pr.body
+            // Convert markdown links to slack format.
+            .replace(/\[(.*)\]\((.*)\)/g, '<$2|$1>')
+            // Covert Issues mentions to links
+            .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`);
 
       result.push({
-        color: pr.state == 'open' ? 'good' : 'danger',
-        title: body,
+        color: pr.state === 'open' ? 'good' : 'danger',
+        title: `PR #${pr.number}: ${pr.title}`,
+        // Convert ISO to slack format.
+        text: `_Last on <!date^${
+          new Date(pr.created_at).getTime() / 1000
+        }^{date_short} at {time}|${pr.created_at}>_\n${body}`,
         title_link: pr.html_url,
-        pretext: `Issue #${pr.number}: ${pr.title}\nID: ${pr.id} Date Created: ${pr.created_at}`,
       });
     }
   } catch (error) {
