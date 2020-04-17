@@ -121,10 +121,6 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const divider = (_) => ({
-  type: 'divider',
-});
-
 const fail = (msg) => {
   const response = {
     response_type: 'in_channel',
