@@ -39,15 +39,16 @@ commands:
         optional: false
   github_reopen_issue:
     sourcePath: packages/github/github_reopen_issue.js
-    description: 'Reopen an issue'
+    description: Reopen an issue
     parameters:
+      - name: issueNumber
+        optional: false
+    options:
       - name: repo
-        optional: false
-      - name: issue_number
-        optional: false
+      - value: repo
   github_request_review:
     sourcePath: packages/github/github_request_review.js
-    description: 'Request someone to review pull a request'
+    description: Request someone to review pull a request
     parameters:
       - name: repo
         optional: false
