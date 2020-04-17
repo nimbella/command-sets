@@ -41,16 +41,10 @@ async function _command(params, commandText, secrets = {}) {
       }
     });
 
-    // Matches html tags
-    const html = new RegExp(/<.*>.*<\/.*>/);
-    const body = html.test(data.body)
-      ? `_couldn't render body of issue_`
-      : data.body;
-
     result.push({
       color: 'good',
-      title: `${data.title}`,
-      text: body,
+      title: data.title,
+      text: data.body,
       title_link: data.html_url,
       pretext: `Issue <${data.html_url}|#${data.number}> opened:`
     });
