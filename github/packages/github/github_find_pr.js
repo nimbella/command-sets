@@ -65,16 +65,16 @@ async function _command(params, commandText, secrets = {}) {
     // Matches html tags
     const html = new RegExp(/<.*>.*<\/.*>/);
     for (const pr of data) {
-      if (formatDate(pr[i].updated_at) == date) {
+      if (formatDate(pr.updated_at) == date) {
         const body = html.test(data.body)
           ? `_couldn't render body of pr_`
           : data.body;
 
         result.push({
-          color: pr[i].state == 'open' ? 'good' : 'danger',
+          color: pr.state == 'open' ? 'good' : 'danger',
           text: body,
-          title_link: pr[i].html_url,
-          title: `Pull Request #${pr[i].number}: ${pr[i].title} Date Created: ${pr[i].created_at}`,
+          title_link: pr.html_url,
+          title: `Pull Request #${pr.number}: ${pr.title} Date Created: ${pr.created_at}`,
         });
       }
     }
