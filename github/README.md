@@ -23,34 +23,36 @@ In order to use this command set, you need to set up a Personal Access Token on 
 Use ```/nc secret_create``` to create secrets.
 Visit https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line to learn how to setup a Personal Access Token on GitHub
 
+Create a secret named `github_default_repo` to avoid passing repository (`-r`) to commands.
+
 ## Usage
 Creating an issue.
 ```
-/nc github_create_issue <repo> <title> <body>
+/nc github_create_issue <title> <body> -r <repo>
 ```
 ![GitHub create_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.png)
 
 Closing an issue.
 ```
-/nc github_close_issue <repo> <issue_number>
+/nc github_close_issue <issue_number> -r <repo>
 ```
 ![GitHub close_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/close_issue.png)
 
 Reopening an issue
 ```
-/nc github_reopen_issue <repo> <issue_number>
+/nc github_reopen_issue <issue_number> -r <repo>
 ```
 ![GitHub reopen_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/reopen_issue.png)
 
 Finding a pull request by date.
 ```
-/nc github_find_pr <repo> <date>
+/nc github_find_pr <date> -r <repo>
 ```
 ![GitHub find_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.png)
 
-Labeling an issue or pull request.
+Labeling an issue.
 ```
-/nc github_label <repo> <number> <labels>
+/nc github_label <issueNumber> <labels> -r <repo>
 ```
 ![GitHub label command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/label.png)
 
