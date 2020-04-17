@@ -19,9 +19,7 @@ async function getRequest(url, secrets) {
     method: 'get',
     url,
     headers,
-  })
-    .then((res) => res)
-    .catch((err) => err));
+  }).then((res) => res).catch((err) => err));
 }
 
 async function command(params, commandText, secrets = {}) {
@@ -47,20 +45,21 @@ async function command(params, commandText, secrets = {}) {
       entity = 'commits';
       displayEntity = 'Commits';
       headers.Accept = 'application/vnd.github.cloak-preview';
+      pageSize = '&per_page=20';
       break;
     case 'c':
     case 'cd':
       entity = 'code';
       displayEntity = 'Code Files';
       keywords += '+in:file';
-      if (!repository) return fail('please specify a repository');
+      if (!repository) return fail('*please specify a repository, using -r flag e.g.*\n`/nc github_list c github -r nimbella/command-sets`');
       break;
     case 'i':
     case 'issue':
       entity = 'issues';
       displayEntity = 'Issues';
       keywords += '+is:issue';
-      pageSize = '&per_page=8';
+      pageSize = '&per_page=5';
       break;
     case 'p':
     case 'pr':
@@ -83,6 +82,8 @@ async function command(params, commandText, secrets = {}) {
       pageSize = '&per_page=10';
       break;
     default:
+      displayEntity = 'Repositories';
+      entity = 'repositories';
       break;
   }
   const url = `https://api.github.com/search/${entity}?q=${repository ? `repo:${repository}+` : ''}${keywords}${language ? `+language:${language}` : ''}${pageSize}`;
@@ -101,10 +102,8 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(entity, header, res.data.items || []);
   }
-
   return fail();
 }
-
 
 const image = (source, alt) => ({
   type: 'image',
@@ -112,12 +111,14 @@ const image = (source, alt) => ({
   alt_text: alt,
 });
 
+const mdText = (text) => ({
+  type: 'mrkdwn',
+  text,
+});
+
 const section = (text) => ({
   type: 'section',
-  text: {
-    type: 'mrkdwn',
-    text,
-  },
+  text: mdText(text),
 });
 
 const divider = (_) => ({
@@ -127,7 +128,7 @@ const divider = (_) => ({
 const fail = (msg) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`*${msg || 'couldn\'t get the listing'}*`)],
+    blocks: [section(`${msg || '*couldn\'t get the listing*'}`)],
   };
   return response;
 };
@@ -138,14 +139,8 @@ const repositories = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.owner.avatar_url, item.owner.login),
       fields: [
-        {
-          type: 'mrkdwn',
-          text: `<${item.html_url}|${item.full_name}> \n *Watchers:* ${item.watchers_count} \n *Stars:* ${item.stargazers_count} \n *Forks:* ${item.forks_count}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `${item.description || ' '}`,
-        },
+        mdText(`<${item.html_url}|${item.full_name}> \n *Watchers:* ${item.watchers_count} \n *Stars:* ${item.stargazers_count} \n *Forks:* ${item.forks_count}`),
+        mdText(`${item.description || ' '}`),
       ],
     },
   );
@@ -158,10 +153,7 @@ const commits = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.author.avatar_url, item.author.login),
       fields: [
-        {
-          type: 'mrkdwn',
-          text: `*Repository:* <${item.repository.html_url}|${item.repository.full_name}> \n *Author:* <${item.author.url}|${item.commit.author.name}> \n *Committer:* <${item.committer.url}|${item.commit.committer.name}> \n *Comments:* ${item.commit.comment_count}`,
-        },
+        mdText(`*Repository:* <${item.repository.html_url}|${item.repository.full_name}> \n *Author:* <${item.author.url}|${item.commit.author.name}> \n *Committer:* <${item.committer.url}|${item.commit.committer.name}> \n *Comments:* ${item.commit.comment_count}`),
       ],
     },
   );
@@ -174,14 +166,8 @@ const code = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.repository.owner.avatar_url, item.repository.owner.login),
       fields: [
-        {
-          type: 'mrkdwn',
-          text: `*Repository:* <${item.repository.html_url}|${item.repository.full_name}>`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*File:* <${item.html_url}|${item.name}> \n*Path:* ${item.path}`,
-        },
+        mdText(`*Repository:* <${item.repository.html_url}|${item.repository.full_name}>`),
+        mdText(`*File:* <${item.html_url}|${item.name}> \n*Path:* ${item.path}`),
       ],
     },
   );
@@ -194,14 +180,8 @@ const issues = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.user.avatar_url, item.user.login),
       fields: [
-        {
-          type: 'mrkdwn',
-          text: `*<${item.html_url}|Title>:* ${item.title} \n *Author:* <${item.author.url}|${item.author.login}>  ${item.assignee ? `\n *Assignee:* <${item.assignee.url}|${item.assignee.login}>` : ''}  \n *Comments:* ${item.comments}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*Labels:* ${item.labels.map((l) => `\n<${l.url}|${l.name}>`)}`,
-        },
+        mdText(`*<${item.html_url}|Title>:* ${item.title} \n *Author:* <${item.author.url}|${item.author.login}>  ${item.assignee ? `\n *Assignee:* <${item.assignee.url}|${item.assignee.login}>` : ''}  \n *Comments:* ${item.comments}`),
+        mdText(`*Labels:* ${item.labels.map((l) => `\n<${l.url}|${l.name}>`)}`),
       ],
     },
   );
@@ -214,10 +194,8 @@ const users = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.avatar_url, item.login),
       fields: [
-        {
-          type: 'mrkdwn', // TODO: Add more useful information
-          text: `${item.type === 'User' ? ':male-office-worker:' : ':office:'} <${item.html_url}|${item.login}>\n<${item.html_url}?tab=repositories|repositories> \n<${item.html_url}?tab=projects|projects> \n<${item.html_url}?tab=stars|stars>  \n<${item.html_url}?tab=following|following> \n<${item.html_url}?tab=followers|followers>`,
-        },
+        // TODO: add more information
+        mdText(`${item.type === 'User' ? ':male-office-worker:' : ':office:'} <${item.html_url}|${item.login}>\n<${item.html_url}?tab=repositories|repositories> \n<${item.html_url}?tab=projects|projects> \n<${item.html_url}?tab=stars|stars>  \n<${item.html_url}?tab=following|following> \n<${item.html_url}?tab=followers|followers>`),
       ],
     },
   );
@@ -228,10 +206,7 @@ const topics = (items, response) => (items).forEach((item) => {
     {
       type: 'section',
       fields: [
-        {
-          type: 'mrkdwn',
-          text: `*${item.display_name || item.name}* ${item.short_description ? `\n${item.short_description}` : ''} ${item.created_by ? `\n *Creator:* ${item.created_by}` : ''} ${item.released ? `\n *Released:* ${item.released}` : ''} \n *Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_long_pretty} at {time}|${item.created_at}>  \n *Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_long_pretty} at {time}|${item.updated_at}>  \n *Featured:* ${item.featured ? ':thumbsup:' : ':thumbsdown:'}  *Curated:* ${item.curated ? ':thumbsup:' : ':thumbsdown:'}`,
-        },
+        mdText(`*${item.display_name || item.name}* ${item.short_description ? `\n${item.short_description}` : ''} ${item.created_by ? `\n *Creator:* ${item.created_by}` : ''} ${item.released ? `\n *Released:* ${item.released}` : ''} \n *Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_long_pretty} at {time}|${item.created_at}>  \n *Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_long_pretty} at {time}|${item.updated_at}>  \n *Featured:* ${item.featured ? ':thumbsup:' : ':thumbsdown:'}  *Curated:* ${item.curated ? ':thumbsup:' : ':thumbsdown:'}`),
       ],
     },
   );
@@ -241,14 +216,7 @@ const topics = (items, response) => (items).forEach((item) => {
 const success = (entity, header, items) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [{
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `${header}`,
-      },
-    },
-    ],
+    blocks: [section(header)],
   };
   if (entity === 'repositories') repositories(items, response);
   if (entity === 'commits') commits(items, response);
@@ -259,12 +227,10 @@ const success = (entity, header, items) => {
 
   response.blocks.push({
     type: 'context',
-    elements: [{
-      type: 'mrkdwn',
-      text: 'add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>',
-    }],
+    elements: [
+      mdText('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
+    ],
   });
-
   return response;
 };
 /**
