@@ -31,11 +31,29 @@ async function _command(params, commandText, secrets = {}) {
   try {
     const url = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
     const axios = require('axios');
+
+    // Get current labels of the issue.
+    const {
+      data: {labels: currentLabels}
+    } = await axios({
+      method: 'GET',
+      url: url,
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Add labels to the issue.
     const {data} = await axios({
       method: 'PATCH',
       url: url,
       data: {
-        labels: labels.split(',').map(label => label.trim())
+        // Merge current labels of the issue and the labels provided by the user.
+        labels: [
+          ...labels.split(',').map(label => label.trim()),
+          ...currentLabels.map(label => label.name)
+        ]
       },
       headers: {
         Authorization: `Bearer ${githubToken}`,
@@ -47,16 +65,23 @@ async function _command(params, commandText, secrets = {}) {
       color: 'good',
       title: `${data.title}`,
       text: `${data.body}\nLabels: ${data.labels
-        .map(label => label.name)
+        .map(label => `\`${label.name}\``)
         .join(' ')}`,
       title_link: data.html_url,
-      pretext: `${data.labels.length} lables added to <${data.html_url}|#${data.number}>`
+      pretext: `Lable(s) added to <${data.html_url}|#${data.number}>`
     });
   } catch (error) {
-    result.push({
-      color: 'danger',
-      text: `Error: ${error.response.status} ${error.response.data.message}`
-    });
+    if (error.response.status === 404) {
+      result.push({
+        color: 'danger',
+        text: `Issue #${issueNumber} not found for <https://github.com/${repo}|${repo}>.`
+      });
+    } else {
+      result.push({
+        color: 'danger',
+        text: `Error: ${error.response.status} ${error.response.data.message}`
+      });
+    }
   }
 
   return {
