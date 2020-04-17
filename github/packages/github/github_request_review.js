@@ -43,18 +43,45 @@ async function _command(params, commandText, secrets = {}) {
       }
     });
 
-    // Matches html tags
-    const html = new RegExp(/<.*>.*<\/.*>/);
+    // Matches <anything>
+    const html = new RegExp(/<.*>/);
     const body = html.test(data.body)
       ? `_couldn't render body of issue_`
-      : data.body;
+      : data.body
+          // Convert markdown links to slack format.
+          .replace(/\[(.*)\]\((.*)\)/g, '<$2|$1>')
+          // Covert Issues mentions to links
+          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`);
+
+    // output formatted text
+    const getReviewers = reviewers => {
+      const output = [];
+      reviewers = reviewers.split(',');
+      reviewers.forEach((reviewer, index) => {
+        if (reviewers.length > 1 && index === reviewers.length - 1) {
+          output.push(
+            `and <https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+          );
+        } else {
+          output.push(
+            `<https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+          );
+        }
+      });
+
+      return output.join(' ');
+    };
 
     result.push({
-      color: 'good',
-      title: data.title,
-      text: body,
+      color: data.state == 'open' ? 'good' : 'danger',
+      text: `_Created on <!date^${
+        new Date(data.created_at).getTime() / 1000
+      }^{date_short} at {time}|${data.created_at}>_\n${body}`,
       title_link: data.html_url,
-      pretext: `${reviewers} has been requested to review <${data.html_url}|#${data.number}>:`
+      title: `PR #${data.number}: ${data.title}`,
+      pretext: `${getReviewers(reviewers)} has been requested to review <${
+        data.html_url
+      }|#${data.number}>:`
     });
   } catch (error) {
     if (error.response.status === 404) {
