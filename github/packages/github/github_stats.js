@@ -41,13 +41,13 @@ async function _command(params, commandText, secrets = {}) {
     const currReading = parseInt(headers['x-ratelimit-remaining']);
 
     const body = [
-      `Most used langauge: ${data.language === null ? 'None' : data.language}`,
-      `Default Branch: ${data.default_branch}`,
-      `Contributors: ${data.network_count}`,
-      `Open Issues Count: ${data.open_issues_count}`,
-      `Forks: ${data.forks}`,
-      `Watchers: ${data.subscribers_count}`,
       `Stars: ${data.stargazers_count}`,
+      `Forks: ${data.forks}`,
+      `Open Issues: ${data.open_issues_count}`,
+      `Watchers: ${data.subscribers_count}`,
+      `Contributors: ${data.network_count}`,
+      `Default Branch: ${data.default_branch}`,
+      `Most used langauge: ${data.language === null ? 'None' : data.language}`,
     ];
 
     result.push({
