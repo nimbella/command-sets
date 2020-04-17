@@ -61,10 +61,16 @@ async function _command(params, commandText, secrets = {}) {
       }
     });
 
+    // Matches html tags
+    const html = new RegExp(/<.*>.*<\/.*>/);
+    const body = html.test(data.body)
+      ? `_couldn't render body of issue_`
+      : data.body;
+
     result.push({
       color: 'good',
       title: `${data.title}`,
-      text: `${data.body}\nLabels: ${data.labels
+      text: `${body}\nLabels: ${data.labels
         .map(label => `\`${label.name}\``)
         .join(' ')}`,
       title_link: data.html_url,

@@ -41,11 +41,17 @@ async function _command(params, commandText, secrets = {}) {
       }
     });
 
+    // Matches html tags
+    const html = new RegExp(/<.*>.*<\/.*>/);
+    const body = html.test(data.body)
+      ? `_couldn't render body of issue_`
+      : data.body;
+
     result.push({
       pretext: `Issue <${data.html_url}|#${issueNumber}> of ${repo} has been closed.`,
       title: data.title,
       title_link: data.html_url,
-      text: data.body
+      text: body
     });
   } catch (error) {
     result.push({

@@ -46,10 +46,16 @@ async function _command(params, commandText, secrets = {}) {
       });
     }
 
+    // Matches html tags
+    const html = new RegExp(/<.*>.*<\/.*>/);
     for (const pr of data) {
+      const body = html.test(data.body)
+        ? `_couldn't render body of pr_`
+        : data.body;
+
       result.push({
         color: pr[i].state == 'open' ? 'good' : 'danger',
-        title: pr[i].body && !pr[i].body.includes('http') ? pr[i].body : 'Link',
+        title: body,
         title_link: pr[i].html_url,
         pretext: `Issue #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`,
       });

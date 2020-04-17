@@ -41,10 +41,16 @@ async function _command(params, commandText, secrets = {}) {
       }
     });
 
+    // Matches html tags
+    const html = new RegExp(/<.*>.*<\/.*>/);
+    const body = html.test(data.body)
+      ? `_couldn't render body of issue_`
+      : data.body;
+
     result.push({
       color: 'good',
       title: data.title,
-      text: data.body,
+      text: body,
       title_link: data.html_url,
       pretext: `Issue <${data.html_url}|#${data.number}> of ${repo} has been reopened.`
     });
