@@ -1,7 +1,7 @@
 commands:
   github_close_issue:
     sourcePath: packages/github/github_close_issue.js
-    description: 'Close an issue'
+    description: Close an issue
     parameters:
       - name: issueNumber
         optional: false
@@ -10,7 +10,7 @@ commands:
         value: repo
   github_create_issue:
     sourcePath: packages/github/github_create_issue.js
-    description: 'Create an issue'
+    description: Create an issue
     parameters:
       - name: title
         optional: false
@@ -21,7 +21,7 @@ commands:
       - value: repo
   github_find_pr:
     sourcePath: packages/github/github_find_pr.js
-    description: 'Find pull requests by date'
+    description: Find pull requests by date
     parameters:
       - name: repo
         optional: false
@@ -29,7 +29,7 @@ commands:
         optional: false
   github_label:
     sourcePath: packages/github/github_label.js
-    description: 'Label an issue/pull request'
+    description: Label an issue/pull request
     parameters:
       - name: repo
         optional: false
@@ -59,10 +59,10 @@ commands:
       - value: repo
   github_stats:
     sourcePath: packages/github/github_stats.js
-    description: 'View repository community statistics'
+    description: View repository community statistics
     parameters:
       - name: repo
-        optional: false
+        optional: true
   github_view_pr:
     sourcePath: packages/github/github_view_pr.js
     description: 'View recent pull requests'
@@ -74,14 +74,14 @@ commands:
     description: 'Find repositories, commits, code, issues, pull requests, users and topics using keywords'
     parameters:
       - name: entity
-        optional: false 
+        optional: false
       - name: keywords
         optional: false
     options:
       - name: r
         value: repository
       - name: l
-        value: language                      
+        value: language
   github:
     sourcePath: packages/github/github.js
-    description: 'View GitHub command set documentation'
+    description: View GitHub command set documentation
