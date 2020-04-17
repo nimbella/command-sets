@@ -34,12 +34,13 @@ commands:
     sourcePath: packages/github/github_label.js
     description: Label an issue/pull request
     parameters:
-      - name: repo
-        optional: false
-      - name: number
+      - name: issueNumber
         optional: false
       - name: labels
         optional: false
+    options:
+      - name: repo
+        value: repo
   github_reopen_issue:
     sourcePath: packages/github/github_reopen_issue.js
     description: Reopen an issue
