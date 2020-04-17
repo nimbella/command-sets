@@ -1,7 +1,7 @@
 // jshint esversion: 9
 
 /**
- * @description
+ * @description View repository community statistics
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -9,8 +9,8 @@
  */
 async function _command(params, commandText, secrets = {}) {
   const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
-  const repo = params.repo === false ? defaultRepo.trim() : params.repo.trim();
-  if (!repo && !defaultRepo) {
+  const {repo = defaultRepo} = params;
+  if (!repo) {
     return {
       response_type: 'ephemeral',
       text:
