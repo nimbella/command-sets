@@ -68,7 +68,7 @@ commands:
         optional: true
   github_view_pr:
     sourcePath: packages/github/github_view_pr.js
-    description: 'View recent pull requests'
+    description: View recent pull requests
     parameters:
       - name: repo
         optional: false
