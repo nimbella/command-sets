@@ -9,23 +9,42 @@
  */
 const axios = require('axios');
 
-async function getRequest(url) {
-
-  return {
-    response_type: 'in_channel', // or `ephemeral` for private response
-    text: await axios.get(url)
-    .then(response => { return response.data; })
-    .catch(error => { return error.response.data; })
-  };
+const requestThreshold = 3;
+const headers = {
+  'Content-Type': 'application/json',
+};
+async function getRequest(url, secrets) {
+  if (secrets.github_token) headers.Authorization = `Bearer ${secrets.github_token}`;
+  return (axios({
+    method: 'get',
+    url,
+    headers,
+  }).then((res) => res).catch((err) => err));
 }
 
+const section = (text) => ({
+  type: 'section',
+  text: {
+    type: 'mrkdwn',
+    text,
+  },
+});
+
+const fail = (msg) => {
+  const response = {
+    response_type: 'in_channel',
+    blocks: [section(`${msg || '*couldn\'t get to the pull requests*'}`)],
+  };
+  return response;
+};
+
+
 function formatDate(d) {
-    
   const date = new Date(d);
-  let dd = date.getDate(); 
-  let mm = date.getMonth()+1;
-  let yyyy = date.getFullYear();
-  
+  let dd = date.getDate();
+  let mm = date.getMonth() + 1;
+  const yyyy = date.getFullYear();
+
   if (dd < 10) {
     dd = `0${dd}`;
   }
@@ -35,51 +54,49 @@ function formatDate(d) {
   return `${mm}/${dd}/${yyyy}`;
 }
 
-async function _command(params, commandText, secrets = {}) {
-    
-  if (!secrets.github_token) {
-    return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
-    };
-  }
+async function command(params, commandText, secrets = {}) {
   const {
     repo,
-    state,
-    date
+    date,
   } = params;
 
   const url = `https://api.github.com/repos/${repo}/pulls?state=closed`;
-  const data = await getRequest(url);
 
-  if (data.response) {
-    return {
-      response_type: 'in_channel',
-      text: data.response.headers.status
-    };
-  } else {
-    const pr = data.text;
+  const res = await getRequest(url, secrets);
+
+  if (res && res.data) {
+    const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
+    const currReading = parseInt(res.headers['x-ratelimit-remaining']);
+    let header;
+    if (currReading < requestThreshold) {
+      header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
+    }
+    if (currReading === 0) {
+      header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
+      return fail(header);
+    }
+    const pr = res.data;
     const attachments = [];
-    
+
     for (let i = 0, j = 0; i < pr.length; i++) {
-      if (formatDate(pr[i].updated_at) == date) {
+      if (formatDate(pr[i].updated_at) === date) {
         attachments.push({
-          color: pr[i].state == 'open' ? 'good' : 'danger',
+          color: pr[i].state === 'open' ? 'good' : 'danger',
           title: pr[i].body && !pr[i].body.includes('http') ? pr[i].body : 'Link',
           title_link: pr[i].html_url,
-          pretext: `Pull Request #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`
+          pretext: `Pull Request #${pr[i].number}: ${pr[i].title}\nID: ${pr[i].id} Date Created: ${pr[i].created_at}`,
         });
       }
     }
     if (attachments.length > 0) {
-      return { attachments: attachments };
-    } else {
+      if (header) attachments.unshift({ pretext: header });
       return {
-        response_type: 'in_channel',
-        text: `No pull requests that were last updated on ${date} could be found`
+        attachments,
       };
     }
+    return fail(`No pull requests that were last updated on ${date} could be found`);
   }
+  return fail();
 }
 /**
  * @typedef {object} SlackBodyType
@@ -88,9 +105,9 @@ async function _command(params, commandText, secrets = {}) {
  */
 
 const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`
-  }))
+    text: `Error: ${error.message}`,
+  })),
 });
 module.exports = main;
