@@ -144,16 +144,18 @@ const repositories = (items, response) => (items).forEach((item) => {
 
 const commits = (items, response) => (items).forEach((item) => {
   item.author = item.author || item.committer;
-  response.blocks.push(
-    {
-      type: 'section',
-      accessory: image(item.author.avatar_url, item.author.login),
-      fields: [
-        mdText(`*Repository:* <${item.repository.html_url}|${item.repository.full_name}> \n *Author:* <${item.author.url}|${item.commit.author.name}> \n *Committer:* <${item.committer.url}|${item.commit.committer.name}> \n *Comments:* ${item.commit.comment_count}`),
-      ],
-    },
-  );
-  response.blocks.push(section(`<${item.html_url}| Commit> Message: ${item.commit.message}`));
+  if (item.author) {
+    response.blocks.push(
+      {
+        type: 'section',
+        accessory: image(item.author.avatar_url, item.author.login),
+        fields: [
+          mdText(`*Repository:* <${item.repository.html_url}|${item.repository.full_name}> \n *Author:* <${item.author.html_url}|${item.commit.author.name}> \n *Committer:* <${item.committer.html_url}|${item.commit.committer.name}> \n *Date:* <!date^${Math.floor(new Date(item.commit.author.date).getTime() / 1000)}^{date_long_pretty} at {time}|${item.commit.author.date}> \n *Comments:* ${item.commit.comment_count}`),
+        ],
+      },
+    );
+    response.blocks.push(section(`<${item.html_url}| Commit> Message: ${item.commit.message}`));
+  }
 });
 
 const code = (items, response) => (items).forEach((item) => {
@@ -176,7 +178,7 @@ const issues = (items, response) => (items).forEach((item) => {
       type: 'section',
       accessory: image(item.user.avatar_url, item.user.login),
       fields: [
-        mdText(`*<${item.html_url}|Title>:* ${item.title} \n *Author:* <${item.author.url}|${item.author.login}>  ${item.assignee ? `\n *Assignee:* <${item.assignee.url}|${item.assignee.login}>` : ''}  \n *Comments:* ${item.comments}`),
+        mdText(`*<${item.html_url}|Title>:* ${item.title} \n *Author:* <${item.author.html_url}|${item.author.login}>  ${item.assignee ? `\n *Assignee:* <${item.assignee.url}|${item.assignee.login}>` : ''}  \n *Comments:* ${item.comments}`),
         mdText(`*Labels:* ${item.labels.map((l) => `\n<${l.url}|${l.name}>`)}`),
       ],
     },
