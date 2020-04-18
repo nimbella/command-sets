@@ -65,6 +65,19 @@ commands:
     parameters:
       - name: repo
         optional: false
+  github_list:
+    sourcePath: packages/github/github_list.js
+    description: 'Find repositories, commits, code, issues, pull requests, users and topics using keywords'
+    parameters:
+      - name: entity
+        optional: false 
+      - name: keywords
+        optional: false
+    options:
+      - name: r
+        value: repository
+      - name: l
+        value: language                      
   github:
     sourcePath: packages/github/github.js
     description: 'View GitHub command set documentation'

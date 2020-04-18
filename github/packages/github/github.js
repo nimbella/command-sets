@@ -83,6 +83,17 @@ async function _command(params, commandText, secrets = {}) {
       section('*Getting repository statistics:* \n`/nc github_stats <repo>`'),
       image(`${baseUrl}/stats.png`, 'github stats command'),
       //
+      section('*Finding repositories, commits, code, issues, pull requests, users and topics using keywords:* \n`/nc github_list <entity> <keywords> [<repository>] [<language>]`\nEntity can be passed in as an abbreviation:\
+      \n r  - repositories\
+      \n cm - commits\
+      \n c  - code \
+      \n i  - issues\
+      \n p  - pull requests\
+      \n u  - users \
+      \n t  - topics\
+      \nMultiple keywords can be combined using `+` sign `github+python``'),
+      image(`${baseUrl}/list.png`, 'github list command'),
+      //
       {
         type: 'divider'
       },
