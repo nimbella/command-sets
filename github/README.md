@@ -1,7 +1,9 @@
 # Nimbella Commander GitHub Command Set
+
 A Nimbella Commander command set for interfacing with GitHub
 
 ## Features
+
 - Create an issue
 - Close an issue
 - Reopen an issue
@@ -14,77 +16,98 @@ A Nimbella Commander command set for interfacing with GitHub
 - View GitHub command set documentation
 
 ## Install
+
 ```
 /nc csm_install github
 ```
 
 ## Requirements
+
 In order to use this command set, you need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with the key 'github_token'
-Use ```/nc secret_create``` to create secrets.
+Use `/nc secret_create` to create secrets.
 Visit https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line to learn how to setup a Personal Access Token on GitHub
 
 Create a secret named `github_default_repo` to avoid passing repository (`-r`) to commands.
 
 ## Usage
+
 Creating an issue.
+
 ```
-/nc github_create_issue <title> <body> -r <repo>
+/nc github_create_issue <title> <body> [-r <repository>]
 ```
+
 ![GitHub create_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.png)
 
 Closing an issue.
+
 ```
-/nc github_close_issue <issue_number> -r <repo>
+/nc github_close_issue <issue_number> [-r <repository>]
 ```
+
 ![GitHub close_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/close_issue.png)
 
 Reopening an issue
+
 ```
-/nc github_reopen_issue <issue_number> -r <repo>
+/nc github_reopen_issue <issue_number> [-r <repository>]
 ```
+
 ![GitHub reopen_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/reopen_issue.png)
 
 Finding a pull request by date.
+
 ```
-/nc github_find_pr <date> -r <repo>
+/nc github_find_pr <date> [-r <repository>]
 ```
+
 ![GitHub find_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.png)
 
 Labeling an issue.
+
 ```
-/nc github_label <issueNumber> <labels> -r <repo>
+/nc github_label <issueNumber> <labels> [-r <repository>]
 ```
+
 ![GitHub label command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/label.png)
 
 Getting repository statistics
+
 ```
 /nc github_stats <repo>
 ```
+
 ![GitHub stats command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/stats.png)
 
 Viewing recent pull requests
+
 ```
 /nc github_view_pr <repo>
 ```
+
 ![GitHub view_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/view_pr.png)
 
 Finding repositories, commits, code, issues, pull requests, users and topics using keywords
+
 ```
 /nc github_list <entity> <keywords> [-r <repository>] [-l <language>]
 ```
+
 ![GitHub list command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/list.png)
 
 Entity can be passed in as an abbreviation:
-- r  - repositories
+
+- r - repositories
 - cm - commits
-- c  - code 
-- i  - issues
-- p  - pull requests
-- u  - users 
-- t  - topics
-Multiple keywords can be combined using `+` sign `github+python`
+- c - code
+- i - issues
+- p - pull requests
+- u - users
+- t - topics
+  Multiple keywords can be combined using `+` sign `github+python`
 
 Viewing GitHub command set documentation
+
 ```
 /nc github
 ```
