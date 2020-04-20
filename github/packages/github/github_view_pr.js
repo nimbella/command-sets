@@ -70,7 +70,12 @@ async function _command(params, commandText, secrets = {}) {
       });
     }
   } catch (error) {
-    if (error.response.status === 404) {
+    if (error.response.status === 403) {
+      result.push({
+        color: 'danger',
+        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`,
+      });
+    } else if (error.response.status === 404) {
       result.push({
         color: 'danger',
         text: `Repository not found: <https://github.com/${repo}|${repo}>.`,

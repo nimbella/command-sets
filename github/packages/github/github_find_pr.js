@@ -89,14 +89,22 @@ async function _command(params, commandText, secrets = {}) {
 
     if (result.length === 0) {
       return {
-        attachments,
+        response_type: 'in_channel',
+        text: `No pull requests that were last updated on ${date} could be found`,
       };
     }
   } catch (error) {
-    result.push({
-      color: 'danger',
-      text: `Error: ${error.response.status} ${error.response.data.message}`,
-    });
+    if (error.response.status === 403) {
+      result.push({
+        color: 'danger',
+        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`,
+      });
+    } else {
+      result.push({
+        color: 'danger',
+        text: `Error: ${error.response.status} ${error.response.data.message}`,
+      });
+    }
   }
 
   return {

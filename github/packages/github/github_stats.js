@@ -22,7 +22,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const tokenMessage = githubToken
     ? ''
-    : 'For greater limits, create a secret named `github_token` with your <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub secret> using `/nc secret_create`.';
+    : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
 
   try {
     const axios = require('axios');
@@ -63,7 +63,7 @@ async function _command(params, commandText, secrets = {}) {
     if (error.response.status === 403) {
       result.push({
         color: 'danger',
-        text: `:warning: *The api rate limit has been exhausted.*`,
+        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`,
       });
     } else if (error.response.status === 404) {
       result.push({
