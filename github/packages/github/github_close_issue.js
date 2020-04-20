@@ -1,56 +1,69 @@
 // jshint esversion: 9
 
 /**
- * @description null
+ * @description Close a GitHub issue.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-const axios = require('axios');
-
-async function closeIssue(url, secrets) {
-
-    return (axios({
-        method: "patch",
-        url: url,
-        data: {state: 'closed'},
-        headers: {
-            Authorization: `Bearer ${secrets.github_token}`,
-            "Content-Type": "application/json"
-        }})
-        .then(res => { return res.data; })
-        .catch(err => { return err; }));
-}
-
 async function _command(params, commandText, secrets = {}) {
-  
-  if (!secrets.github_token) {
+  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
+  if (!githubToken) {
     return {
-      response_type: 'in_channel',
-      text: 'Missing GitHub Personal Access Token!'
+      response_type: 'ephemeral',
+      text:
+        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
-  const {
-    repo,
-    issue_number
-  } = params;
-  const url = `https://api.github.com/repos/${repo}/issues/${issue_number}`;
-  const data = await closeIssue(url, secrets);
-  
-  if (data.response) {
+
+  const result = [];
+  const {issueNumber} = params;
+  const repo = params.repo === false ? defaultRepo : params.repo;
+  if (!repo && !defaultRepo) {
     return {
-      response_type: 'in_channel',
-      text: data.response.headers.status
+      response_type: 'ephemeral',
+      text:
+        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
     };
-  } else {
-    return { attachments: [{
-      color: data.state == 'open' ? 'good' : 'danger',
-      title: `${repo}\nIssue #${issue_number}\n${data.title}`,
+  }
+
+  try {
+    const url = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
+    const axios = require('axios');
+    const {data} = await axios({
+      method: 'PATCH',
+      url: url,
+      data: {state: 'closed'},
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Matches html tags
+    const html = new RegExp(/<.*>.*<\/.*>/);
+    const body = html.test(data.body)
+      ? `_couldn't render body of issue_`
+      : data.body;
+
+    result.push({
+      pretext: `Issue <${data.html_url}|#${issueNumber}> of ${repo} has been closed.`,
+      title: data.title,
       title_link: data.html_url,
-      pretext: `Issue #${issue_number} for ${repo} has been closed.`
-    }]};
+      text: body
+    });
+  } catch (error) {
+    result.push({
+      color: 'danger',
+      text: `Error: ${error.response.status} ${error.response.data.message}`
+    });
   }
+
+  return {
+    response_type: 'in_channel',
+    attachments: result
+  };
 }
 
 /**
@@ -58,9 +71,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
