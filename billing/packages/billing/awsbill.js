@@ -136,13 +136,13 @@ async function _command(params, commandText, secrets = {}) {
       if (cost === 0) {
         continue;
       }
-	  if (serviceFieldCount == 10) {
-		serviceSectionList.push(serviceSection);
+      if (serviceFieldCount == 10) {
+        serviceSectionList.push(serviceSection);
         serviceSection = {type: 'section', fields: []};
         serviceFieldCount = 0;
       }
       serviceFieldCount++;
-      
+
       // Object key is the search value & object value is the replace value.
       const replaceDict = {
         'Elastic Compute Cloud': 'Elastic Compute',
@@ -238,7 +238,15 @@ async function _command(params, commandText, secrets = {}) {
     }
   } catch (error) {
     result.response_type = 'ephemeral';
-    result.text = `Error: ${error.message}`;
+    result.blocks.push(
+      mui(
+        {
+          type: 'context',
+          elements: [{type: 'mrkdwn', text: `Error: ${error.message}`}]
+        },
+        client
+      )
+    );
   }
 
   if (client === 'mattermost') {
@@ -255,8 +263,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
