@@ -144,7 +144,7 @@ To list EC2 instances under your account:
 
 `corona_stats` - Live stats for the pandemic, worldwide or in a specific country/state/district. (To install: `/nc csm_install corona_stats`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />
 
-`times` - Displays current time in AM/PM format for the given cities. (To install: `/nc csm_install times`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />
+`times` - Displays current time in AM/PM format for the given cities. (To install: `/nc csm_install times`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
 
 `translate` - Translates text to a specified language. (To install: `/nc csm_install translate`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
 
