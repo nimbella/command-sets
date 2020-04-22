@@ -1,4 +1,4 @@
-# Get live Coronavirus stats in Slack with Nimbella Commander
+# Get live Coronavirus stats in Slack/Mattermost with Nimbella Commander
 
 Coronaviruses (CoV) are a large family of viruses that cause illness ranging from the common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS-CoV) and Severe Acute Respiratory Syndrome (SARS-CoV). A novel coronavirus (nCoV) is a new strain that has not been previously identified in humans.
 
@@ -22,5 +22,3 @@ Available commands:
 `/nc corona_stats <Country Name | Abbreviation > -r <State Name | Abbreviation>`  -- to get stats for a specific state.
 
 `/nc corona_stats <Country Name | Abbreviation > -r <District Name>`  -- to get stats for a specific district.
-
-[Read More](https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/)
