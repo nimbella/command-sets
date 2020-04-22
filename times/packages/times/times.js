@@ -2,6 +2,64 @@
 /* eslint-disable no-underscore-dangle */
 // jshint esversion: 9
 
+const makeStringOfLength = (string, length) => {
+  while (string.length < length) {
+    string += ' ';
+  }
+
+  return string;
+};
+
+/**
+ * A small function that converts slack `section` to mattermost compatible markdown.
+ * @param {object} element - Slack element
+ * @param {string} client - name of the client
+ * @returns {string}
+ */
+const mui = (element, client) => {
+  if (client === 'slack') {
+    return element;
+  }
+
+  const output = [];
+  switch (element.type) {
+    case 'context': {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'section': {
+      if (element.fields && element.fields.length > 0) {
+        let longestColumn = 0;
+        for (let i = 0; i < element.fields.length; i++) {
+          element.fields[i].text = element.fields[i].text.replace(/\*/g, '**');
+          if (element.fields[i].text.length > longestColumn) {
+            longestColumn = element.fields[i].text.length;
+          }
+        }
+
+        // Customized for this command to append two fields into one string of equal length
+        for (let i = 0; i < element.fields.length; i += 2) {
+          const cityName = makeStringOfLength(
+            element.fields[i].text,
+            longestColumn
+          );
+          const cityTime = element.fields[i + 1].text;
+
+          output.push(cityName + ' ' + cityTime + '\n');
+        }
+      } else if (element.text) {
+        // Convert single text element to h4 in mattermost.
+        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+  }
+
+  return output.join('');
+};
+
 const defaultCities = 'delhi, rome, new york, los angeles';
 
 const worldClock1 = 'https://24timezones.com/current_world_time.php/';
@@ -10,12 +68,13 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const tableparser = require('cheerio-tableparser');
 
-const toTitleCase = (phrase) => phrase
-  .trim()
-  .toLowerCase()
-  .split(' ')
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
+const toTitleCase = (phrase) =>
+  phrase
+    .trim()
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 const abbrExpand = (shortName) => {
   let longName = shortName;
@@ -29,40 +88,54 @@ const abbrExpand = (shortName) => {
   return longName;
 };
 
-const fail = (err, msg) => {
+const fail = (err) => {
   console.log(err);
   return {
     response_type: 'in_channel',
-    text: msg || 'Couldn\'t get times.',
+    text: err || "Couldn't get times.",
   };
 };
 
-const success = (fields) => {
+const success = (fields, client) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [{
-      type: 'section',
-      fields: [],
-    }],
+    blocks: [
+      {
+        type: 'section',
+        fields: [],
+      },
+    ],
   };
   Object.keys(fields).forEach((key) => {
-    response.blocks[0].fields.push({
-      type: 'mrkdwn',
-      text: `*${key}*`,
-
-    }, {
-      type: 'mrkdwn',
-      text: `*${fields[key].split('\n')[0]}*`,
-    });
+    response.blocks[0].fields.push(
+      {
+        type: 'mrkdwn',
+        text: `*${key}*`,
+      },
+      {
+        type: 'mrkdwn',
+        text: `*${fields[key].split('\n')[0]}*`,
+      }
+    );
   });
+
+  if (client === 'mattermost') {
+    response.text = mui(response.blocks[0], client);
+    delete response.blocks;
+    return response;
+  }
 
   response.blocks.push({
     type: 'context',
-    elements: [{
-      type: 'mrkdwn',
-      text: 'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>'
-    }],
+    elements: [
+      {
+        type: 'mrkdwn',
+        text:
+          'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>',
+      },
+    ],
   });
+
   return response;
 };
 
@@ -76,14 +149,16 @@ const success = (fields) => {
 async function _command(params, commandText, secrets = {}) {
   let response;
   try {
-    response = await axios.get(worldClock1, {
-      headers: {
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-    }).catch((error) => {
-      console.error(error);
-      axios.get(worldClock2);
-    });
+    response = await axios
+      .get(worldClock1, {
+        headers: {
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+      })
+      .catch((error) => {
+        console.error(error);
+        axios.get(worldClock2);
+      });
     if (response.status !== 200) {
       return fail(response);
     }
@@ -92,7 +167,7 @@ async function _command(params, commandText, secrets = {}) {
   }
   const fields = {};
   const html = cheerio.load(response.data);
-  const { cities = defaultCities } = params;
+  const {cities = defaultCities} = params;
   const cityList = cities.split(',');
   try {
     tableparser(html);
@@ -101,7 +176,6 @@ async function _command(params, commandText, secrets = {}) {
     let allCities = [];
     if (times.length > 0) {
       for (let index = 0; index < times.length; index += 1) {
-        const element = times[index];
         allCities = allCities.concat(times[index]);
         allTimes = allTimes.concat(times[index + 1]);
         index += 1;
@@ -120,7 +194,7 @@ async function _command(params, commandText, secrets = {}) {
       }
       fields[city] = time;
     }
-    return success(fields);
+    return success(fields, params.__client.name);
   } catch (e) {
     return fail(e.message);
   }
@@ -133,7 +207,11 @@ async function _command(params, commandText, secrets = {}) {
  */
 
 const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
