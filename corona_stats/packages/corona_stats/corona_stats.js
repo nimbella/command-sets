@@ -17,39 +17,38 @@ let inStatesData;
 let inDistrictData;
 
 const mui = (element, client) => {
-  if (client === 'slack') {
-    return element;
-  }
-
-  const output = [];
-  switch (element.type) {
-    case 'context': {
-      for (const item of element.elements) {
-        output.push(item.text.replace(/\*/g, '**'));
-      }
-      break;
-    }
-    case 'section': {
-      if (element.fields && element.fields.length > 0) {
-        for (const field of element.fields) {
-          output.push(field.text.replace(/\*/g, '**') + '\n');
+  if (client === 'mattermost') {
+    const output = [];
+    switch (element.type) {
+      case 'context': {
+        for (const item of element.elements) {
+          output.push(item.text.replace(/\*/g, '**'));
         }
-      } else if (element.text) {
-        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+        break;
       }
-      break;
+      case 'section': {
+        if (element.fields && element.fields.length > 0) {
+          for (const field of element.fields) {
+            output.push(field.text.replace(/\*/g, '**') + '\n');
+          }
+        } else if (element.text) {
+          output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+        }
+        break;
+      }
+      case 'mrkdwn': {
+        output.push('#### ' + element.text.replace(/\*/g, '**'));
+        break;
+      }
+      case 'divider': {
+        output.push('***');
+        break;
+      }
     }
-    case 'mrkdwn': {
-      output.push('#### ' + element.text.replace(/\*/g, '**'));
-      break;
-    }
-    case 'divider': {
-      output.push('***');
-      break;
-    }
-  }
 
-  return output.join(' ');
+    return output.join(' ');
+  }
+  return element;
 };
 
 const toTitleCase = (phrase) => phrase
@@ -289,7 +288,7 @@ const success = (header, fields, footer, client) => {
     type: 'context',
     elements: [{
       type: 'mrkdwn',
-      text: `add _corona_stats_ to your ${toTitleCase(client)} with <${client==='slack'?'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/':'https://github.com/nimbella/command-sets'}|Commander>.`,
+      text: `add _corona_stats_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets'}|Commander>.`,
     }],
   }
   if (footer) {
@@ -369,7 +368,7 @@ const help = (client) => {
     type: 'context',
     elements: [{
       type: 'mrkdwn',
-      text: 'add _corona_stats_ to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander> | data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>',
+      text: `add _corona_stats_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets'}|Commander> \n data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>`,
     }],
   }, client));
 
@@ -524,10 +523,10 @@ async function _command(params) {
   }
   if (country) {
     if (country === 'USA') {
-      footer = '\nto see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
+      footer = '\n to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
     }
     if (country === 'India') {
-      footer = '\nto see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
+      footer = '\n to see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
     }
     header = `CoronaVirus 😷 Stats in ${country} ${getFlag(country)} :`;
     fields = getDetails(country, countryHtml);
