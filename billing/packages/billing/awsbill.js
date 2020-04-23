@@ -49,7 +49,8 @@ async function _command(params, commandText, secrets = {}) {
   const {
     awsCostExplorerAccessKeyId,
     awsCostExplorerSecretAccessKey,
-    awsCostExplorerRegion
+    awsCostExplorerRegion,
+    awsCostThreshold
   } = secrets;
 
   if (
@@ -64,8 +65,14 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const {month_year: monthYear, __client} = params;
+  const client = __client ? __client.name : 'slack';
 
-  const client = __client.name;
+  if (monthYear === 'task' && !awsCostThreshold) {
+    return {
+      response_type: 'ephemeral', // eslint-disable-line camelcase
+      text: `Please create a secret named \`awsCostThreshold\` specifying the amount to get notified when the bill exceeds the set threshold.\nNote: The AWS API is delayed by a day, so please set your threshold amount a bit less than your actual amount.`
+    };
+  }
 
   const AWS = require('aws-sdk');
 
@@ -73,7 +80,7 @@ async function _command(params, commandText, secrets = {}) {
   let month = now.getUTCMonth();
   let year = now.getUTCFullYear();
 
-  if (monthYear != null) {
+  if (monthYear != null && monthYear !== 'task') {
     const arr = monthYear.split('/');
     if (arr.length != 2) {
       return {
@@ -116,6 +123,7 @@ async function _command(params, commandText, secrets = {}) {
     region: secrets.awsCostExplorerRegion
   });
 
+  let totalCost = 0.0;
   try {
     const {promisify} = require('util');
     const getCostAndUsageAsync = promisify(costExplorer.getCostAndUsage).bind(
@@ -126,7 +134,6 @@ async function _command(params, commandText, secrets = {}) {
     const serviceSectionList = [];
     let serviceSection = {type: 'section', fields: []};
     const {Groups: groups} = data.ResultsByTime[0];
-    let totalCost = 0.0;
     let unit;
     let hasMultipleUnits = false;
 
@@ -252,10 +259,46 @@ async function _command(params, commandText, secrets = {}) {
   if (client === 'mattermost') {
     result.text = result.blocks.join('\n');
     delete result.blocks;
-    return result;
+    if (monthYear === 'task') {
+      if (Number(totalCost) >= Number(awsCostThreshold)) {
+        result.text =
+          `### The cost exceeded your threshold ${awsCostThreshold}\n` +
+          result.text +
+          `\nIncrease your threshold (${awsCostThreshold}) or stop this task to avoid getting further notifications.\n`;
+        return result;
+      } else {
+        return {text: ''};
+      }
+    } else {
+      return result;
+    }
   }
 
-  return result;
+  if (monthYear === 'task') {
+    if (Number(totalCost) >= Number(awsCostThreshold)) {
+      result.blocks.unshift({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `The cost exceeded your threshold *${awsCostThreshold}*`
+        }
+      });
+
+      result.blocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `Increase your threshold (${awsCostThreshold}) or stop this task to avoid getting further notifications.`
+        }
+      });
+
+      return result;
+    } else {
+      return {text: ''};
+    }
+  } else {
+    return result;
+  }
 }
 
 /**
