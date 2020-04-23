@@ -16,6 +16,42 @@ let usStatesHtml;
 let inStatesData;
 let inDistrictData;
 
+const mui = (element, client) => {
+  if (client === 'slack') {
+    return element;
+  }
+
+  const output = [];
+  switch (element.type) {
+    case 'context': {
+      for (const item of element.elements) {
+        output.push(item.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'section': {
+      if (element.fields && element.fields.length > 0) {
+        for (const field of element.fields) {
+          output.push(field.text.replace(/\*/g, '**') + '\n');
+        }
+      } else if (element.text) {
+        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+      }
+      break;
+    }
+    case 'mrkdwn': {
+      output.push('#### ' + element.text.replace(/\*/g, '**'));
+      break;
+    }
+    case 'divider': {
+      output.push('***');
+      break;
+    }
+  }
+
+  return output.join(' ');
+};
+
 const toTitleCase = (phrase) => phrase
   .toLowerCase()
   .split(' ')
@@ -225,111 +261,122 @@ const fail = (err, msg) => {
   };
 };
 
-const success = (header, fields, footer) => {
+const success = (header, fields, footer, client) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [{
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*${header}*`,
-      },
-    },
-    {
-      type: 'section',
-      fields: [],
-    },
-    {
-      type: 'context',
-      elements: [{
-        type: 'mrkdwn',
-        text: 'add _corona_stats_ to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander>',
-      }],
-    },
-    ],
+    blocks: [
+      mui({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*${header}*`,
+        },
+      }, client)
+    ]
   };
+  const body = {
+    type: 'section',
+    fields: [],
+  }
   for (const property in fields) {
-    response.blocks[1].fields.push({
+    body.fields.push({
       type: 'mrkdwn',
       text: `${property}:  *${(fields[property] || 0)}*`,
     });
   }
+
+  const lower = {
+    type: 'context',
+    elements: [{
+      type: 'mrkdwn',
+      text: `add _corona_stats_ to your ${toTitleCase(client)} with <${client==='slack'?'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/':'https://github.com/nimbella/command-sets'}|Commander>.`,
+    }],
+  }
   if (footer) {
-    response.blocks[2].elements.push(
+    lower.elements.push(
       {
         type: 'mrkdwn',
         text: footer,
-      },
-    );
+      })
+  }
+  response.blocks.push(mui(body, client))
+  response.blocks.push(mui(lower, client))
+  if (client === 'mattermost') {
+    response.text = response.blocks.join('\n');
+    delete response.blocks;
   }
   return response;
 };
 
-const help = () => {
+const help = (client) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [{
+    blocks: [mui({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '*Using these commands, see stats for any country/region or worldwide.*',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text:
       {
         type: 'mrkdwn',
         text: '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text:
       {
         type: 'mrkdwn',
         text: '*examples:*',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '`/nc corona_stats` : Worldwide stats',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '`/nc corona_stats in` : stats for India',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '`/nc corona_stats in -r up` : stats for Uttar Pradesh, India',
       },
-    },
-    {
+    }, client),
+    mui({
       type: 'section',
       text: {
         type: 'mrkdwn',
         text: '`/nc corona_stats in -r agra` : stats for Agra District, India',
       },
-    },
+    }, client),
     ],
   };
 
-  response.blocks.push({
+  response.blocks.push(mui({
     type: 'context',
     elements: [{
       type: 'mrkdwn',
       text: 'add _corona_stats_ to your Slack with <https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/ | Commander> | data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>',
     }],
-  });
+  }, client));
 
+  if (client === 'mattermost') {
+    response.text = response.blocks.join('\n');
+    delete response.blocks;
+  }
   return response;
 };
 
@@ -448,8 +495,9 @@ async function _command(params) {
   let fields = {};
   let header;
   let footer;
+  const client = params.__client.name;
   if (params.h || params.countryName === 'help') {
-    return help();
+    return help(client);
   }
   const country = getCountryName((params.countryName || '').toUpperCase());
   let state = params.region;
@@ -466,9 +514,9 @@ async function _command(params) {
       state = getIndianStateName(params.region.toUpperCase());
       fields = await getDetailsForIndia(state);
     }
-    header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
+    header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(country)} :`;
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
-    return success(header, fields, footer);
+    return success(header, fields, footer, client);
   }
   if (!countryHtml) {
     countryHtml = await getHTMLData(coronaMeter);
@@ -476,12 +524,12 @@ async function _command(params) {
   }
   if (country) {
     if (country === 'USA') {
-      footer = 'to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
+      footer = '\nto see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
     }
     if (country === 'India') {
-      footer = 'to see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
+      footer = '\nto see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
     }
-    header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
+    header = `CoronaVirus 😷 Stats in ${country} ${getFlag(country)} :`;
     fields = getDetails(country, countryHtml);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
   } else {
@@ -495,13 +543,13 @@ async function _command(params) {
       fields.Cases = stats[0];
       fields.Recovered = stats[2];
       fields.Fatalities = stats[1];
-      header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
+      header = 'CoronaVirus 😷 Stats Worldwide 🗺️ :';
       footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
     } catch (e) {
       return fail(undefined, 'Couldn\'t get the stats.');
     }
   }
-  return success(header, fields, footer);
+  return success(header, fields, footer, client);
 }
 
 /**
