@@ -514,7 +514,7 @@ async function _command(params) {
       state = getIndianStateName(params.region.toUpperCase());
       fields = await getDetailsForIndia(state);
     }
-    header = `CoronaVirus :mask: Stats in ${state}, ${country} ${getFlag(country)} :`;
+    header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(country)} :`;
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
     return success(header, fields, footer, client);
   }
@@ -529,7 +529,7 @@ async function _command(params) {
     if (country === 'India') {
       footer = '\nto see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
     }
-    header = `CoronaVirus :mask: Stats in ${country} ${getFlag(country)} :`;
+    header = `CoronaVirus 😷 Stats in ${country} ${getFlag(country)} :`;
     fields = getDetails(country, countryHtml);
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
   } else {
@@ -543,7 +543,7 @@ async function _command(params) {
       fields.Cases = stats[0];
       fields.Recovered = stats[2];
       fields.Fatalities = stats[1];
-      header = 'CoronaVirus :mask: Stats Worldwide :world_map: :';
+      header = 'CoronaVirus 😷 Stats Worldwide 🗺️ :';
       footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
     } catch (e) {
       return fail(undefined, 'Couldn\'t get the stats.');
