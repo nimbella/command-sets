@@ -72,40 +72,42 @@ async function _command(params, commandText, secrets = {}) {
 
   result.push(documentTone);
 
-  result.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: 'Breakdown'
-    }
-  });
-
-  for (const sentence of data.sentences_tone) {
-    const sentenceOutput = [];
-
-    sentenceOutput.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `*Sentence:* ${sentence.text}`
-        }
-      ]
+  if (data.sentences_tone && data.sentences_tone.length > 0) {
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'Breakdown'
+      }
     });
 
-    for (const tone of sentence.tones) {
+    for (const sentence of data.sentences_tone) {
+      const sentenceOutput = [];
+
       sentenceOutput.push({
         type: 'context',
         elements: [
           {
             type: 'mrkdwn',
-            text: `*Tone*: ${tone.tone_name} score: \`${tone.score}\``
+            text: `*Sentence:* ${sentence.text}`
           }
         ]
       });
-    }
 
-    result.push(...sentenceOutput);
+      for (const tone of sentence.tones) {
+        sentenceOutput.push({
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: `*Tone*: ${tone.tone_name} score: \`${tone.score}\``
+            }
+          ]
+        });
+      }
+
+      result.push(...sentenceOutput);
+    }
   }
 
   result.push({
@@ -130,12 +132,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
+const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch((error) => ({
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
