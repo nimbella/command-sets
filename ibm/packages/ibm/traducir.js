@@ -6,7 +6,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {text, targetlanguage} = params;
+  const {text, targetLanguage} = params;
   const {ibmLanguageTranslatorCredentials} = secrets;
   if (!ibmLanguageTranslatorCredentials) {
     return {
@@ -22,7 +22,7 @@ async function _command(params, commandText, secrets = {}) {
     url + '/v3/translate?version=2018-05-01',
     {
       text: text,
-      target: targetlanguage
+      target: targetLanguage
     },
     {
       auth: {
