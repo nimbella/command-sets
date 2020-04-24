@@ -3,12 +3,15 @@
 Interact with IBM services from Slack using Nimbella Commander.
 
 - [IBM Cloud Functions](#IBM-Cloud-Functions)
-- [IBM Watson Language Translator](#Traducir)
-- [IBM Watson Tone Analyzer](#Tone-Analyzer)
+- [IBM Watson Visual Recognition](#Watson-Visual-Recognition)
+- [IBM Watson Language Translator](#Watson-Language-Translator)
+- [IBM Watson Tone Analyzer](#Watson-Tone-Analyzer)
 
-## Install
+## Pre-requisite
 
-After you've [Nimbella Commander](https://nimbella.com/product/commander) installed, run the following command in your workspace to install IBM command set.
+These commands are intended for use with [Nimbella Commander](https://nimbella.com/product/commander).
+Please install Commander in your [Slack team](https://slack.com/apps/AS833QXL0-nimbella-commander) first.
+Next, install this command set into your workspace by running the following command.
 
 ```sh
 /nc csm_install ibm
@@ -84,7 +87,7 @@ By default, first 20 actions are shown. You can skip through the list by using `
 /nc invoke <actionName> [-nsId <nsId>]
 ```
 
-You can pass params to your function as flags. To pass namespace ID, use `-nsId` flag. Example: `/nc invoke <actionName> -nsId "aasdfasd2r435232sdgfw25"`
+You can pass parameters to your function as flags. To pass namespace ID, use `-nsId` flag. Example: `/nc invoke <actionName> -nsId "aasdfasd2r435232sdgfw25"`
 
 Example:
 
@@ -92,9 +95,33 @@ Example:
 /nc invoke <actionName> [<namespaceId>] -name "Nimbella". # { name: "Nimbella" }
 ```
 
-## Traducir
+## Watson Visual Recognition
 
-Translate text right from your Slack workspace using Nimbella Commander & IBM Watson Langauge Translator.
+This command uses the [Watson Visual Recognition service](https://cloud.ibm.com/catalog/services/visual-recognition) to label images.
+
+### Requirements
+
+You need to configure this service with an API key for the [Watson Visual Recognition service](https://cloud.ibm.com/catalog/services/visual-recognition).
+If you don't have an instance of this service, please create one first. Then visit the **Service credentials** page for this resource, click on **View credentials** and copy the API key for this service. You will use this API key with the Nimbella Secret Creator to encrypt the API key and use it with the command.
+
+1. Run `/nc secret_create` in your workspace and click the link provided.
+2. in the _Name_ field enter `ibmWatsonVisualRecognitionCredentials` and enter the API key in the corresponding _Value_ field.
+3. Press **Make Secrets** and follow the instructions shown.
+
+### Usage
+```sh
+/nc watson-viz <imageUrl>
+```
+
+For example:
+```sh
+/nc watson-viz https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg
+
+```
+
+## Watson Language Translator
+
+Translate text right from your Slack workspace using Nimbella Commander & IBM Watson Language Translator.
 
 > Traducir means 'translate' in Spanish.
 
@@ -133,7 +160,7 @@ Example:
 
 Refer [this](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) page for language codes.
 
-## Tone Analyzer
+## Watson Tone Analyzer
 
 Analyze tone of a text right from your Slack workspace using Nimbella Commander and IBM Watson Tone Analyzer.
 
