@@ -1,4 +1,9 @@
 commands:
+  watson-viz:
+    sourcePath: packages/ibm/watson-viz.py
+    description: Analyze and tag images using IBM Watson Visual Recognition
+    parameters:
+      - name: imageUrl
   traducir:
     sourcePath: packages/ibm/traducir.js
     description: Translate text using IBM Watson Language Translator
