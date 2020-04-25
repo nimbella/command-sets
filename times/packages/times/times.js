@@ -6,7 +6,6 @@ const makeStringOfLength = (string, length) => {
   while (string.length < length) {
     string += ' ';
   }
-
   return string;
 };
 
@@ -17,47 +16,45 @@ const makeStringOfLength = (string, length) => {
  * @returns {string}
  */
 const mui = (element, client) => {
-  if (client === 'slack') {
-    return element;
-  }
-
-  const output = [];
-  switch (element.type) {
-    case 'context': {
-      for (const item of element.elements) {
-        output.push(item.text.replace(/\*/g, '**'));
+  if (client === 'mattermost') {
+    const output = [];
+    switch (element.type) {
+      case 'context': {
+        for (const item of element.elements) {
+          output.push(item.text.replace(/\*/g, '**'));
+        }
+        break;
       }
-      break;
-    }
-    case 'section': {
-      if (element.fields && element.fields.length > 0) {
-        let longestColumn = 0;
-        for (let i = 0; i < element.fields.length; i++) {
-          element.fields[i].text = element.fields[i].text.replace(/\*/g, '**');
-          if (element.fields[i].text.length > longestColumn) {
-            longestColumn = element.fields[i].text.length;
+      case 'section': {
+        if (element.fields && element.fields.length > 0) {
+          let longestColumn = 0;
+          for (let i = 0; i < element.fields.length; i++) {
+            element.fields[i].text = element.fields[i].text.replace(/\*/g, '**');
+            if (element.fields[i].text.length > longestColumn) {
+              longestColumn = element.fields[i].text.length;
+            }
           }
-        }
+          // Customized for this command to append two fields into one string of equal length
+          for (let i = 0; i < element.fields.length; i += 2) {
+            const cityName = makeStringOfLength(
+              element.fields[i].text,
+              longestColumn
+            );
+            const cityTime = element.fields[i + 1].text;
 
-        // Customized for this command to append two fields into one string of equal length
-        for (let i = 0; i < element.fields.length; i += 2) {
-          const cityName = makeStringOfLength(
-            element.fields[i].text,
-            longestColumn
-          );
-          const cityTime = element.fields[i + 1].text;
-
-          output.push(cityName + ' ' + cityTime + '\n');
+            output.push(cityName + ' ' + cityTime + '\n');
+          }
+        } else if (element.text) {
+          // Convert single text element to h4 in mattermost.
+          output.push('#### ' + element.text.text.replace(/\*/g, '**'));
         }
-      } else if (element.text) {
-        // Convert single text element to h4 in mattermost.
-        output.push('#### ' + element.text.text.replace(/\*/g, '**'));
+        break;
       }
-      break;
     }
+    return output.join('');
   }
+  return element;
 
-  return output.join('');
 };
 
 const defaultCities = 'delhi, rome, new york, los angeles';
@@ -99,15 +96,14 @@ const fail = (err) => {
 const success = (fields, client) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [
-      {
-        type: 'section',
-        fields: [],
-      },
-    ],
+    blocks: []
   };
+  const body = {
+    type: 'section',
+    fields: []
+  }
   Object.keys(fields).forEach((key) => {
-    response.blocks[0].fields.push(
+    body.fields.push(
       {
         type: 'mrkdwn',
         text: `*${key}*`,
@@ -118,24 +114,21 @@ const success = (fields, client) => {
       }
     );
   });
-
-  if (client === 'mattermost') {
-    response.text = mui(response.blocks[0], client);
-    delete response.blocks;
-    return response;
-  }
-
-  response.blocks.push({
+  const footer = {
     type: 'context',
     elements: [
       {
         type: 'mrkdwn',
-        text:
-          'add _times_ to your Slack with <https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/ | Commander>',
+        text: `add _times_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets/tree/master/times'}|Commander>.`,
       },
     ],
-  });
-
+  }
+  response.blocks.push(mui(body, client))
+  response.blocks.push(mui(footer, client))
+  if (client === 'mattermost') {
+    response.text = response.blocks.join('\n');
+    delete response.blocks;
+  }
   return response;
 };
 
@@ -167,7 +160,7 @@ async function _command(params, commandText, secrets = {}) {
   }
   const fields = {};
   const html = cheerio.load(response.data);
-  const {cities = defaultCities} = params;
+  const { cities = defaultCities } = params;
   const cityList = cities.split(',');
   try {
     tableparser(html);
