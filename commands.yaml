@@ -1,4 +1,12 @@
 commands:
-  sites:
-    sourcePath: /projects/netlify/sites.js
-    description: List all sites under your account.
+  list_sites:
+    sourcePath: /projects/netlify/list_sites.js
+    description: Access all sites under your account.
+  list_deploys:
+    sourcePath: /projects/netlify/list_deploys.js
+    description: Access all deploys of a site.
+    parameters:
+      - name: site
+    options:
+      - name: skip
+        value: skip
