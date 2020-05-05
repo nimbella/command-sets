@@ -32,3 +32,13 @@ Example:
 ```sh
 /nc list_deploys <site> [-skip <skip>]
 ```
+
+### `list_forms`
+
+Access all forms under your account/site.
+
+```sh
+/nc list_forms [<site>]
+```
+
+You can also access forms of a site by providing the name of the site.

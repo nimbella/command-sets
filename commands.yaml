@@ -10,3 +10,9 @@ commands:
     options:
       - name: skip
         value: skip
+  list_forms:
+    sourcePath: /projects/netlify/list_forms.js
+    description: Access all forms under your account/site.
+    parameters:
+      - name: site
+        optional: true
