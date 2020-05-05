@@ -1,0 +1,4 @@
+commands:
+  sites:
+    sourcePath: /projects/netlify/sites.js
+    description: List all sites under your account.
