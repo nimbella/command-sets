@@ -1,14 +1,11 @@
 commands:
   vultr_list:
-    sourcePath: packages/vultr/vultr_list.js
     description: Lists Vultr server instances.
   vultr_reboot:
-    sourcePath: packages/vultr/vultr_reboot.js
     description: Reboot Vultr server instance.
     parameters:
       - name: subid
   vultr_snap:
-    sourcePath: packages/vultr/vultr_snap.js
     description: Create a snapshot of Vultr server instance.
     parameters:
       - name: subid

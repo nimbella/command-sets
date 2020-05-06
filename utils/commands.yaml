@@ -1,7 +1,5 @@
 commands:
   js_packages:
-    sourcePath: packages/npm-example/package_list.js
     description: Lists the installed node/npm packages in Commander
   python_packages:
-    sourcePath: packages/npm-example/package_list.js
     description: Lists the installed python packages in Commander

@@ -1,31 +1,25 @@
 commands:
   ec2_list:
-    sourcePath: packages/aws/ec2_list.js
     description: Lists your EC2 instances in the provided region.
     parameters:
       - name: substr
         optional: true
   ec2_reboot:
-    sourcePath: packages/aws/ec2_reboot.js
     description: Reboot your EC2 instance.
     parameters:
       - name: id
   ec2_status:
-    sourcePath: packages/aws/ec2_status.js
     description: Know the status of your EC2 instances.
     parameters:
       - name: id
   dynamodb_list:
-    sourcePath: packages/aws/dynamodb_list.js
     description: List DB Tables under your account.
     parameters:
       - name: startTable
         optional: true
   rds_list:
-    sourcePath: packages/aws/rds_list.js
     description: List Amazon RDS (Relational Database Service) instances under your account.
   route53_list:
-    sourcePath: packages/aws/route53_list.js
     description: Lists AWS route53 managed hostnames
     options:
       - name: type
@@ -33,7 +27,6 @@ commands:
       - name: match
         value: match_string
   route53_add:
-    sourcePath: packages/aws/route53_add.js
     description: Adds an AWS route53 hostname
     parameters:
       - name: hostname
