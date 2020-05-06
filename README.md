@@ -49,3 +49,11 @@ Access all form submissions under your account or submissions of a specific site
 ```sh
 /nc list_submissions
 ```
+
+### `deploy_cancel` [Not tested]
+
+Cancel a deploy.
+
+```sh
+/nc deploy_cancel <deployId>
+```
