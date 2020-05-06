@@ -40,12 +40,15 @@ const mui = (element, client) => {
         output.push('#### ' + element.text.replace(/\*/g, '**'));
         break;
       }
+      case 'image': {
+        output.push(`![${element.alt_text}](${element.image_url})`);
+        break;
+      }
       case 'divider': {
         output.push('***');
         break;
       }
     }
-
     return output.join(' ');
   }
   return element;
@@ -260,7 +263,7 @@ const fail = (err, msg) => {
   };
 };
 
-const success = (header, fields, footer, client) => {
+const success = (header, fields, footer, client, country) => {
   const response = {
     response_type: 'in_channel',
     blocks: [
@@ -283,6 +286,16 @@ const success = (header, fields, footer, client) => {
       text: `${property}:  *${(fields[property] || 0)}*`,
     });
   }
+  const chart = {
+    type: 'image',
+    title: {
+      type: 'plain_text',
+      text:  country||'',
+      emoji: true
+    },
+    image_url: `https://raichand-8kehpaun1bf-apigcp.nimbella.io/countries/${encodeURI(country)}.png?${new Date().getTime()}`,
+    alt_text: country||''
+  }
 
   const lower = {
     type: 'context',
@@ -299,6 +312,7 @@ const success = (header, fields, footer, client) => {
       })
   }
   response.blocks.push(mui(body, client))
+  if(country) response.blocks.push(mui(chart, client))
   response.blocks.push(mui(lower, client))
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
@@ -484,7 +498,7 @@ const getDetailsForIndia = async (name) => {
 };
 
 /**
- * @description Live stats for the pandemic, worldwide or in a specific country
+ * @description Live stats for the pandemic, worldwide or in a specific country/state/district.
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -515,7 +529,7 @@ async function _command(params) {
     }
     header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(country)} :`;
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
-    return success(header, fields, footer, client);
+    return success(header, fields, footer, client, country);
   }
   if (!countryHtml) {
     countryHtml = await getHTMLData(coronaMeter);
@@ -548,7 +562,7 @@ async function _command(params) {
       return fail(undefined, 'Couldn\'t get the stats.');
     }
   }
-  return success(header, fields, footer, client);
+  return success(header, fields, footer, client, country);
 }
 
 /**
