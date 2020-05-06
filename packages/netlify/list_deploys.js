@@ -36,6 +36,7 @@ async function _command(params, commandText, secrets = {}) {
     ) {
       const site = data[i];
       const body = [
+        `Deploy ID: \`${site.id}\``,
         `Build ID: \`${site.build_id}\``,
         `State: \`${site.state}\``,
         `Commit: \`<${site.commit_url}|${site.commit_ref.slice(0, 7)}>\``,
