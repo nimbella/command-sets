@@ -6,7 +6,6 @@ Interact with Netlify directly from Slack using Nimbella Commander.
 
 Create a secret named `netlifyToken` with your [Netlify Personal Access](https://app.netlify.com/user/applications/personal) token.
 
-
 ## Usage
 
 ### `list_sites` [WIP]
@@ -42,3 +41,11 @@ Access all forms under your account/site.
 ```
 
 You can also access forms of a site by providing the name of the site.
+
+### `list_submissions`
+
+Access all form submissions under your account or submissions of a specific site or form.
+
+```sh
+/nc list_submissions
+```

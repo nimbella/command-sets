@@ -16,3 +16,6 @@ commands:
     parameters:
       - name: site
         optional: true
+  list_submissions:
+    sourcePath: /projects/netlify/list_submissions.js
+    description: Acesss all form submissions under your account/site.
