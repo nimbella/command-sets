@@ -19,7 +19,7 @@ async function _command(params, commandText, secrets = {}) {
 
   const axios = require('axios');
   const result = [];
-  let {skip = false} = params;
+  let {skip = false, filter = false} = params;
   skip = skip === false ? 0 : skip;
 
   try {
@@ -47,13 +47,26 @@ async function _command(params, commandText, secrets = {}) {
       body.push(`Form: \`${submission.form_name}\``);
       body.push(`Site: \`${submission.site_url}\``);
 
-      result.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: body.join('\n'),
-        },
-      });
+      if (filter) {
+        if (body.join('\n').includes(filter)) {
+          result.push({
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: body.join('\n'),
+            },
+          });
+          continue;
+        }
+      } else {
+        result.push({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: body.join('\n'),
+          },
+        });
+      }
     }
   } catch (error) {
     result.push({
