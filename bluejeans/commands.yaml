@@ -1,15 +1,12 @@
 commands:
   bluejeans:
-    sourcePath: packages/bluejeans/bluejeans.js
     description: Dipslay help to use BlueJeans Command Set.
   bluejeans_list:
-    sourcePath: packages/bluejeans/bluejeans_list.js
     description: List meetings of a user.
     parameters:
       - name: userId
         optional: true
   bluejeans_create:
-    sourcePath: packages/bluejeans/bluejeans_create.js
     description: Create a BlueJeans meeting.
     options:
       - name: title
@@ -23,7 +20,6 @@ commands:
       - name: end
         value: end
   bluejeans_cancel:
-    sourcePath: packages/bluejeans/bluejeans_cancel.js
     description: Cancel a BlueJeans meeting.
     parameters:
       - name: meetingId

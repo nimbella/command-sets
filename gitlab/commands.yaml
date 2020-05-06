@@ -1,12 +1,10 @@
 commands:
   gitlab_stats:
-    sourcePath: packages/gitlab/gitlab_stats.js
     description: 'View community contribution stats for provided GitLab project repository. Example repository: username/project'
     parameters:
       - name: repo
         optional: false
   gitlab_create:
-    sourcePath: packages/gitlab/gitlab_create.js
     description: 'Creates a GitLab ticket with provided project repository, title, and descriptions. Example repository: username/project'
     parameters:
       - name: repo
@@ -16,7 +14,6 @@ commands:
       - name: description
         optional: false
   gitlab_users:
-    sourcePath: packages/gitlab/gitlab_users.js
     description: 'View list of users in GitLab project repository. Example repository: username/project'
     parameters:
       - name: repo
@@ -24,7 +21,6 @@ commands:
       - name: name
         optional: true
   gitlab_issues:
-    sourcePath: packages/gitlab/gitlab_issues.js
     description: 'View GitLab project issues. Note: Status may be all, opened, or closed.'
     parameters:
       - name: repo
@@ -32,7 +28,6 @@ commands:
       - name: status
         optional: true
   gitlab_assign:
-    sourcePath: packages/gitlab/gitlab_assign.js
     description: 'Assign issues to GitLab users and add labels to them. Labels must be comma deliminated!'
     parameters:
       - name: repo
@@ -44,5 +39,4 @@ commands:
       - name: labels
         optional: true
   gitlab:
-    sourcePath: packages/gitlab/gitlab.js
     description: 'View gitlab command set documentation'

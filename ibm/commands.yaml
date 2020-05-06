@@ -1,33 +1,27 @@
 commands:
   watson-viz:
-    sourcePath: packages/ibm/watson-viz.py
     description: Analyze and tag images using IBM Watson Visual Recognition
     parameters:
       - name: imageUrl
   traducir:
-    sourcePath: packages/ibm/traducir.js
     description: Translate text using IBM Watson Language Translator
     parameters:
       - name: text
       - name: targetLanguage
   tone:
-    sourcePath: packages/ibm/tone.js
     description: Analyze the tone of a text using IBM Watson Tone Analyzer
     parameters:
       - name: text
   tone_cs:
-    sourcePath: packages/ibm/tone_cs.js
     description: Analyze the tone of your customer using IBM Watson Tone Analyzer
     parameters:
       - name: text
   namespaces:
-    sourcePath: packages/ibm/namespaces.js
     description: List your IBM IAM and Cloud Foundry-based namespaces.
     options:
       - name: skip
         value: skip
   activations:
-    sourcePath: packages/ibm/activations.js
     description: List activation records in a namespace.
     parameters:
       - name: namespaceId
@@ -36,27 +30,23 @@ commands:
       - name: skip
         value: skip
   act_log:
-    sourcePath: packages/ibm/act_log.js
     description: Get the logs for an activation.
     parameters:
       - name: activationId
       - name: namespaceId
         optional: true
   act_result:
-    sourcePath: packages/ibm/act_result.js
     description: Get the results of an activation.
     parameters:
       - name: activationId
       - name: namespaceId
         optional: true
   invoke:
-    sourcePath: packages/ibm/invoke.js
     description: Invoke an action, web action, or action sequence.
     parameters:
       - name: actionName
       - name: '...'
   actions:
-    sourcePath: packages/ibm/actions.js
     description: List all actions, web actions, and action sequences in a namespaces.
     parameters:
       - name: namespaceId

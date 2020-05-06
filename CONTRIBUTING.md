@@ -63,13 +63,11 @@ Copy & paste the below into `commands.yaml`.
 sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/greetings
 commands:
   hola:
-    sourcePath: /packages/default/hola.js # Path of the command relative to sourceBasePath
     description: Greet in Spanish. # Small description of the command.
     parameters:
       - name: name
         optional: true # The name parameter is not strictly required by our code.
   bonjour:
-    sourcePath: /packages/default/bonjour.js
     description: Greet in French.
     parameters:
       - name: name
@@ -119,7 +117,6 @@ Append this to `command_sets.yaml`:
 
 ```yaml
 greetings:
-  sourcePath: https://raw.githubusercontent.com/nimbella/command-sets/master/greetings/commands.yaml
   description: Greet in different languages.
 ```
 
