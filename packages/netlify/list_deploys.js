@@ -20,6 +20,7 @@ async function _command(params, commandText, secrets = {}) {
   let {site, skip = 0} = params;
   // Handle slack escaping
   site = site.startsWith('<') ? site.split('|')[1].slice(0, -1) : site;
+  skip = skip === false ? 0 : skip;
 
   const axios = require('axios');
   const result = [];
