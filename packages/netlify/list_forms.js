@@ -43,13 +43,30 @@ async function _command(params, commandText, secrets = {}) {
     }
 
     for (const form of data) {
+      let fieldsString = '';
+
+      form.fields.forEach((field, index) => {
+        if (index === 0) {
+          fieldsString += '`' + field.name + '`';
+        } else {
+          fieldsString += ', `' + field.name + '`';
+        }
+      });
+
       const body = [
         `Form: *${form.name}*`,
-        `Total Submissions: ${form.submission_count}`,
-        `Last submission on *<!date^${Number(
-          new Date(form.last_submission_at).getTime().toString().slice(0, -3)
-        )}^{date_short} at {time}|${form.last_submission_at}>*`
+        `Fields: ${fieldsString}`,
+        `ID: \`${form.id}\``,
+        `Total Submissions: ${form.submission_count}`
       ];
+
+      if (form.submission_count !== 0) {
+        body.push(
+          `Last submission on _<!date^${Number(
+            new Date(form.last_submission_at).getTime().toString().slice(0, -3)
+          )}^{date_short} at {time}|${form.last_submission_at}>_`
+        );
+      }
 
       result.push({
         type: 'section',
