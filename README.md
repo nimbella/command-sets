@@ -8,13 +8,15 @@ Create a secret named `netlifyToken` with your [Netlify Personal Access](https:/
 
 ## Usage
 
-### `list_sites` [WIP]
+### `list_sites`
 
 Access all sites under your account.
 
 ```sh
-/nc list_sites
+/nc list_sites [-skip <skip>]
 ```
+
+The output contains only 5 or less sites, you can skip through the list using `-skip` flag.
 
 ### `list_deploys`
 
