@@ -199,7 +199,7 @@ const getIndianStateName = (name) => {
     CG: 'Chhattisgarh',
     CH: 'Chandigarh',
     DD: 'Daman and Diu',
-    DH: 'Dadra and Nagar Haveli',
+    DH: 'Dadar Nagar Haveli',
     DL: 'Delhi',
     GA: 'Goa',
     GJ: 'Gujarat',
@@ -263,7 +263,7 @@ const fail = (err, msg) => {
   };
 };
 
-const success = (header, fields, footer, client, country) => {
+const success = async (header, fields, footer, client, country, region) => {
   const response = {
     response_type: 'in_channel',
     blocks: [
@@ -286,15 +286,16 @@ const success = (header, fields, footer, client, country) => {
       text: `${property}:  *${(fields[property] || 0)}*`,
     });
   }
+  const chart_url = `https://raichand-8kehpaun1bf-apigcp.nimbella.io/charts/${encodeURI(region ? region : country)}.png`
   const chart = {
     type: 'image',
     title: {
       type: 'plain_text',
-      text:  country||'',
+      text: country || '',
       emoji: true
     },
-    image_url: `https://raichand-8kehpaun1bf-apigcp.nimbella.io/countries/${encodeURI(country)}.png?${new Date().getTime()}`,
-    alt_text: country||''
+    image_url: `${chart_url}?${new Date().getTime()}`,
+    alt_text: country || ''
   }
 
   const lower = {
@@ -312,7 +313,10 @@ const success = (header, fields, footer, client, country) => {
       })
   }
   response.blocks.push(mui(body, client))
-  if(country) response.blocks.push(mui(chart, client))
+  await axios.head(chart_url).then( r => {
+    if(r.status===200)
+    response.blocks.push(mui(chart, client));
+  }).catch(e => {console.log(`Couldn't get chart for ${region}`);})
   response.blocks.push(mui(lower, client))
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
@@ -474,21 +478,15 @@ const getDetailsForIndia = async (name) => {
     }
     let record = stats.find((o) => o.state === name);
     if (record) {
-      fields.Active = record.active;
-      fields['New Active'] = record.deltaactive;
-      fields.Confirmed = record.confirmed;
-      fields['New Confirmed'] = record.deltaconfirmed;
-      fields.Fatalities = record.deaths;
-      fields['New Fatalities'] = record.deltadeaths;
-      fields.Recovered = record.recovered;
-      fields['New Recovered'] = record.deltarecovered;
+      getStateFields(fields, record);
     } else {
       if (!inDistrictData) {
         inDistrictData = await getData(`${covid19India}state_district_wise.json`);
       }
       record = Object.values(inDistrictData).find((e) => e.districtData[name]);
       if (record) {
-        fields.Confirmed = record.districtData[name].confirmed;
+        const district = record.districtData[name];
+        getDistrictFields(fields, district);
       }
     }
   } catch (e) {
@@ -496,6 +494,28 @@ const getDetailsForIndia = async (name) => {
   }
   return fields;
 };
+
+function getStateFields(fields, record) {
+  fields.Active = record.active;
+  fields['New Active'] = record.deltaactive;
+  fields.Confirmed = record.confirmed;
+  fields['New Confirmed'] = record.deltaconfirmed;
+  fields.Fatalities = record.deaths;
+  fields['New Fatalities'] = record.deltadeaths;
+  fields.Recovered = record.recovered;
+  fields['New Recovered'] = record.deltarecovered;
+}
+
+function getDistrictFields(fields, record) {
+  fields.Active = record.active;
+  fields['New Active'] = record.delta.active;
+  fields.Confirmed = record.confirmed;
+  fields['New Confirmed'] = record.delta.confirmed;
+  fields.Fatalities = record.deaths;
+  fields['New Fatalities'] = record.delta.deaths;
+  fields.Recovered = record.recovered;
+  fields['New Recovered'] = record.delta.recovered;
+}
 
 /**
  * @description Live stats for the pandemic, worldwide or in a specific country/state/district.
@@ -512,7 +532,7 @@ async function _command(params) {
   if (params.h || params.countryName === 'help') {
     return help(client);
   }
-  const country = getCountryName((params.countryName || '').toUpperCase());
+  let country = getCountryName((params.countryName || '').toUpperCase());
   let state = params.region;
   if (params.region) {
     if (country === 'USA') {
@@ -529,7 +549,7 @@ async function _command(params) {
     }
     header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(country)} :`;
     if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
-    return success(header, fields, footer, client, country);
+    return success(header, fields, footer, client, country, state);
   }
   if (!countryHtml) {
     countryHtml = await getHTMLData(coronaMeter);
@@ -548,6 +568,7 @@ async function _command(params) {
   } else {
     try {
       const statsElements = countryHtml('.maincounter-number');
+      country = 'Worldwide';
       const stats = statsElements
         .text()
         .trim()
