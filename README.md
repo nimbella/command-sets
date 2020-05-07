@@ -49,8 +49,10 @@ You can also access forms of a site by providing the name of the site.
 Access all form submissions under your account or submissions of a specific site or form.
 
 ```sh
-/nc list_submissions
+/nc list_submissions [-filter <filter>] [-skip <skip>]
 ```
+
+You can search for submissions that includes a specific keyword using `-filter` flag.
 
 ### `deploy_cancel` [Not tested]
 
