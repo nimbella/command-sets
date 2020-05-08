@@ -87,6 +87,12 @@ async function _command(params, commandText, secrets = {}) {
 
         body.push(`Form: \`${submission.form_name}\``);
         body.push(`Site: \`${submission.site_url}\``);
+        body.push(
+          `Submitted on: \`<!date^${new Date(submission.created_at)
+            .getTime()
+            .toString()
+            .slice(0, -3)}^{date_short} at {time}|${submission.created_at}>\``
+        );
 
         result.push({
           type: 'section',
