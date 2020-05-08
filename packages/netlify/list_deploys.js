@@ -38,13 +38,24 @@ async function _command(params, commandText, secrets = {}) {
       const body = [
         `Deploy ID: \`${site.id}\``,
         `Build ID: \`${site.build_id}\``,
-        `State: \`${site.state}\``,
-        `Commit: \`<${site.commit_url}|${site.commit_ref.slice(0, 7)}>\``,
-        `Deploy Time: ${site.deploy_time + 's' || 'not available'}`,
+        `State: \`${site.state}\``
+      ];
+
+      if (site.commit_url) {
+        body.push(
+          `Commit: \`<${site.commit_url}|${site.commit_ref.slice(0, 7)}>\``
+        );
+      }
+
+      if (site.deploy_time) {
+        body.push(`Deploy Time: ${site.deploy_time + 's' || 'not available'}`);
+      }
+
+      if (site.updated_at) {
         `Deployed on <!date^${Number(
           new Date(site.updated_at).getTime().toString().slice(0, -3)
-        )}^{date_short} at {time}|${site.updated_at}>`
-      ];
+        )}^{date_short} at {time}|${site.updated_at}>`;
+      }
 
       result.push({
         color: site.state === 'error' ? 'danger' : 'good',

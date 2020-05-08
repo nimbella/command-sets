@@ -27,8 +27,8 @@ commands:
         value: skip
       - name: filter
         value: filter
-  deploy_cancel:
-    sourcePath: /projects/netlify/deploy_cancel.js
+  cancel_deploy:
+    sourcePath: /projects/netlify/cancel_deploy.js
     description: Cancel a Netlify deploy.
     parameters:
       - name: deployId

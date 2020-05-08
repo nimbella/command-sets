@@ -22,24 +22,36 @@ async function _command(params, commandText, secrets = {}) {
   const axios = require('axios');
   const result = [];
 
+  let response;
   try {
     const URL = `https://api.netlify.com/api/v1/deploys/${deployId}/cancel?access_token=${netlifyToken}`;
     const {data} = await axios.post(URL);
+    response = data;
 
     result.push({
-      title: data.title,
-      text: `State: \`${data.state}\`\nSkipped: \`${data.skipped}\``
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Cancelled the deploy of \`${data.title}\`(<${
+          data.commit_url
+        }|${data.commit_ref.slice(0, 7)}>)`
+      }
     });
   } catch (error) {
     result.push({
-      color: 'danger',
-      text: `Error: ${error.message}`
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Failed to cancel the deployment \`${response.title}\`(<${
+          response.commit_url
+        }|${response.commit_ref.slice(0, 7)}>)`
+      }
     });
   }
 
   return {
     response_type: 'in_channel',
-    attachments: result
+    blocks: result
   };
 }
 

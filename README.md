@@ -54,10 +54,10 @@ Access all form submissions under your account or submissions of a specific site
 
 You can search for submissions that includes a specific keyword using `-filter` flag.
 
-### `deploy_cancel` [Not tested]
+### `cancel_deploy`
 
 Cancel a deploy.
 
 ```sh
-/nc deploy_cancel <deployId>
+/nc cancel_deploy <deployId>
 ```
