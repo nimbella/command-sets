@@ -37,3 +37,5 @@ command_sets:
     description: Set of utility commands for Commander
   jira:
     description: Commands to interact with Jira Cloud.
+  netlify:
+    description: Commands to interact with Netlify.

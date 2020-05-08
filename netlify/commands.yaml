@@ -1,0 +1,34 @@
+commands:
+  list_sites:
+    sourcePath: /projects/netlify/list_sites.js
+    description: Access all sites under your account.
+    options:
+      - name: skip
+        value: skip
+  list_deploys:
+    sourcePath: /projects/netlify/list_deploys.js
+    description: Access all deploys of a site.
+    parameters:
+      - name: site
+    options:
+      - name: skip
+        value: skip
+  list_forms:
+    sourcePath: /projects/netlify/list_forms.js
+    description: Access all forms under your account/site.
+    parameters:
+      - name: site
+        optional: true
+  list_submissions:
+    sourcePath: /projects/netlify/list_submissions.js
+    description: Acesss all form submissions under your account/site.
+    options:
+      - name: skip
+        value: skip
+      - name: filter
+        value: filter
+  cancel_deploy:
+    sourcePath: /projects/netlify/cancel_deploy.js
+    description: Cancel a Netlify deploy.
+    parameters:
+      - name: deployId
