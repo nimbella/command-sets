@@ -4,6 +4,8 @@ commands:
     parameters:
       - name: month_year
         optional: true
+    options:
+      - name: task
   datadogbill:
     description: Shows your Datadog bill
     options:
