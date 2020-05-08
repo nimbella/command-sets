@@ -67,18 +67,23 @@ async function _command(params, commandText, secrets = {}) {
         );
       }
 
-      result.push({
+      const section = {
         type: 'section',
         text: {
           type: 'mrkdwn',
           text: body.join('\n')
-        },
-        accessory: {
+        }
+      };
+
+      if (site.screenshot_url) {
+        section.accessory = {
           type: 'image',
           image_url: site.screenshot_url,
           alt_text: site.name
-        }
-      });
+        };
+      }
+
+      result.push(section);
     }
 
     result.push({
