@@ -5,6 +5,8 @@ commands:
     parameters:
       - name: month_year
         optional: true
+    options:
+      - name: task
   datadogbill:
     sourcePath: packages/billing/datadogbill.js
     description: Shows your Datadog bill

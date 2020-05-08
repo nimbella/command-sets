@@ -64,10 +64,10 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {month_year: monthYear, __client} = params;
+  const {month_year: monthYear, __client, task = false} = params;
   const client = __client ? __client.name : 'slack';
 
-  if (monthYear === 'task' && !awsCostThreshold) {
+  if (task === true && !awsCostThreshold) {
     return {
       response_type: 'ephemeral', // eslint-disable-line camelcase
       text: `Please create a secret named \`awsCostThreshold\` specifying the amount to get notified when the bill exceeds the set threshold.\nNote: The AWS API is delayed by a day, so please set your threshold amount a bit less than your actual amount.`
@@ -80,7 +80,7 @@ async function _command(params, commandText, secrets = {}) {
   let month = now.getUTCMonth();
   let year = now.getUTCFullYear();
 
-  if (monthYear != null && monthYear !== 'task') {
+  if (monthYear != null) {
     const arr = monthYear.split('/');
     if (arr.length != 2) {
       return {
@@ -259,7 +259,7 @@ async function _command(params, commandText, secrets = {}) {
   if (client === 'mattermost') {
     result.text = result.blocks.join('\n');
     delete result.blocks;
-    if (monthYear === 'task') {
+    if (task === true) {
       if (Number(totalCost) >= Number(awsCostThreshold)) {
         result.text =
           `### The cost exceeded your threshold ${awsCostThreshold}\n` +
@@ -274,7 +274,7 @@ async function _command(params, commandText, secrets = {}) {
     }
   }
 
-  if (monthYear === 'task') {
+  if (task === true) {
     if (Number(totalCost) >= Number(awsCostThreshold)) {
       result.blocks.unshift({
         type: 'section',
