@@ -263,15 +263,20 @@ async function _command(params) {
       }
 
       default: {
-        result.push({
-          type: 'context',
-          elements: [
+        result.push(
+          mui(
             {
-              type: 'mrkdwn',
-              text: `\`${type}\` is not supported. Supported records are \`A\`, \`AAAA\`, \`TXT\`, \`MX\`, \`NS\` & \`SOA\`.`
-            }
-          ]
-        });
+              type: 'context',
+              elements: [
+                {
+                  type: 'mrkdwn',
+                  text: `\`${type}\` is not supported. Supported records are \`A\`, \`AAAA\`, \`TXT\`, \`MX\`, \`NS\` & \`SOA\`.`
+                }
+              ]
+            },
+            client
+          )
+        );
         break;
       }
     }
@@ -335,8 +340,12 @@ async function _command(params) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
