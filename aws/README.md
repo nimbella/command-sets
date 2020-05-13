@@ -2,6 +2,24 @@
 
 Interact with Amazon Web Services directly from Slack using Nimbella Commander.
 
+## Installation
+
+Please make sure you've Commander in your [Slack team](https://slack.com/apps/AS833QXL0-nimbella-commander) before executing this Slash command.
+
+```
+/nc csm_install aws
+```
+
+## Requirements
+
+We need three secrets named `awsAccessKey`, `awsSecretKey`, and `awsRegion` for all commands excluding route53.
+
+Watch [this](https://youtu.be/665RYobRJDY) tutorial to learn how to create AWS access keys. And while creating the keys, please make sure they have **permissions** to interact with EC2, DynamoDB, and RDS services.
+
+The values of `awsAccessKey`, `awsSecretKey`, and `awsRegion` should be your Access Key ID, Secret access key and your AWS region code respectively.
+
+To use `route53` commands, create three secrets named `route53AccessKey`, `route53SecretKey`, `route53ZoneId` with values being your Access Key ID, Secret access key and Route 53 Zone Identifier respectively.
+
 ## Commands
 
 - [`ec2_list`](#ec2_list)
