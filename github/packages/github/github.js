@@ -83,7 +83,7 @@ async function _command(params, commandText, secrets = {}) {
       section('*Getting repository statistics:* \n`/nc github_stats <repo>`'),
       image(`${baseUrl}/stats.png`, 'github stats command'),
       //
-      section('*Finding repositories, commits, code, issues, pull requests, users and topics using keywords:* \n`/nc github_list <entity> <keywords> [<repository>] [<language>]`\nEntity can be passed in as an abbreviation:\
+      section('*Finding repositories, commits, code, issues, pull requests, users and topics using keywords:* \n`/nc github_list <entity> <keywords> [-r <repository>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]`\nEntity can be passed in as an abbreviation:\
       \n r  - repositories\
       \n cm - commits\
       \n c  - code \

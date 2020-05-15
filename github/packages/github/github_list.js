@@ -28,10 +28,12 @@ async function command(params, commandText, secrets = {}) {
     keywords,
     repository,
     language,
+    pageSize,
+    pageNumber = 1
   } = params;
   let displayEntity = entity;
   const displayKeywords = keywords;
-  let pageSize = '';
+  let adjustedPageSize = 20;
   switch (entity) {
     case 'r':
     case 'rep':
@@ -45,7 +47,6 @@ async function command(params, commandText, secrets = {}) {
       entity = 'commits';
       displayEntity = 'Commits';
       headers.Accept = 'application/vnd.github.cloak-preview';
-      pageSize = '&per_page=20';
       break;
     case 'c':
     case 'cd':
@@ -59,7 +60,7 @@ async function command(params, commandText, secrets = {}) {
       entity = 'issues';
       displayEntity = 'Issues';
       keywords += '+is:issue';
-      pageSize = '&per_page=5';
+      adjustedPageSize = 5;
       break;
     case 'p':
     case 'pr':
@@ -67,7 +68,6 @@ async function command(params, commandText, secrets = {}) {
       entity = 'issues';
       displayEntity = 'Pull-requests';
       keywords += '+is:pr';
-      pageSize = '&per_page=20';
       break;
     case 'u':
     case 'user':
@@ -79,14 +79,14 @@ async function command(params, commandText, secrets = {}) {
       entity = 'topics';
       displayEntity = 'Topics';
       headers.Accept = 'application/vnd.github.mercy-preview+json';
-      pageSize = '&per_page=10';
+      adjustedPageSize = 10;
       break;
     default:
       displayEntity = 'Repositories';
       entity = 'repositories';
       break;
   }
-  const url = `https://api.github.com/search/${entity}?q=${repository ? `repo:${repository}+` : ''}${keywords}${language ? `+language:${language}` : ''}${pageSize}`;
+  const url = `https://api.github.com/search/${entity}?q=${repository ? `repo:${repository}+` : ''}${keywords}${language ? `+language:${language}` : ''}&page=${pageNumber}&per_page=${pageSize?pageSize:adjustedPageSize}`;
   const res = await getRequest(url, secrets);
 
   if (res && res.data) {

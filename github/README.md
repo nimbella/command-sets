@@ -90,7 +90,7 @@ Viewing recent pull requests
 Finding repositories, commits, code, issues, pull requests, users and topics using keywords
 
 ```
-/nc github_list <entity> <keywords> [-r <repository>] [-l <language>]
+/nc github_list <entity> <keywords> [-r <repository>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]
 ```
 
 ![GitHub list command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/list.png)
