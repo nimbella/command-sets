@@ -425,16 +425,16 @@ const getDetails = (name, html) => {
     if (stats.length === 0) {
       return;
     }
-    const recordIndex = stats[0].indexOf(name);
+    const recordIndex = stats[1].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = `${stats[1][recordIndex]} _(per M. ${stats[8][recordIndex]})_`;
-      fields['Total Fatalities'] = `${stats[3][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
-      fields['Total Tests'] = `${stats[10][recordIndex]} _(per M. ${stats[11][recordIndex]})_`;
-      fields['Total Recovered'] = stats[5][recordIndex];
-      fields['New Cases'] = stats[2][recordIndex];
-      fields['New Fatalities'] = stats[4][recordIndex];
-      fields['Active Cases'] = stats[6][recordIndex];
-      fields['Critical Cases'] = stats[7][recordIndex];
+      fields['Total Cases'] = `${stats[2][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
+      fields['Total Fatalities'] = `${stats[4][recordIndex]} _(per M. ${stats[10][recordIndex]})_`;
+      fields['Total Tests'] = `${stats[11][recordIndex]} _(per M. ${stats[12][recordIndex]})_`;
+      fields['Total Recovered'] = stats[6][recordIndex];
+      fields['New Cases'] = stats[3][recordIndex];
+      fields['New Fatalities'] = stats[5][recordIndex];
+      fields['Active Cases'] = stats[7][recordIndex];
+      fields['Critical Cases'] = stats[8][recordIndex];
     }
   } catch (e) {
     fail(e.message);
