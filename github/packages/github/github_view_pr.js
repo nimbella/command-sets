@@ -8,10 +8,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {
-    github_token: githubToken,
-    github_default_repo: defaultRepo = 'nimbella/command-sets'
-  } = secrets;
+  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
   const {repo = defaultRepo, state = 'open'} = params;
   if (!repo) {
     return {

@@ -31,6 +31,8 @@ Create a secret named `github_default_repo` to avoid passing repository (`-r`) t
 
 ## Usage
 
+**Note:** The repository (-r) flag should include both owner name and repository name. Example: `-r nimbella/command-sets`
+
 Creating an issue.
 
 ```
