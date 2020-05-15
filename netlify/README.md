@@ -4,7 +4,7 @@ Interact with Netlify directly from Slack using Nimbella Commander.
 
 ## Installation
 
-Please make sure you've Commander in your [Slack team](https://slack.com/apps/AS833QXL0-nimbella-commander) before executing this Slash command.
+Please make sure you have already installed Commander in your [Slack team](https://slack.com/apps/AS833QXL0-nimbella-commander) before executing this Slash command.
 
 ```
 /nc csm_install netlify
