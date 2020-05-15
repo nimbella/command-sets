@@ -78,5 +78,9 @@ commands:
         value: repository
       - name: l
         value: language
+      - name: s
+        value: pageSize
+      - name: n
+        value: pageNumber
   github:
     description: View GitHub command set documentation
