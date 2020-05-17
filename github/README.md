@@ -58,7 +58,7 @@ Reopening an issue
 Finding a pull request by date.
 
 ```
-/nc github_find_pr <date> [-r <repository>]
+/nc github_find_pr <date> [-r <repository>] [-state <state>]
 ```
 
 ![GitHub find_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.png)
@@ -74,7 +74,7 @@ Labeling an issue.
 Getting repository statistics
 
 ```
-/nc github_stats <repo>
+/nc github_stats [<repository>]
 ```
 
 ![GitHub stats command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/stats.png)
@@ -82,7 +82,7 @@ Getting repository statistics
 Viewing recent pull requests
 
 ```
-/nc github_view_pr <repo>
+/nc github_view_pr [<repository>] [-state <state>]
 ```
 
 ![GitHub view_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/view_pr.png)
