@@ -29,6 +29,8 @@ Visit https://help.github.com/en/github/authenticating-to-github/creating-a-pers
 
 Create a secret named `github_default_repo` to avoid passing repository (`-r`) to commands.
 
+![Secret Creator](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/secret_creator.png)
+
 ## Usage
 
 **Note:** The repository (-r) flag should include both owner name and repository name. Example: `-r nimbella/command-sets`
