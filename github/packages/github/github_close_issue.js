@@ -8,7 +8,7 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
+  let {github_token: githubToken, github_repos: defaultRepo} = secrets;
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -16,6 +16,9 @@ async function _command(params, commandText, secrets = {}) {
         'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
+
+  // Extract the first repository.
+  defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
   const {issueNumber} = params;
