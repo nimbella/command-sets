@@ -15,6 +15,17 @@ function formatDate(d) {
   return `${mm}/${dd}/${yyyy}`;
 }
 
+function normalizeDate(date) {
+  if (date.trim().length === 8) {
+    const arr = date.split('/');
+    arr[arr.length - 1] = '20' + arr[arr.length - 1];
+
+    return arr.join('/');
+  } else {
+    return date;
+  }
+}
+
 /**
  * @description null
  * @param {ParamsType} params list of command parameters
@@ -36,7 +47,9 @@ async function _command(params, commandText, secrets = {}) {
   githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
-  const {state = 'closed', date} = params;
+  let {state = 'all', date} = params;
+
+  date = normalizeDate(date);
 
   const tokenMessage = githubToken
     ? ''
@@ -82,7 +95,7 @@ async function _command(params, commandText, secrets = {}) {
       const html = new RegExp(/<.*>.*<\/.*>/);
       const prs = [];
       for (const pr of data) {
-        if (formatDate(pr.updated_at) == date) {
+        if (formatDate(pr.updated_at) === date) {
           const body = html.test(pr.body)
             ? `_couldn't render body of pr_`
             : pr.body
@@ -97,7 +110,7 @@ async function _command(params, commandText, secrets = {}) {
                 .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
           prs.push({
-            color: pr.state == 'open' ? 'good' : 'danger',
+            color: pr.state == 'closed' ? 'danger' : 'good',
             text: `_Last updated on <!date^${
               new Date(pr.updated_at).getTime() / 1000
             }^{date_short} at {time}|${pr.updated_at}>_\n${body}`,
@@ -109,7 +122,7 @@ async function _command(params, commandText, secrets = {}) {
 
       if (prs.length === 0) {
         result.push({
-          pretext: `No PRs found for ${date}`
+          pretext: `Couldn't find any PRs that are updated on *${date}*`
         });
       } else {
         result.push(...prs);
