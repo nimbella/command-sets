@@ -8,15 +8,18 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {github_token: githubToken, github_default_repo: defaultRepo} = secrets;
-  const {repo = defaultRepo} = params;
-  if (!repo) {
+  let {github_token: githubToken, github_repos: githubRepos = ''} = secrets;
+  githubRepos = params.repo ? params.repo : githubRepos;
+
+  if (!githubRepos) {
     return {
       response_type: 'ephemeral',
       text:
-        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.',
+        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
     };
   }
+
+  githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
 
@@ -26,61 +29,72 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     const axios = require('axios');
-    const url = `https://api.github.com/repos/${repo}`;
-    const {data, headers} = await axios({
-      method: 'GET',
-      url: url,
-      headers: githubToken
-        ? {
-            Authorization: `Bearer ${githubToken}`,
-            'Content-Type': 'application/json',
-          }
-        : {},
-    });
-    const requestThreshold = 3;
-    const currReading = parseInt(headers['x-ratelimit-remaining']);
+    const networkRequests = [];
+    for (const repo of githubRepos) {
+      const url = `https://api.github.com/repos/${repo}`;
+      networkRequests.push(
+        axios({
+          method: 'GET',
+          url: url,
+          headers: githubToken
+            ? {
+                Authorization: `Bearer ${githubToken}`,
+                'Content-Type': 'application/json'
+              }
+            : {}
+        })
+      );
+    }
 
-    const body = [
-      `Stars: ${data.stargazers_count}`,
-      `Forks: ${data.forks}`,
-      `Open Issues: ${data.open_issues_count}`,
-      `Watchers: ${data.subscribers_count}`,
-      `Contributors: ${data.network_count}`,
-      `Default Branch: ${data.default_branch}`,
-      `Most used langauge: ${data.language === null ? 'None' : data.language}`,
-    ];
+    const responses = await Promise.all(networkRequests);
 
-    result.push({
-      color: 'good',
-      text: body.join('\n'),
-      title: `<${data.html_url}|${data.full_name}> statistics`,
-      pretext:
-        currReading < requestThreshold
-          ? `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`
-          : null,
-    });
-  } catch (error) {
-    if (error.response.status === 403) {
+    for (const response of responses) {
+      const {data, headers} = response;
+      const requestThreshold = 3;
+      const currReading = parseInt(headers['x-ratelimit-remaining']);
+      const body = [
+        `Stars: ${data.stargazers_count}`,
+        `Forks: ${data.forks}`,
+        `Open Issues: ${data.open_issues_count}`,
+        `Watchers: ${data.subscribers_count}`,
+        `Contributors: ${data.network_count}`,
+        `Default Branch: ${data.default_branch}`,
+        `Most used langauge: ${data.language === null ? 'None' : data.language}`
+      ];
       result.push({
-        color: 'danger',
-        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`,
+        color: 'good',
+        text: body.join('\n'),
+        title: `<${data.html_url}|${data.full_name}> statistics`,
+        pretext:
+          currReading < requestThreshold
+            ? `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`
+            : null
       });
-    } else if (error.response.status === 404) {
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
       result.push({
         color: 'danger',
-        text: `Repository not found: <https://github.com/${repo}|${repo}>.`,
+        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`
+      });
+    } else if (error.response && error.response.status === 404) {
+      result.push({
+        color: 'danger',
+        text: `Repository not found: <https://github.com/${repo}|${repo}>.`
+      });
+    } else if (error.response && error.response.status) {
+      result.push({
+        color: 'danger',
+        text: `Error: ${error.response.status} ${error.response.data.message}`
       });
     } else {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`,
-      });
+      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
     }
   }
 
   return {
     response_type: 'in_channel',
-    attachments: result,
+    attachments: result
   };
 }
 
@@ -89,14 +103,14 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
+const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch((error) => ({
+  ).catch(error => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`,
-  })),
+    text: `Error: ${error.message}`
+  }))
 });
 module.exports = main;

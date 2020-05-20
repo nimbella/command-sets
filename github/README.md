@@ -27,9 +27,11 @@ In order to use this command set, you need to set up a Personal Access Token on 
 Use `/nc secret_create` to create secrets.
 Visit https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line to learn how to setup a Personal Access Token on GitHub
 
-Create a secret named `github_default_repo` to avoid passing repository (`-r`) to commands.
+Create a secret named `github_repos` to avoid passing repository (`-r`) to commands.
 
 ![Secret Creator](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/secret_creator.png)
+
+For commands that only work with single repository the first repository in `github_repos` is used.
 
 ## Usage
 
