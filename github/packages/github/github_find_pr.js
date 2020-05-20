@@ -88,7 +88,7 @@ async function _command(params, commandText, secrets = {}) {
       }
 
       result.push({
-        pretext: repo
+        pretext: `*${repo}*`
       });
 
       // Matches html tags
