@@ -26,7 +26,8 @@ async function command(params, commandText, secrets = {}) {
   let {
     entity, // repositories, commits, code, issues pull requests, users, topics
     keywords,
-    repository,
+    query,
+    repositories,
     language,
     pageSize,
     pageNumber = 1
@@ -34,6 +35,12 @@ async function command(params, commandText, secrets = {}) {
   let displayEntity = entity;
   const displayKeywords = keywords;
   let adjustedPageSize = 20;
+
+  let { github_repos } = secrets;
+  const repos  = repositories ? repositories : github_repos;
+  if(repos){
+    repositories = repos.split(',').map(repo =>  'repo:'+repo.trim()).join('+');
+  }
   switch (entity) {
     case 'r':
     case 'rep':
@@ -41,6 +48,7 @@ async function command(params, commandText, secrets = {}) {
     case 'repos':
       displayEntity = 'Repositories';
       entity = 'repositories';
+      repositories = undefined;
       break;
     case 'cm':
     case 'commit':
@@ -53,7 +61,7 @@ async function command(params, commandText, secrets = {}) {
       entity = 'code';
       displayEntity = 'Code Files';
       keywords += '+in:file';
-      if (!repository) return fail('*please specify a repository, using -r flag e.g.*\n`/nc github_list c github -r nimbella/command-sets`');
+      if (!repository) return fail('*please specify a repository, using -r flag e.g.*\n`/nc github_search c github -r nimbella/command-sets`');
       break;
     case 'i':
     case 'issue':
@@ -64,7 +72,7 @@ async function command(params, commandText, secrets = {}) {
       break;
     case 'p':
     case 'pr':
-    case 'prs':
+    case 'prs':   
       entity = 'issues';
       displayEntity = 'Pull-requests';
       keywords += '+is:pr';
@@ -73,6 +81,7 @@ async function command(params, commandText, secrets = {}) {
     case 'user':
       displayEntity = 'Users';
       entity = 'users';
+      repositories = undefined;
       break;
     case 't':
     case 'topic':
@@ -80,19 +89,22 @@ async function command(params, commandText, secrets = {}) {
       displayEntity = 'Topics';
       headers.Accept = 'application/vnd.github.mercy-preview+json';
       adjustedPageSize = 10;
+      repositories = undefined;
       break;
     default:
       displayEntity = 'Repositories';
       entity = 'repositories';
+      repositories = undefined;
       break;
   }
-  const url = `https://api.github.com/search/${entity}?q=${repository ? `repo:${repository}+` : ''}${keywords}${language ? `+language:${language}` : ''}&page=${pageNumber}&per_page=${pageSize?pageSize:adjustedPageSize}`;
+  const url = `https://api.github.com/search/${entity}?q=${repositories?`${repositories}+`:''}${keywords}${query ? `+${query}` : ''}${language ? `+language:${language}` : ''}&page=${pageNumber}&per_page=${pageSize?pageSize:adjustedPageSize}`;
+  console.log(url);  
   const res = await getRequest(url, secrets);
 
   if (res && res.data) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `*${displayEntity}* with keywords _*${displayKeywords}*_`;
+    let header = `*${displayEntity}* with keywords _*${displayKeywords}*_ and query _*${query}*_`;
     if (currReading < requestThreshold) {
       header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
     }
@@ -113,7 +125,11 @@ const image = (source, alt) => ({
 
 const mdText = (text) => ({
   type: 'mrkdwn',
-  text,
+  text: text
+  // Convert markdown links to slack format.
+  .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
+  // Replace markdown headings with slack bold
+  .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({
