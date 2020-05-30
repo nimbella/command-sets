@@ -1,0 +1,3 @@
+commands:
+  dobill:
+    description: Shows your DigitalOcean bill

@@ -43,3 +43,5 @@ command_sets:
     description: Fetch AWS billing information.
   datadogbill:
     description: Fetch Datadog billing information from Slack using Nimbella Commander.
+  dobill:
+    description: Fetch DigitalOcean billing information from Slack using Nimbella Commander.
