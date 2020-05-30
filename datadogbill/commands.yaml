@@ -1,0 +1,5 @@
+commands:
+  datadogbill:
+    description: Shows your Datadog bill
+    options:
+      - name: detail

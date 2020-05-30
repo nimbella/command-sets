@@ -39,3 +39,9 @@ command_sets:
     description: Commands to interact with Jira Cloud.
   netlify:
     description: Commands to interact with Netlify.
+  awsbill:
+    description: Fetch AWS billing information.
+  datadogbill:
+    description: Fetch Datadog billing information from Slack using Nimbella Commander.
+  dobill:
+    description: Fetch DigitalOcean billing information from Slack using Nimbella Commander.
