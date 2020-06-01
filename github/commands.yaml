@@ -73,6 +73,7 @@ commands:
     parameters:
       - name: entity
       - name: keywords
+        optional: true
     options:
       - name: q
         value: query        
