@@ -77,7 +77,9 @@ async function _command(params, commandText, secrets = {}) {
     if (result.status !== 200) {
       return fail();
     }
-    translatedText = result.data[0][0][0];
+    result.data[0].forEach(t => {
+      translatedText += t[0];
+    });
   } catch (err) {
     return fail(err.response.status === 400 ? `Unknown language. ${languageHelp}` : err.message);
   }
