@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^0.19.2",
+    "oauth-1.0a": "^2.2.6",
+    "twitter": "^1.7.1"
+  }
+}
