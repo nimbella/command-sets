@@ -1,3 +1,13 @@
 commands:
   mentions:
     description: Show recent mentions
+  follow:
+    description: Follow a Twitter user.
+    parameters:
+      - name: username
+        optional: false
+  unfollow:
+    description: Unfollow a Twitter user.
+    parameters:
+      - name: username
+        optional: false

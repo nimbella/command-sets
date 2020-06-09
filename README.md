@@ -9,6 +9,8 @@ You can obtain them by creating an app in your Twitter developer portal.
 ## Commands
 
 - [`mentions`](#mentions)
+- [`follow`](#follow)
+- [`unfollow`](#unfollow)
 
 ## Usage
 
@@ -17,4 +19,18 @@ You can obtain them by creating an app in your Twitter developer portal.
 Show recent mentions
 ```sh
 /nc mentions
+```
+
+### `follow`
+
+Follow a user.
+```sh
+/nc follow nimbella
+```
+
+### `unfollow`
+
+Unfollow a user.
+```sh
+/nc unfollow <username>
 ```
