@@ -1,10 +1,4 @@
 // jshint esversion: 9
-/* eslint-disable global-require */
-/* eslint-disable guard-for-in */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable consistent-return */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-underscore-dangle */
 const coronaMeter = 'https://www.worldometers.info/coronavirus/';
 const covid19India = 'https://api.covid19india.org/';
 const countryDomId = 'table_countries_today';
@@ -281,9 +275,10 @@ const success = async (header, fields, footer, client, country, region) => {
     fields: [],
   }
   for (const property in fields) {
+    const value = fields[property] || 0
     body.fields.push({
       type: 'mrkdwn',
-      text: `${property}:  *${(fields[property] || 0)}*`,
+      text: `${property}:  ${isNaN(value) ? value : `*${value}*`}`,
     });
   }
   const chart_url = `https://raichand-8kehpaun1bf-apigcp.nimbella.io/charts/${encodeURI(region ? region : country)}.png`
@@ -313,10 +308,10 @@ const success = async (header, fields, footer, client, country, region) => {
       })
   }
   response.blocks.push(mui(body, client))
-  await axios.head(chart_url).then( r => {
-    if(r.status===200)
-    response.blocks.push(mui(chart, client));
-  }).catch(e => {console.log(`Couldn't get chart for ${region}`);})
+  await axios.head(chart_url).then(r => {
+    if (r.status === 200)
+      response.blocks.push(mui(chart, client));
+  }).catch(e => { console.log(`Couldn't get chart for ${region}`); })
   response.blocks.push(mui(lower, client))
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
@@ -418,6 +413,27 @@ async function getData(url) {
 }
 
 const getDetails = (name, html) => {
+  // Column Orders
+  /* 
+  1 #	Country,Other	
+  2 Total Cases
+  3 New Cases	
+  4 Total Deaths
+  5 New Deaths
+  6 Total Recovered
+  7 New Recovered
+  8 Active Cases
+  9 Serious, Critical
+  10 Tot Cases/ 1M pop	
+  11 Deaths/1M pop	
+  12 Total Tests
+  13 Tests/1M pop	
+  14 Population
+  15 Continent
+  16 1 Case Every X ppl
+  17 1 Death Every X ppl
+  18 1 Test Every X ppl
+  */
   const fields = {};
   try {
     tableParser(html);
@@ -427,14 +443,16 @@ const getDetails = (name, html) => {
     }
     const recordIndex = stats[1].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = `${stats[2][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
-      fields['Total Fatalities'] = `${stats[4][recordIndex]} _(per M. ${stats[10][recordIndex]})_`;
-      fields['Total Tests'] = `${stats[11][recordIndex]} _(per M. ${stats[12][recordIndex]})_`;
+      fields['Population'] = stats[14][recordIndex];
+      fields['Total Cases'] = `*${stats[2][recordIndex]}* \n_(per M. *${stats[10][recordIndex]}*, 1 every *${stats[16][recordIndex]}* ppl)_\n`;
+      fields['Total Fatalities'] = `*${stats[4][recordIndex]}* \n_(per M. *${stats[11][recordIndex]}*, 1 every *${stats[17][recordIndex]}* ppl)_\n`;
+      fields['Total Tests'] = `*${stats[12][recordIndex]}* \n_(per M. *${stats[13][recordIndex]}*, 1 every *${stats[18][recordIndex]}* ppl)_\n`;
       fields['Total Recovered'] = stats[6][recordIndex];
       fields['New Cases'] = stats[3][recordIndex];
       fields['New Fatalities'] = stats[5][recordIndex];
-      fields['Active Cases'] = stats[7][recordIndex];
-      fields['Critical Cases'] = stats[8][recordIndex];
+      fields['New Recovered'] = stats[7][recordIndex];
+      fields['Active Cases'] = stats[8][recordIndex];
+      fields['Critical Cases'] = stats[9][recordIndex];
     }
   } catch (e) {
     fail(e.message);
@@ -452,9 +470,9 @@ const getDetailsForUS = (name, html) => {
     }
     const recordIndex = stats[0].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = `${stats[1][recordIndex]} _(per M. ${stats[6][recordIndex]})_`;
-      fields['Total Fatalities'] = `${stats[3][recordIndex]} _(per M. ${stats[7][recordIndex]})_`;
-      fields['Total Tests'] = `${stats[8][recordIndex]} _(per M. ${stats[9][recordIndex]})_`;
+      fields['Total Cases'] = `*${stats[1][recordIndex]}* _(per M. *${stats[6][recordIndex]}*)_`;
+      fields['Total Fatalities'] = `*${stats[3][recordIndex]}* _(per M. *${stats[7][recordIndex]}*)_`;
+      fields['Total Tests'] = `*${stats[8][recordIndex]}* _(per M. *${stats[9][recordIndex]}*)_`;
       fields['New Cases'] = stats[2][recordIndex];
       fields['New Fatalities'] = stats[4][recordIndex];
       fields['Active Cases'] = stats[5][recordIndex];
