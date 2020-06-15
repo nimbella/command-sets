@@ -38,7 +38,7 @@ Unfollow a user.
 
 ### `tweets`
 
-Show recent tweets of a user.
+Show recent tweets of users.
 ```sh
-/nc tweets <username>
+/nc tweets <usernames> # /nc tweets "nimbella, rabbah"
 ```

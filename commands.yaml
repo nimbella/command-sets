@@ -11,3 +11,7 @@ commands:
     parameters:
       - name: username
         optional: false
+  tweets:
+    description: Show recent tweets of users.
+    parameters:
+      - name: usernames
