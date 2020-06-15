@@ -11,6 +11,7 @@ You can obtain them by creating an app in your Twitter developer portal.
 - [`mentions`](#mentions)
 - [`follow`](#follow)
 - [`unfollow`](#unfollow)
+- [`tweets`](#tweets)
 
 ## Usage
 
@@ -33,4 +34,11 @@ Follow a user.
 Unfollow a user.
 ```sh
 /nc unfollow <username>
+```
+
+### `tweets`
+
+Show recent tweets of a user.
+```sh
+/nc tweets <username>
 ```
