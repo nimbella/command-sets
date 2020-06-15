@@ -4,12 +4,12 @@ commands:
   follow:
     description: Follow a Twitter user.
     parameters:
-      - name: username
+      - name: usernames
         optional: false
   unfollow:
     description: Unfollow a Twitter user.
     parameters:
-      - name: username
+      - name: usernames
         optional: false
   tweets:
     description: Show recent tweets of users.

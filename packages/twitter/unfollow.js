@@ -26,7 +26,8 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {username} = params;
+  let {usernames} = params;
+  usernames = usernames.split(',').map(username => username.trim());
 
   const result = [];
   const axios = require('axios');
@@ -48,24 +49,24 @@ async function _command(params, commandText, secrets = {}) {
     secret: twitter_access_token_secret
   };
 
-  const url = `https://api.twitter.com/1.1/friendships/destroy.json?screen_name=${username}`;
-  const {data} = await axios.post(
-    url,
-    {},
-    {
-      headers: oauth.toHeader(oauth.authorize({url, method: 'POST'}, token))
-    }
-  );
+  for (const username of usernames) {
+    const url = `https://api.twitter.com/1.1/friendships/destroy.json?screen_name=${username}`;
+    const {data} = await axios.post(
+      url,
+      {},
+      {
+        headers: oauth.toHeader(oauth.authorize({url, method: 'POST'}, token))
+      }
+    );
 
-  console.log(data);
-
-  result.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `Unfollowed <https://twitter.com/${data.screen_name}|@${data.screen_name}>`
-    }
-  });
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Unfollowed <https://twitter.com/${data.screen_name}|@${data.screen_name}>`
+      }
+    });
+  }
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
