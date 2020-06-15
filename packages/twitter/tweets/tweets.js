@@ -1,5 +1,17 @@
 // jshint esversion: 9
 
+let OAuth;
+async function install(pkgs) {
+  pkgs = pkgs.join(' ');
+  return new Promise((resolve, reject) => {
+    const {exec} = require('child_process');
+    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 /**
  * @description Run the user command
  * @param {ParamsType} params list of command parameters
@@ -26,13 +38,17 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
+  if (!OAuth) {
+    await install(['oauth-1.0a']);
+  }
+
   let {usernames} = params;
   usernames = usernames.split(',').map(username => username.trim());
 
   const result = [];
   const axios = require('axios');
   const crypto = require('crypto');
-  const OAuth = require('oauth-1.0a');
+  OAuth = require('oauth-1.0a');
 
   const oauth = OAuth({
     consumer: {
