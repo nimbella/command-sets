@@ -26,7 +26,8 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {username} = params;
+  let {usernames} = params;
+  usernames = usernames.split(',').map(username => username.trim());
 
   const result = [];
   const axios = require('axios');
@@ -48,29 +49,39 @@ async function _command(params, commandText, secrets = {}) {
     secret: twitter_access_token_secret
   };
 
-  const url = `https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=${username}`;
-  const {data} = await axios.get(url, {
-    headers: oauth.toHeader(oauth.authorize({url, method: 'GET'}, token))
-  });
-
-  for (let i = 0; i < (data.length > 5 ? 5 : data.length); i++) {
-    const tweet = data[i];
-    const created = new Date(tweet.created_at);
+  for (const username of usernames) {
     result.push({
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `*${tweet.text}*`
-        },
-        {
-          type: 'mrkdwn',
-          text: `_Tweeted on <!date^${
-            created.getTime() / 1000
-          }^{date_short} at {time}|${tweet.created_at}>_`
-        }
-      ]
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Tweets of <https://twitter.com/${username}|@${username}>:*`
+      }
     });
+
+    const url = `https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=${username}`;
+    const {data} = await axios.get(url, {
+      headers: oauth.toHeader(oauth.authorize({url, method: 'GET'}, token))
+    });
+
+    for (let i = 0; i < (data.length > 5 ? 5 : data.length); i++) {
+      const tweet = data[i];
+      const created = new Date(tweet.created_at);
+      result.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `*${tweet.text}*`
+          },
+          {
+            type: 'mrkdwn',
+            text: `_Tweeted on <!date^${
+              created.getTime() / 1000
+            }^{date_short} at {time}|${tweet.created_at}>_`
+          }
+        ]
+      });
+    }
   }
 
   return {
