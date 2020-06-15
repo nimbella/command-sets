@@ -1,5 +1,7 @@
 # Twitter Command Set
 
+Interact with Twitter directly from Slack using [Nimbella Commander](https://nimbella.com/product/commander).
+
 ## Requirements
 
 We need secrets named `twitter_consumer_key`, `twitter_consumer_secret`, `twitter_access_token_key`, and `twitter_access_token_secret` to run this command set.
@@ -17,7 +19,7 @@ You can obtain them by creating an app in your Twitter developer portal.
 
 ### `mentions`
 
-Show recent mentions
+Show recent mentions.
 ```sh
 /nc mentions
 ```
@@ -26,14 +28,15 @@ Show recent mentions
 
 Follow a user.
 ```sh
-/nc follow nimbella
+/nc follow <usernames> # /nc follow nimbella
 ```
 
 ### `unfollow`
 
 Unfollow a user.
+
 ```sh
-/nc unfollow <username>
+/nc unfollow <usernames> # /nc unfollow twitter
 ```
 
 ### `tweets`
