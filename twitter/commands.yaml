@@ -1,0 +1,17 @@
+commands:
+  mentions:
+    description: Show recent mentions
+  follow:
+    description: Follow a Twitter user.
+    parameters:
+      - name: usernames
+        optional: false
+  unfollow:
+    description: Unfollow a Twitter user.
+    parameters:
+      - name: usernames
+        optional: false
+  tweets:
+    description: Show recent tweets of users.
+    parameters:
+      - name: usernames

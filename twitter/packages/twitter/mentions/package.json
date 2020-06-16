@@ -1,0 +1,8 @@
+{
+  "name": "mentions",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "oauth-1.0a": "^2.2.6"
+  }
+}
