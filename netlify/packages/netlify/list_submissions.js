@@ -123,8 +123,11 @@ async function _command(params, commandText, secrets = {}) {
     }
   } catch (error) {
     result.push({
-      color: 'danger',
-      text: `Error: ${error.message}`
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Error: ${error.message}`
+      }
     });
   }
 
