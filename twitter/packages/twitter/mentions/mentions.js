@@ -52,12 +52,24 @@ async function _command(params, commandText, secrets = {}) {
     headers: oauth.toHeader(oauth.authorize({url, method: 'GET'}, token))
   });
 
-  for (const tweet of data) {
+  for (let i = 0; i < (data.length > 5 ? 5 : data.length); i++) {
+    const tweet = data[i];
     const createdAt = new Date(tweet.created_at).getTime();
 
     result.push({
-      type: 'section',
-      text: {type: 'mrkdwn', text: `${tweet.text}\n at ${createdAt}`}
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: `*${tweet.text}*`
+        },
+        {
+          type: 'mrkdwn',
+          text: `_Tweeted on <!date^${
+            createdAt.getTime() / 1000
+          }^{date_short} at {time}|${tweet.created_at}>_`
+        }
+      ]
     });
   }
 
