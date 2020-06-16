@@ -1,6 +1,6 @@
 # Twitter Command Set
 
-Interact with Twitter directly from Slack using [Nimbella Commander](https://nimbella.com/product/commander).
+Interact with Twitter directly from Slack and Terminal using [Nimbella Commander](https://nimbella.com/product/commander).
 
 ## Requirements
 
