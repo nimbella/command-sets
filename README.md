@@ -1,10 +1,25 @@
 # Nimbella Command Set Registry
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](https://nimbella-community.slack.com/)
-[![Twitter](https://img.shields.io/twitter/follow/nimbella.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=nimbella)
+[Nimbella Commander]() is the best, fastest and easiest way to build bots and commands for messaging platforms such as [Slack](), [Microsoft Teams](), and [Mattermost](). Commander requires no new accounts to setup, no command line tools to start, and you will create your first command in seconds. The development experience can extend from your browser, to your terminal, so that you can develop, test, run and integrate bots and commands where it is most convenient for your workflow.
 
-A bunch of command-sets that can be installed using [Nimbella Commander](https://nimbella.com/product/commander) to run on messaging platforms like Slack (<img alt="slack"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) and Mattermost (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />).
+Unique features of Nimbella Commander:
+
+1. **Command Sets:** a convenient way to bundle, share, and install commands into your messaging platform.
+2. **Access Control:** control which users can run, edit, or administer commands
+3. **Secrets Management:** securly bind API keys to commands
+4. **Audit Logs and Operator Dashboard:** monitor and administer usage.
+
+- Installation instructions
+  - Slack (<img alt="slack"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />)
+  - Teams (coming soon)
+  - Mattermost (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) (coming soon)
+- Command Sets
+  - [Installing a command set]()
+  - Catalog of command sets
+    - [AWS]()
+- [Develop your own command set]()
+- Additional resources
+  - [Commander reference manual](https://nimbella.com/resources-commander/reference)
 
 ## Installation
 
