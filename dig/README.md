@@ -1,6 +1,6 @@
 # Dig Nimbella
 
-A dig clone for Nimbella Commander.
+A [dig](https://en.wikipedia.org/wiki/Dig_(command)) clone for [Nimbella Commander](https://nimbella.com/product/commander).
 
 ## Install
 
