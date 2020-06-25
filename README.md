@@ -1,5 +1,6 @@
 # Nimbella Command Set Registry
 
+![command sets count](https://img.shields.io/endpoint?url=https://apigcp.nimbella.io/api/v1/web/mesatyar-yzpbtecwigu/default/command-sets-count&style=flat)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](https://nimbella-community.slack.com/)
 [![Twitter](https://img.shields.io/twitter/follow/nimbella.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=nimbella)
