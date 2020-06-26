@@ -10,8 +10,8 @@
 Unique features of Nimbella Commander:
 
 1. **Command Sets:** a convenient way to bundle, share, and install commands into your messaging platform.
-2. **Access Control:** control which users can run, edit, or administer commands
-3. **Secrets Management:** securly bind API keys to commands
+2. **Access Control:** control which users can run, edit, or administer commands.
+3. **Secrets Management:** securly bind API keys to commands.
 4. **Audit Logs and Operator Dashboard:** monitor and administer usage.
 
 Learn more on how Commander can help you by clicking [here](https://nimbella.com/resources-commander/overview#what-is-commander).
@@ -20,9 +20,8 @@ Learn more on how Commander can help you by clicking [here](https://nimbella.com
   - [Slack](#Slack) (<img alt="slack"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />)
   - [Teams](#Teams) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/microsoftteams.svg" />) (coming soon)
   - [Mattermost](#Mattermost) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) (coming soon)
-- [Command Sets](#Command-Sets)
-  - [Installing a command set](#Installing-a-Command-Set)
-  - [Catalog of command sets](#Catalog-of-Command-Sets)
+- [Installing a command set](#Installing-a-Command-Set)
+- [Catalog of command sets](#Catalog-of-Command-Sets)
 - [Support](#support)
 - [License](#license)
 - Additional resources
@@ -30,9 +29,11 @@ Learn more on how Commander can help you by clicking [here](https://nimbella.com
 
 ## Installation
 
+The installation instructions for Commander depend on the platform used. Select the one that works for you.
+
 ### Slack
 
-Click on the below to install Nimbella Commander on your Slack workspace.
+Click the link below to install Nimbella Commander on your Slack workspace.
 
 <a href="https://slack.com/oauth/authorize?client_id=876870346995.892105847680&scope=commands"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
 
@@ -44,9 +45,7 @@ Coming soon.
 
 Coming soon.
 
-## Command Sets
-
-### Installing a Command Set
+## Installing a Command Set
 
 After having Nimbella Commander installed, you can install a command-set by running the following slash command.
 
@@ -58,7 +57,7 @@ Replace `<command-set>` with any of the command-sets available.
 
 Example:
 
-To install [AWS Command Set](aws), we have to run the below command.
+To install the [aws command set](aws), you have to run the command shown below.
 
 ```
 /nc csm_install aws
@@ -72,7 +71,7 @@ To list EC2 instances under your AWS account:
 /nc ec2_list
 ```
 
-### Catalog of Command Sets
+## Catalog of Command Sets
 
 - [`awsbill`](awsbill) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Fetch AWS billing information.
 - [`aws`](aws) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - AWS commands.
