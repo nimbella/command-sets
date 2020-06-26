@@ -1,18 +1,55 @@
 # Nimbella Command Set Registry
 
+![command sets count](https://img.shields.io/endpoint?url=https://apigcp.nimbella.io/api/v1/web/mesatyar-yzpbtecwigu/default/command-sets-count&style=flat)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](https://nimbella-community.slack.com/)
 [![Twitter](https://img.shields.io/twitter/follow/nimbella.svg?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=nimbella)
 
-A bunch of command-sets that can be installed using [Nimbella Commander](https://nimbella.com/product/commander) to run on messaging platforms like Slack (<img alt="slack"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) and Mattermost (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />).
+[Nimbella Commander](https://nimbella.com/product/commander) is the best, fastest and easiest way to build bots and commands for messaging platforms such as [Slack](https://slack.com/apps/AS833QXL0-nimbella-commander), Microsoft Teams, and Mattermost. Commander requires no new accounts to setup, no command line tools to start, and you will create your first command in seconds. The development experience can extend from your browser, to your terminal, so that you can develop, test, run and integrate bots and commands where it is most convenient for your workflow.
+
+Unique features of Nimbella Commander:
+
+1. **Command Sets:** a convenient way to bundle, share, and install commands into your messaging platform.
+2. **Access Control:** control which users can run, edit, or administer commands.
+3. **Secrets Management:** securly bind API keys to commands.
+4. **Audit Logs and Operator Dashboard:** monitor and administer usage.
+
+Learn more on how Commander can help you by clicking [here](https://nimbella.com/resources-commander/overview#what-is-commander).
+
+- [Installation instructions](#Installation)
+  - [Slack](#Slack) (<img alt="slack"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />)
+  - [Teams](#Teams) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/microsoftteams.svg" />) (coming soon)
+  - [Mattermost](#Mattermost) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) (coming soon)
+- [Installing a command set](#Installing-a-Command-Set)
+- [Catalog of command sets](#Catalog-of-Command-Sets)
+- [Support](#support)
+- [License](#license)
+- Additional resources
+  - [Commander reference manual](https://nimbella.com/resources-commander/reference)
 
 ## Installation
 
-Make sure you've Nimbella Commander installed. If not, click [here](https://slack.com/oauth/authorize?client_id=876870346995.892105847680&scope=commands) to install it on your slack workspace.
+The installation instructions for Commander depend on the platform used. Select the one that works for you.
+
+### Slack
+
+Click the link below to install Nimbella Commander on your Slack workspace.
+
+<a href="https://slack.com/oauth/authorize?client_id=876870346995.892105847680&scope=commands"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
+
+### Teams
+
+Coming soon.
+
+### Mattermost
+
+Coming soon.
+
+## Installing a Command Set
 
 After having Nimbella Commander installed, you can install a command-set by running the following slash command.
 
-```sh
+```
 /nc csm_install <command-set>
 ```
 
@@ -20,7 +57,7 @@ Replace `<command-set>` with any of the command-sets available.
 
 Example:
 
-To install AWS command-set, we have to run the below command.
+To install the [aws command set](aws), you have to run the command shown below.
 
 ```
 /nc csm_install aws
@@ -28,126 +65,43 @@ To install AWS command-set, we have to run the below command.
 
 You can use the same `/nc` slash app to run all commands under `aws`.
 
-To list EC2 instances under your account:
+To list EC2 instances under your AWS account:
 
 ```
 /nc ec2_list
 ```
 
-## Available commands
+## Catalog of Command Sets
 
-### AWS (`aws`) <img alt="slack" width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost" width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
+- [`awsbill`](awsbill) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Fetch AWS billing information.
+- [`aws`](aws) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - AWS commands.
+- [`bluejeans`](bluejeans) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Bluejeans commands.
+- [`billing`](billing) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Commands to show cloud service bills.
+- [`corona_stats`](corona_stats) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Live stats for the pandemic, worldwide or in a specific country.
+- [`dig`](dig) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Command to lookup DNS.
+- [`do`](do) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - DigitalOcean commands.
+- [`datadogbill`](datadogbill) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Fetch Datadog billing information from Slack using Nimbella Commander.
+- [`dobill`](dobill) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Fetch DigitalOcean billing information from Slack using Nimbella Commander.
+- [`echo`](echo) - (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Simple echo test.
+- [`gcloud`](gcloud) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) - Google Cloud commands (right now, just billing).
+- [`github`](github) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Command set for interfacing with GitHub.
+- [`gitlab`](gitlab) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Command set for interfacing with GitLab.
+- [`ibm`](ibm) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Commands to interact with IBM Cloud Functions & IBM Watson services.
+- [`jira`](jira) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) - Commands to interact with Jira Cloud.
+- [`netlify`](netlify) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) - Commands to interact with Netlify.
+- [`run`](run) (<img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Command to run slash commands.
+- [`shopify`](shopify) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Command set for interfacing with Shopify.
+- [`times`](times) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Displays current time in AM/PM format for the given cities.
+- [`twitter`](twitter) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />) - Execute Twitter related operations
+- [`translate`](translate) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Translates text to a given language.
+- [`utils`](utils) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Set of utility commands for Commander
+- [`vultr`](vultr) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Vultr commands.
+- [`weather`](weather) (<img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />) - Get weather conditions for a city.
 
-`ec2_list` - Lists EC2 instances.
+## Support
 
-`ec2_reboot` - Reboots an EC2 instance.
+We're always happy to help you with any issues you encounter. You may want to [join our Slack community](https://nimbella-community.slack.com/) to engage with us for a more rapid response.
 
-`ec2_status` - Shows the current status of an EC2 instance.
+## License
 
-`dynamodb_list` - Lists DynamoDB tables under an account.
-
-`rds_list` - Lists RDS instances under an account.
-
-`route53_add` - Adds an AWS route53 hostname.
-
-`route53_list` - Lists AWS route53 managed hostnames.
-
-### DigitalOcean (`do`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`droplet_ip` - List IP addresses of a droplet.
-
-`droplet_list` - Lists the droplets under your account.
-
-`droplet_status` - Shows the current status of a droplet.
-
-`droplet_snap` - Snapshots a droplet.
-
-`droplet_power` - Command to turn a droplet on and off.
-
-`droplet_reboot` - Command to reboot a droplet.
-
-### Google Cloud Platform (`gcloud`) <img alt="slack" width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />
-
-`gcloudbill` - Shows your GCP bill.
-
-### Vultr (`vultr`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`vultr_list` - Lists vultr server instances.
-
-`vultr_reboot` - Reboot Vultr server instance.
-
-`vultr_snap` - Create a snapshot of Vultr server instance.
-
-### Billing (`billing`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`awsbill` - Shows your AWS bill.
-
-`datadogbill` - Calculates your DataDog bill based on usage.
-
-`dobill` - Calculates DigitalOcean bill based on usage.
-
-### BlueJeans (`bluejeans`) <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`bluejeans_create` - Create a meeting.
-
-`bluejeans_list` - List meetings of a user.
-
-### GitLab (`gitlab`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`gitlab_stats` - View community contribution stats for GitLab projects.
-
-`gitlab_create` - Create a ticket for a GitLab project.
-
-`gitlab_issues` - Assign issues for a GitLab project.
-
-`gitlab_users` - View list of users in project repository.
-
-`gitlab` - View GitLab command set documentation.
-
-### Shopify (`shopify`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`orders` - Get a detailed list of orders.
-
-`add_note` - Add a note to an existing order.
-
-`inventory` - Get inventory numbers for products.
-
-`products_sold` - Get sale numbers for products in shop.
-
-`shopify` - View command set documentation.
-
-### GitHub (`github`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />
-
-`github_close_issue` - Close an issue.
-
-`github_create_issue` - Create an issue.
-
-`github_find_pr` Find pull requests by date.
-
-`github_label` - Label an issue/pull request.
-
-`github_reopen_issue` - Reopen an issue.
-
-`github_request_review` - Request someone to review a pull request.
-
-`github_stats` - View repository community statistics.
-
-`github_view_pr` - View recent pull requests.
-
-`github` - View GitHub command set documentation.
-
-### Misc
-
-`dig` - A clone of dig that works on nimbella commander. (To install: `/nc csm_install dig`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`run` - Mattermost slash command to execute other slash commands. (To install: `/nc csm_install run`) <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`corona_stats` - Live stats for the pandemic, worldwide or in a specific country/state/district. (To install: `/nc csm_install corona_stats`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`times` - Displays current time in AM/PM format for the given cities. (To install: `/nc csm_install times`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`translate` - Translates text to a specified language. (To install: `/nc csm_install translate`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
-
-`weather` - Get weather conditions for a city. (To install: `/nc csm_install weather`) <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" />
-
-`utils` - Utitility commands for Commander <img alt="slack"  width="12" height="12" src="https://unpkg.com/simple-icons@latest/icons/slack.svg" /> <img alt="mattermost"  width="13" height="13" src="https://unpkg.com/simple-icons@latest/icons/mattermost.svg" />
+Apache-2.0. See [LICENSE](LICENSE) to learn more.

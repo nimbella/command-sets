@@ -45,3 +45,5 @@ command_sets:
     description: Fetch Datadog billing information from Slack using Nimbella Commander.
   dobill:
     description: Fetch DigitalOcean billing information from Slack using Nimbella Commander.
+  twitter:
+    description: Execute Twitter related operations.
