@@ -1,0 +1,10 @@
+commands:
+  logs:
+    description: Get logs of a pod.
+    parameters:
+      - name: podName
+    options:
+      - name: n
+        value: tailLines
+  get:
+    description: Get information about objects (pods, services, deployments).
