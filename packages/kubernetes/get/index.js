@@ -22,6 +22,7 @@ async function _command(params, commandText, secrets = {}) {
   const result = [];
   const {objectName = 'pods'} = params;
   const https = require('https');
+  const prettyMS = require('pretty-ms');
   const axios = require('axios');
   const {data} = await axios.get(
     `${K8_APISERVER}/api/v1/namespaces/default/${objectName}`,
@@ -37,9 +38,37 @@ async function _command(params, commandText, secrets = {}) {
 
   for (const item of data.items) {
     if (objectName.trim() === 'pods') {
+      let containerReady = 0;
+      let restartCount = 0;
+
+      for (const container of item.status.containerStatuses) {
+        if (container.ready) {
+          containerReady++;
+        }
+        restartCount += container.restartCount;
+      }
+
       result.push({
         type: 'context',
-        elements: [{type: 'mrkdwn', text: `${item.metadata.name}`}]
+        elements: [
+          {type: 'mrkdwn', text: `\`${item.metadata.name}\``},
+          {type: 'mrkdwn', text: `\`STATUS: ${item.status.phase}\``},
+          {
+            type: 'mrkdwn',
+            text: `\`READY: ${containerReady}/${item.status.containerStatuses.length}\``
+          },
+          {
+            type: 'mrkdwn',
+            text: `\`RESTARTS: ${restartCount}\``
+          },
+          {
+            type: 'mrkdwn',
+            text: `\`AGE: ${prettyMS(
+              Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
+              {secondsDecimalDigits: 0}
+            )}\``
+          }
+        ]
       });
     }
   }
@@ -67,4 +96,4 @@ const main = async args => ({
     text: `Error: ${error.message}`
   }))
 });
-module.exports = main;
+module.exports.main = main;
