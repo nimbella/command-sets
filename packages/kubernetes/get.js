@@ -1,7 +1,7 @@
 // jshint esversion: 9
 
 /**
- * @description Get logs of a pod.
+ * @description Run the user command
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
@@ -19,12 +19,12 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {podName, tailLines = 30} = params;
-
+  const result = [];
+  const {objectName = 'pods'} = params;
   const https = require('https');
   const axios = require('axios');
   const {data} = await axios.get(
-    `${K8_APISERVER}/api/v1/namespaces/default/pods/${podName}/log?tailLines=${tailLines}`,
+    `${K8_APISERVER}/api/v1/namespaces/default/${objectName}`,
     {
       httpsAgent: new https.Agent({
         ca: Buffer.from(K8_CA, 'base64')
@@ -35,9 +35,18 @@ async function _command(params, commandText, secrets = {}) {
     }
   );
 
+  for (const item of data.items) {
+    if (objectName.trim() === 'pods') {
+      result.push({
+        type: 'context',
+        elements: [{type: 'mrkdwn', text: `${item.metadata.name}`}]
+      });
+    }
+  }
+
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: `\`\`\`\n${data}\`\`\``
+    blocks: result
   };
 }
 
