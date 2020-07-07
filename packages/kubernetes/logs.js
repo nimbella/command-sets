@@ -19,7 +19,7 @@ async function _command(params, commandText, secrets = {}) {
     };
   }
 
-  const {podName, tailLines = 30} = params;
+  const {podName, tailLines = 25} = params;
 
   const https = require('https');
   const axios = require('axios');
@@ -37,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel', // or `ephemeral` for private response
-    text: `\`\`\`\n${data}\`\`\``
+    text: tailLines > 25 ? data : `\`\`\`\n${data}\`\`\``
   };
 }
 
