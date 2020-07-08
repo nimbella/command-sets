@@ -10,3 +10,6 @@ commands:
     description: Get information about objects (pods, services, deployments).
     parameters:
       - name: objectName
+    options:
+      - name: n
+        value: namespace

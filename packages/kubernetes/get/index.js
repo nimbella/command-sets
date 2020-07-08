@@ -20,21 +20,34 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   const result = [];
-  const {objectName = 'pods'} = params;
+  const {objectName = 'pods', namespace = 'default'} = params;
   const https = require('https');
   const prettyMS = require('pretty-ms');
   const axios = require('axios');
-  const {data} = await axios.get(
-    `${K8_APISERVER}/api/v1/namespaces/default/${objectName}`,
-    {
-      httpsAgent: new https.Agent({
-        ca: Buffer.from(K8_CA, 'base64')
-      }),
-      headers: {
-        Authorization: `Bearer ${K8_TOKEN}`
-      }
+  let requestURL = `${K8_APISERVER}/api/v1/namespaces/${namespace}/${objectName}`;
+
+  if (objectName.trim() === 'nodes') {
+    requestURL = `${K8_APISERVER}/api/v1/nodes`;
+  }
+
+  const {data} = await axios.get(requestURL, {
+    httpsAgent: new https.Agent({
+      ca: Buffer.from(K8_CA, 'base64')
+    }),
+    headers: {
+      Authorization: `Bearer ${K8_TOKEN}`
     }
-  );
+  });
+
+  if (data.items.length === 0) {
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `No resources found.`
+      }
+    });
+  }
 
   for (const item of data.items) {
     if (objectName.trim() === 'pods') {
@@ -67,6 +80,30 @@ async function _command(params, commandText, secrets = {}) {
               Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
               {secondsDecimalDigits: 0}
             )}\``
+          }
+        ]
+      });
+    } else if (objectName.trim() === 'nodes') {
+      const nodeAge = prettyMS(
+        Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
+        {secondsDecimalDigits: 0}
+      )
+        .split(' ')
+        .join('');
+      let nodeStatus = '';
+      for (const condition of item.status.conditions) {
+        if (condition.status === 'True') {
+          nodeStatus = condition.type;
+          break;
+        }
+      }
+
+      result.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `\`${item.metadata.name}\` \`STATUS: ${nodeStatus}\` \`AGE: ${nodeAge}\` \`VERSION: ${item.status.nodeInfo.kubeletVersion}\``
           }
         ]
       });
