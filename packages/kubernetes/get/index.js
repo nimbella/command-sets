@@ -53,6 +53,10 @@ async function _command(params, commandText, secrets = {}) {
     if (objectName.trim() === 'pods') {
       let containerReady = 0;
       let restartCount = 0;
+      const podAge = prettyMS(
+        Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
+        {secondsDecimalDigits: 0}
+      );
 
       for (const container of item.status.containerStatuses) {
         if (container.ready) {
@@ -64,22 +68,9 @@ async function _command(params, commandText, secrets = {}) {
       result.push({
         type: 'context',
         elements: [
-          {type: 'mrkdwn', text: `\`${item.metadata.name}\``},
-          {type: 'mrkdwn', text: `\`STATUS: ${item.status.phase}\``},
           {
             type: 'mrkdwn',
-            text: `\`READY: ${containerReady}/${item.status.containerStatuses.length}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `\`RESTARTS: ${restartCount}\``
-          },
-          {
-            type: 'mrkdwn',
-            text: `\`AGE: ${prettyMS(
-              Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
-              {secondsDecimalDigits: 0}
-            )}\``
+            text: `\`${item.metadata.name}\` \`READY: ${containerReady}/${item.status.containerStatuses.length}\` \`STATUS: ${item.status.phase}\` \`AGE: ${podAge}\` \`RESTARTS: ${restartCount}\``
           }
         ]
       });
