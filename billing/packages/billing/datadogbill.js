@@ -6,7 +6,7 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  if (client === 'slack') {
+  if (client === 'slack' || client === 'msteams') {
     return element;
   }
 
@@ -40,7 +40,7 @@ const mui = (element, client) => {
 
 // this code is from: https://www.tomas-dvorak.cz/posts/nodejs-request-without-dependencies/
 // it allows us to do a promise https request without any dependencies
-const getContent = function(url) {
+const getContent = function (url) {
   // return new pending promise
   return new Promise((resolve, reject) => {
     // select http or https module, depending on reqested url
@@ -95,7 +95,7 @@ function calcHostsCosts(json) {
     return {thisMonthCost: 0, nextMonthCost: 0};
   }
 
-  const hostsByHour = []; 
+  const hostsByHour = [];
   const apmHostsByHour = [];
 
   let recentHostCount = 0;
@@ -200,7 +200,7 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
   const metricsCosts = calcMetricsCosts(timeseriesJson);
   const syntheticsCosts = calcSyntheticsCosts(syntheticsJson);
 
- if (hostsCosts.thisMonthCost !== 0) {
+  if (hostsCosts.thisMonthCost !== 0) {
     verbose.Hosts = hostsCosts;
   }
 
@@ -212,18 +212,25 @@ function calcCosts(hostsJson, timeseriesJson, syntheticsJson) {
     verbose.Synthetics = syntheticsCosts;
   }
 
-  const totalCost = hostsCosts.thisMonthCost + metricsCosts.thisMonthCost + syntheticsCosts.thisMonthCost;
+  const totalCost =
+    hostsCosts.thisMonthCost +
+    metricsCosts.thisMonthCost +
+    syntheticsCosts.thisMonthCost;
   hostsCosts.thisMonthCost = '$' + Number(hostsCosts.thisMonthCost).toFixed(2);
-  metricsCosts.thisMonthCost = '$' + Number(metricsCosts.thisMonthCost).toFixed(2);
-  syntheticsCosts.thisMonthCost = '$' + Number(syntheticsCosts.thisMonthCost).toFixed(2);
+  metricsCosts.thisMonthCost =
+    '$' + Number(metricsCosts.thisMonthCost).toFixed(2);
+  syntheticsCosts.thisMonthCost =
+    '$' + Number(syntheticsCosts.thisMonthCost).toFixed(2);
 
   const totalForwardCost =
     hostsCosts.nextMonthCost +
     metricsCosts.nextMonthCost +
     syntheticsCosts.nextMonthCost;
   hostsCosts.nextMonthCost = '$' + Number(hostsCosts.nextMonthCost).toFixed(2);
-  metricsCosts.nextMonthCost = '$' + Number(metricsCosts.nextMonthCost).toFixed(2);
-  syntheticsCosts.nextMonthCost = '$' + Number(syntheticsCosts.nextMonthCost).toFixed(2);
+  metricsCosts.nextMonthCost =
+    '$' + Number(metricsCosts.nextMonthCost).toFixed(2);
+  syntheticsCosts.nextMonthCost =
+    '$' + Number(syntheticsCosts.nextMonthCost).toFixed(2);
 
   return {
     totalCost,
@@ -349,13 +356,17 @@ const _command = async (params, commandText, secrets = {}) => {
 
   return {
     response_type: 'in_channel',
-    [client === 'slack' ? 'blocks' : 'text']:
-      client === 'slack' ? result : result.join('\n')
+    [client !== 'mattermost' ? 'blocks' : 'text']:
+      client !== 'mattermost' ? result : result.join('\n')
   };
 };
 
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))

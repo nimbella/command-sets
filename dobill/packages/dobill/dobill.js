@@ -7,7 +7,7 @@
  */
 const mui = (element, client) => {
   const output = [];
-  if (client === 'slack') {
+  if (client === 'slack' || client === 'msteams') {
     return element;
   } else {
     if (element.type === 'context') {
@@ -547,8 +547,8 @@ const _command = async (params, commandText, secrets = {}) => {
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    [client === 'slack' ? 'blocks' : 'text']:
-      client === 'slack' ? result : result.join('\n')
+    [client !== 'mattermost' ? 'blocks' : 'text']:
+      client !== 'mattermost' ? result : result.join('\n')
   };
 };
 

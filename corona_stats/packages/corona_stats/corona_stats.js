@@ -48,13 +48,14 @@ const mui = (element, client) => {
   return element;
 };
 
-const toTitleCase = (phrase) => phrase
-  .toLowerCase()
-  .split(' ')
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
+const toTitleCase = phrase =>
+  phrase
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
-const getCountryName = (name) => {
+const getCountryName = name => {
   const longNames = {
     US: 'USA',
     USA: 'USA',
@@ -113,12 +114,12 @@ const getCountryName = (name) => {
     HK: 'Hong Kong',
     SL: 'Sri Lanka',
     IQ: 'Iraq',
-    Default: name,
+    Default: name
   };
-  return (longNames[name] || toTitleCase(longNames.Default));
+  return longNames[name] || toTitleCase(longNames.Default);
 };
 
-const getUSStateName = (name) => {
+const getUSStateName = name => {
   const longNames = {
     AL: 'Alabama',
     AK: 'Alaska',
@@ -179,12 +180,12 @@ const getUSStateName = (name) => {
     WV: 'West Virginia',
     WI: 'Wisconsin',
     WY: 'Wyoming',
-    Default: name,
+    Default: name
   };
-  return (longNames[name] || toTitleCase(longNames.Default));
+  return longNames[name] || toTitleCase(longNames.Default);
 };
 
-const getIndianStateName = (name) => {
+const getIndianStateName = name => {
   const longNames = {
     AP: 'Andhra Pradesh',
     AR: 'Arunachal Pradesh',
@@ -219,12 +220,12 @@ const getIndianStateName = (name) => {
     UK: 'Uttarakhand',
     UP: 'Uttar Pradesh',
     WB: 'West Bengal',
-    Default: name,
+    Default: name
   };
-  return (longNames[name] || toTitleCase(longNames.Default));
+  return longNames[name] || toTitleCase(longNames.Default);
 };
 
-const getFlag = (name) => {
+const getFlag = name => {
   const flags = {
     China: '🇨🇳',
     Italy: '🇮🇹',
@@ -244,16 +245,16 @@ const getFlag = (name) => {
     'Hong Kong': '🇭🇰',
     UAE: '🇦🇪',
     'Sri Lanka': '🇱🇰',
-    Default: '',
+    Default: ''
   };
-  return (flags[name] || flags.Default);
+  return flags[name] || flags.Default;
 };
 
 const fail = (err, msg) => {
   console.log(err);
   return {
     response_type: 'in_channel',
-    text: msg || "Couldn't get stats.",
+    text: msg || "Couldn't get stats."
   };
 };
 
@@ -261,27 +262,32 @@ const success = async (header, fields, footer, client, country, region) => {
   const response = {
     response_type: 'in_channel',
     blocks: [
-      mui({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*${header}*`,
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*${header}*`
+          }
         },
-      }, client)
+        client
+      )
     ]
   };
   const body = {
     type: 'section',
-    fields: [],
-  }
+    fields: []
+  };
   for (const property in fields) {
-    const value = fields[property] || 0
+    const value = fields[property] || 0;
     body.fields.push({
       type: 'mrkdwn',
-      text: `${property}:  ${isNaN(value) ? value : `*${value}*`}`,
+      text: `${property}:  ${isNaN(value) ? value : `*${value}*`}`
     });
   }
-  const chart_url = `https://raichand-8kehpaun1bf-apigcp.nimbella.io/charts/${encodeURI(region ? region : country)}.png`
+  const chart_url = `https://raichand-8kehpaun1bf-apigcp.nimbella.io/charts/${encodeURI(
+    region ? region : country
+  )}.png`;
   const chart = {
     type: 'image',
     title: {
@@ -291,28 +297,37 @@ const success = async (header, fields, footer, client, country, region) => {
     },
     image_url: `${chart_url}?${new Date().getTime()}`,
     alt_text: country || ''
-  }
+  };
 
   const lower = {
     type: 'context',
-    elements: [{
-      type: 'mrkdwn',
-      text: `add _corona_stats_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets'}|Commander>.`,
-    }],
-  }
-  if (footer) {
-    lower.elements.push(
+    elements: [
       {
         type: 'mrkdwn',
-        text: footer,
-      })
+        text: `add _corona_stats_ to your ${client} with <${
+          client === 'slack' || client === 'msteams'
+            ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
+            : 'https://github.com/nimbella/command-sets'
+        }|Commander>.`
+      }
+    ]
+  };
+  if (footer) {
+    lower.elements.push({
+      type: 'mrkdwn',
+      text: footer
+    });
   }
-  response.blocks.push(mui(body, client))
-  await axios.head(chart_url).then(r => {
-    if (r.status === 200)
-      response.blocks.push(mui(chart, client));
-  }).catch(e => { console.log(`Couldn't get chart for ${region}`); })
-  response.blocks.push(mui(lower, client))
+  response.blocks.push(mui(body, client));
+  await axios
+    .head(chart_url)
+    .then(r => {
+      if (r.status === 200) response.blocks.push(mui(chart, client));
+    })
+    .catch(e => {
+      console.log(`Couldn't get chart for ${region}`);
+    });
+  response.blocks.push(mui(lower, client));
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
     delete response.blocks;
@@ -320,70 +335,104 @@ const success = async (header, fields, footer, client, country, region) => {
   return response;
 };
 
-const help = (client) => {
+const help = client => {
   const response = {
     response_type: 'in_channel',
-    blocks: [mui({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '*Using these commands, see stats for any country/region or worldwide.*',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text:
-      {
-        type: 'mrkdwn',
-        text: '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text:
-      {
-        type: 'mrkdwn',
-        text: '*examples:*',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '`/nc corona_stats` : Worldwide stats',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '`/nc corona_stats in` : stats for India',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '`/nc corona_stats in -r up` : stats for Uttar Pradesh, India',
-      },
-    }, client),
-    mui({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: '`/nc corona_stats in -r agra` : stats for Agra District, India',
-      },
-    }, client),
-    ],
+    blocks: [
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text:
+              '*Using these commands, see stats for any country/region or worldwide.*'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text:
+              '*command format*: \n`/nc corona_stats` \n`/nc corona_stats <Country Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <State Name | Abbreviation>` \n`/nc corona_stats <Country Name | Abbreviation> -r <District Name>`'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*examples:*'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '`/nc corona_stats` : Worldwide stats'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '`/nc corona_stats in` : stats for India'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '`/nc corona_stats in -r up` : stats for Uttar Pradesh, India'
+          }
+        },
+        client
+      ),
+      mui(
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text:
+              '`/nc corona_stats in -r agra` : stats for Agra District, India'
+          }
+        },
+        client
+      )
+    ]
   };
 
-  response.blocks.push(mui({
-    type: 'context',
-    elements: [{
-      type: 'mrkdwn',
-      text: `add _corona_stats_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets'}|Commander> \n data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>`,
-    }],
-  }, client));
+  response.blocks.push(
+    mui(
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `add _corona_stats_ to your ${client} with <${
+              client === 'slack' || client === 'msteams'
+                ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
+                : 'https://github.com/nimbella/command-sets'
+            }|Commander> \n data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>`
+          }
+        ]
+      },
+      client
+    )
+  );
 
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
@@ -444,9 +493,15 @@ const getDetails = (name, html) => {
     const recordIndex = stats[1].indexOf(name);
     if (recordIndex > 0) {
       fields['Population'] = stats[14][recordIndex];
-      fields['Total Cases'] = `*${stats[2][recordIndex]}* \n_(per M. *${stats[10][recordIndex]}*, 1 every *${stats[16][recordIndex]}* ppl)_\n`;
-      fields['Total Fatalities'] = `*${stats[4][recordIndex]}* \n_(per M. *${stats[11][recordIndex]}*, 1 every *${stats[17][recordIndex]}* ppl)_\n`;
-      fields['Total Tests'] = `*${stats[12][recordIndex]}* \n_(per M. *${stats[13][recordIndex]}*, 1 every *${stats[18][recordIndex]}* ppl)_\n`;
+      fields[
+        'Total Cases'
+      ] = `*${stats[2][recordIndex]}* \n_(per M. *${stats[10][recordIndex]}*, 1 every *${stats[16][recordIndex]}* ppl)_\n`;
+      fields[
+        'Total Fatalities'
+      ] = `*${stats[4][recordIndex]}* \n_(per M. *${stats[11][recordIndex]}*, 1 every *${stats[17][recordIndex]}* ppl)_\n`;
+      fields[
+        'Total Tests'
+      ] = `*${stats[12][recordIndex]}* \n_(per M. *${stats[13][recordIndex]}*, 1 every *${stats[18][recordIndex]}* ppl)_\n`;
       fields['Total Recovered'] = stats[6][recordIndex];
       fields['New Cases'] = stats[3][recordIndex];
       fields['New Fatalities'] = stats[5][recordIndex];
@@ -470,9 +525,15 @@ const getDetailsForUS = (name, html) => {
     }
     const recordIndex = stats[0].indexOf(name);
     if (recordIndex > 0) {
-      fields['Total Cases'] = `*${stats[1][recordIndex]}* _(per M. *${stats[6][recordIndex]}*)_`;
-      fields['Total Fatalities'] = `*${stats[3][recordIndex]}* _(per M. *${stats[7][recordIndex]}*)_`;
-      fields['Total Tests'] = `*${stats[8][recordIndex]}* _(per M. *${stats[9][recordIndex]}*)_`;
+      fields[
+        'Total Cases'
+      ] = `*${stats[1][recordIndex]}* _(per M. *${stats[6][recordIndex]}*)_`;
+      fields[
+        'Total Fatalities'
+      ] = `*${stats[3][recordIndex]}* _(per M. *${stats[7][recordIndex]}*)_`;
+      fields[
+        'Total Tests'
+      ] = `*${stats[8][recordIndex]}* _(per M. *${stats[9][recordIndex]}*)_`;
       fields['New Cases'] = stats[2][recordIndex];
       fields['New Fatalities'] = stats[4][recordIndex];
       fields['Active Cases'] = stats[5][recordIndex];
@@ -483,7 +544,7 @@ const getDetailsForUS = (name, html) => {
   return fields;
 };
 
-const getDetailsForIndia = async (name) => {
+const getDetailsForIndia = async name => {
   if (!inStatesData) {
     const stateData = await getData(`${covid19India}data.json`);
     inStatesData = stateData.statewise;
@@ -494,14 +555,16 @@ const getDetailsForIndia = async (name) => {
     if (!stats) {
       return;
     }
-    let record = stats.find((o) => o.state === name);
+    let record = stats.find(o => o.state === name);
     if (record) {
       getStateFields(fields, record);
     } else {
       if (!inDistrictData) {
-        inDistrictData = await getData(`${covid19India}state_district_wise.json`);
+        inDistrictData = await getData(
+          `${covid19India}state_district_wise.json`
+        );
       }
-      record = Object.values(inDistrictData).find((e) => e.districtData[name]);
+      record = Object.values(inDistrictData).find(e => e.districtData[name]);
       if (record) {
         const district = record.districtData[name];
         getDistrictFields(fields, district);
@@ -557,7 +620,9 @@ async function _command(params) {
       state = getUSStateName(params.region.toUpperCase());
       if (!usStatesHtml) {
         usStatesHtml = await getHTMLData(`${coronaMeter}country/us/`);
-        if (!usStatesHtml) { return fail(undefined, `Couldn't get stats for ${state}.`); }
+        if (!usStatesHtml) {
+          return fail(undefined, `Couldn't get stats for ${state}.`);
+        }
       }
       fields = getDetailsForUS(state, usStatesHtml);
     }
@@ -565,24 +630,34 @@ async function _command(params) {
       state = getIndianStateName(params.region.toUpperCase());
       fields = await getDetailsForIndia(state);
     }
-    header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(country)} :`;
-    if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${state}`); }
+    header = `CoronaVirus 😷 Stats in ${state}, ${country} ${getFlag(
+      country
+    )} :`;
+    if (Object.keys(fields).length === 0 && fields.constructor === Object) {
+      return fail(undefined, `Couldn\'t get stats for ${state}`);
+    }
     return success(header, fields, footer, client, country, state);
   }
   if (!countryHtml) {
     countryHtml = await getHTMLData(coronaMeter);
-    if (!countryHtml) { return fail(undefined, 'Couldn\'t get the stats'); }
+    if (!countryHtml) {
+      return fail(undefined, "Couldn't get the stats");
+    }
   }
   if (country) {
     if (country === 'USA') {
-      footer = '\n to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
+      footer =
+        '\n to see stats for a state, type `corona_stats us -r <stateName>` e.g. `/nc corona_stats us -r ny`';
     }
     if (country === 'India') {
-      footer = '\n to see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
+      footer =
+        '\n to see stats for a state, type `corona_stats in -r <stateName>` e.g. `/nc corona_stats in -r up`';
     }
     header = `CoronaVirus 😷 Stats in ${country} ${getFlag(country)} :`;
     fields = getDetails(country, countryHtml);
-    if (Object.keys(fields).length === 0 && fields.constructor === Object) { return fail(undefined, `Couldn\'t get stats for ${country}`); }
+    if (Object.keys(fields).length === 0 && fields.constructor === Object) {
+      return fail(undefined, `Couldn\'t get stats for ${country}`);
+    }
   } else {
     try {
       const statsElements = countryHtml('.maincounter-number');
@@ -596,9 +671,10 @@ async function _command(params) {
       fields.Recovered = stats[2];
       fields.Fatalities = stats[1];
       header = 'CoronaVirus 😷 Stats Worldwide 🗺️ :';
-      footer = 'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
+      footer =
+        'to see stats for a country, type `corona_stats <countryName>` e.g. `/nc corona_stats us`';
     } catch (e) {
-      return fail(undefined, 'Couldn\'t get the stats.');
+      return fail(undefined, "Couldn't get the stats.");
     }
   }
   return success(header, fields, footer, client, country);
@@ -609,12 +685,10 @@ async function _command(params) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
-  body: await _command(
-    args.params,
-  ).catch((error) => ({
+const main = async args => ({
+  body: await _command(args.params).catch(error => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`,
-  })),
+    text: `Error: ${error.message}`
+  }))
 });
 module.exports = main;

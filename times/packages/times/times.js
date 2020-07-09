@@ -29,7 +29,10 @@ const mui = (element, client) => {
         if (element.fields && element.fields.length > 0) {
           let longestColumn = 0;
           for (let i = 0; i < element.fields.length; i++) {
-            element.fields[i].text = element.fields[i].text.replace(/\*/g, '**');
+            element.fields[i].text = element.fields[i].text.replace(
+              /\*/g,
+              '**'
+            );
             if (element.fields[i].text.length > longestColumn) {
               longestColumn = element.fields[i].text.length;
             }
@@ -54,7 +57,6 @@ const mui = (element, client) => {
     return output.join('');
   }
   return element;
-
 };
 
 const defaultCities = 'delhi, rome, new york, los angeles';
@@ -65,15 +67,15 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const tableparser = require('cheerio-tableparser');
 
-const toTitleCase = (phrase) =>
+const toTitleCase = phrase =>
   phrase
     .trim()
     .toLowerCase()
     .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-const abbrExpand = (shortName) => {
+const abbrExpand = shortName => {
   let longName = shortName;
   switch (shortName) {
     case 'Delhi':
@@ -85,11 +87,11 @@ const abbrExpand = (shortName) => {
   return longName;
 };
 
-const fail = (err) => {
+const fail = err => {
   console.log(err);
   return {
     response_type: 'in_channel',
-    text: err || "Couldn't get times.",
+    text: err || "Couldn't get times."
   };
 };
 
@@ -101,16 +103,16 @@ const success = (fields, client) => {
   const body = {
     type: 'section',
     fields: []
-  }
-  Object.keys(fields).forEach((key) => {
+  };
+  Object.keys(fields).forEach(key => {
     body.fields.push(
       {
         type: 'mrkdwn',
-        text: `*${key}*`,
+        text: `*${key}*`
       },
       {
         type: 'mrkdwn',
-        text: `*${fields[key].split('\n')[0]}*`,
+        text: `*${fields[key].split('\n')[0]}*`
       }
     );
   });
@@ -119,12 +121,16 @@ const success = (fields, client) => {
     elements: [
       {
         type: 'mrkdwn',
-        text: `add _times_ to your ${client} with <${client === 'slack' ? 'https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/' : 'https://github.com/nimbella/command-sets/tree/master/times'}|Commander>.`,
-      },
-    ],
-  }
-  response.blocks.push(mui(body, client))
-  response.blocks.push(mui(footer, client))
+        text: `add _times_ to your ${client} with <${
+          client === 'slack' || client === 'msteams'
+            ? 'https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/'
+            : 'https://github.com/nimbella/command-sets/tree/master/times'
+        }|Commander>.`
+      }
+    ]
+  };
+  response.blocks.push(mui(body, client));
+  response.blocks.push(mui(footer, client));
   if (client === 'mattermost') {
     response.text = response.blocks.join('\n');
     delete response.blocks;
@@ -145,10 +151,10 @@ async function _command(params, commandText, secrets = {}) {
     response = await axios
       .get(worldClock1, {
         headers: {
-          'Accept-Language': 'en-US,en;q=0.9',
-        },
+          'Accept-Language': 'en-US,en;q=0.9'
+        }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         axios.get(worldClock2);
       });
@@ -160,7 +166,7 @@ async function _command(params, commandText, secrets = {}) {
   }
   const fields = {};
   const html = cheerio.load(response.data);
-  const { cities = defaultCities } = params;
+  const {cities = defaultCities} = params;
   const cityList = cities.split(',');
   try {
     tableparser(html);
@@ -179,7 +185,7 @@ async function _command(params, commandText, secrets = {}) {
       let city = toTitleCase(element);
       city = abbrExpand(city);
       let time;
-      const recordIndex = allCities.findIndex((e) => e.startsWith(city));
+      const recordIndex = allCities.findIndex(e => e.startsWith(city));
       if (recordIndex > 0) {
         time = allTimes[recordIndex];
       } else {
@@ -199,14 +205,14 @@ async function _command(params, commandText, secrets = {}) {
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
 
-const main = async (args) => ({
+const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
     args.__secrets || {}
-  ).catch((error) => ({
+  ).catch(error => ({
     response_type: 'ephemeral',
-    text: `Error: ${error.message}`,
-  })),
+    text: `Error: ${error.message}`
+  }))
 });
 module.exports = main;
