@@ -30,5 +30,5 @@ Get logs of a pod.
 Get information about objects (pods, nodes, services, deployments).
 
 ```sh
-/nc get <objectName> [-n <namespace>]
+/nc get <objectName> [-n <namespace>] [-skip <skip>]
 ```
