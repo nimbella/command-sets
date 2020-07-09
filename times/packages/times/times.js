@@ -122,7 +122,7 @@ const success = (fields, client) => {
       {
         type: 'mrkdwn',
         text: `add _times_ to your ${client} with <${
-          client === 'slack' || client === 'msteams'
+          client === 'slack'
             ? 'https://nimbella.com/blog/see-the-time-in-different-cities-on-slack-with-nimbella-commander/'
             : 'https://github.com/nimbella/command-sets/tree/master/times'
         }|Commander>.`
