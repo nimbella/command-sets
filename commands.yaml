@@ -13,3 +13,5 @@ commands:
     options:
       - name: n
         value: namespace
+      - name: skip
+        value: skip

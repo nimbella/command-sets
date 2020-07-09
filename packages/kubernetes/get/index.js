@@ -30,7 +30,9 @@ async function _command(params, commandText, secrets = {}) {
     requestURL = `${K8_APISERVER}/api/v1/nodes`;
   }
 
-  const {data} = await axios.get(requestURL, {
+  const {
+    data: {items}
+  } = await axios.get(requestURL, {
     httpsAgent: new https.Agent({
       ca: Buffer.from(K8_CA, 'base64')
     }),
@@ -39,7 +41,9 @@ async function _command(params, commandText, secrets = {}) {
     }
   });
 
-  if (data.items.length === 0) {
+  const skip = params.skip === false ? 0 : Number(params.skip);
+  const loopLength = items.length < skip + 10 ? items.length : skip + 10;
+  if (items.length === 0) {
     result.push({
       type: 'section',
       text: {
@@ -47,9 +51,18 @@ async function _command(params, commandText, secrets = {}) {
         text: `No resources found.`
       }
     });
+  } else {
+    result.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Showing: ${skip + 1}-${loopLength} Total: *${items.length}*`
+      }
+    });
   }
 
-  for (const item of data.items) {
+  for (let i = skip; i < loopLength; i++) {
+    const item = items[i];
     if (objectName.trim() === 'pods') {
       let containerReady = 0;
       let restartCount = 0;
