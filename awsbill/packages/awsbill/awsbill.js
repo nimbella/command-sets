@@ -174,7 +174,7 @@ async function _command(params, commandText, secrets = {}) {
       }
       serviceSection.fields.push({
         type: 'mrkdwn',
-        text: costInUnits + ' *' + serviceName + '*'
+        text: costInUnits + ' *' + serviceName.trim() + '*'
       });
       if (unit != null && unit != serviceUnit) {
         hasMultipleUnits = true;
