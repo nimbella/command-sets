@@ -63,12 +63,13 @@ async function _command(params, commandText, secrets = {}) {
 
   for (let i = skip; i < loopLength; i++) {
     const item = items[i];
+    // Format output for pods.
     if (objectName.trim() === 'pods') {
       let containerReady = 0;
       let restartCount = 0;
       const podAge = prettyMS(
         Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
-        {secondsDecimalDigits: 0}
+        {compact: true}
       );
 
       for (const container of item.status.containerStatuses) {
@@ -87,10 +88,11 @@ async function _command(params, commandText, secrets = {}) {
           }
         ]
       });
+      // Format output for nodes.
     } else if (objectName.trim() === 'nodes') {
       const nodeAge = prettyMS(
         Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
-        {secondsDecimalDigits: 0}
+        {compact: true}
       )
         .split(' ')
         .join('');
@@ -108,6 +110,43 @@ async function _command(params, commandText, secrets = {}) {
           {
             type: 'mrkdwn',
             text: `\`${item.metadata.name}\` \`STATUS: ${nodeStatus}\` \`AGE: ${nodeAge}\` \`VERSION: ${item.status.nodeInfo.kubeletVersion}\``
+          }
+        ]
+      });
+      // Format output for services.
+    } else if (objectName.trim() === 'services') {
+      const name = item.metadata.name;
+      const serviceAge = prettyMS(
+        Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
+        {compact: true}
+      )
+        .split(' ')
+        .join('');
+      const serviceType = item.spec.type;
+      const clusterIP = item.spec.clusterIP;
+      // TODO(satyarohith): Figure out externalIP for other services.
+      const externalIP = item.spec.loadBalancerIP
+        ? item.spec.loadBalancerIP
+        : '';
+      const ports = item.spec.ports
+        .map(
+          port =>
+            (port.nodePort
+              ? port.targetPort + ':' + port.nodePort
+              : port.targetPort) +
+            '/' +
+            port.protocol
+        )
+        .join(',');
+
+      result.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `\`${name}\` \`TYPE: ${serviceType}\` \`CLUSTER-IP: ${clusterIP}\` ${
+              externalIP ? 'EXTERNAL-IP:' + externalIP + ' ' : ''
+            }\`PORT(S): ${ports}\` \`AGE: ${serviceAge}\``
           }
         ]
       });
