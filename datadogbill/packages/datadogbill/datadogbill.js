@@ -6,7 +6,7 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  if (client === 'slack') {
+  if (client !== 'mattermost') {
     return element;
   }
 
@@ -356,8 +356,8 @@ const _command = async (params, commandText, secrets = {}) => {
 
   return {
     response_type: 'in_channel',
-    [client === 'slack' ? 'blocks' : 'text']:
-      client === 'slack' ? result : result.join('\n')
+    [client !== 'mattermost' ? 'blocks' : 'text']:
+      client !== 'mattermost' ? result : result.join('\n')
   };
 };
 

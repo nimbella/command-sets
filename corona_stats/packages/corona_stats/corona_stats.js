@@ -305,7 +305,7 @@ const success = async (header, fields, footer, client, country, region) => {
       {
         type: 'mrkdwn',
         text: `add _corona_stats_ to your ${client} with <${
-          client === 'slack' || client === 'msteams'
+          client === 'slack'
             ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
             : 'https://github.com/nimbella/command-sets'
         }|Commander>.`
@@ -423,7 +423,7 @@ const help = client => {
           {
             type: 'mrkdwn',
             text: `add _corona_stats_ to your ${client} with <${
-              client === 'slack' || client === 'msteams'
+              client === 'slack'
                 ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
                 : 'https://github.com/nimbella/command-sets'
             }|Commander> \n data sources: <https://www.worldometers.info/coronavirus/|worldometers>, <https://www.covid19india.org/|covid19india>`

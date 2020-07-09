@@ -5,7 +5,7 @@
  */
 const mui = (element, client) => {
   const output = [];
-  if (client === 'slack' || client === 'msteams') {
+  if (client !== 'mattermost') {
     return element;
   } else {
     if (element.type === 'context') {
