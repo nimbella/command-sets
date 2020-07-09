@@ -28,6 +28,8 @@ async function _command(params, commandText, secrets = {}) {
 
   if (objectName.trim() === 'nodes') {
     requestURL = `${K8_APISERVER}/api/v1/nodes`;
+  } else if (objectName.trim() === 'deployments') {
+    requestURL = `${K8_APISERVER}/apis/apps/v1/namespaces/${namespace}/deployments`;
   }
 
   const {
@@ -147,6 +149,25 @@ async function _command(params, commandText, secrets = {}) {
             text: `\`${name}\` \`TYPE: ${serviceType}\` \`CLUSTER-IP: ${clusterIP}\` ${
               externalIP ? 'EXTERNAL-IP:' + externalIP + ' ' : ''
             }\`PORT(S): ${ports}\` \`AGE: ${serviceAge}\``
+          }
+        ]
+      });
+      // Format output for deployments.
+    } else if (objectName.trim() === 'deployments') {
+      const name = item.metadata.name;
+      const deploymentAge = prettyMS(
+        Date.now() - new Date(item.metadata.creationTimestamp).getTime(),
+        {compact: true}
+      )
+        .split(' ')
+        .join('');
+
+      result.push({
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `\`${name}\` \`READY: ${item.status.readyReplicas}/${item.status.replicas}\` \`UP-TO-DATE: ${item.status.updatedReplicas}\` \`AVAILABLE: ${item.status.availableReplicas}\` \`AGE: ${deploymentAge}\``
           }
         ]
       });
