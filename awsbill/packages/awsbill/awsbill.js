@@ -6,7 +6,7 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  if (client === 'slack') {
+  if (client === 'slack' || client === 'msteams') {
     return element;
   }
 

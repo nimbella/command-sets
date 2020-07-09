@@ -5,7 +5,7 @@
  */
 const mui = (element, client) => {
   const output = [];
-  if (client === 'slack') {
+  if (client === 'slack' || client === 'msteams') {
     return element;
   } else {
     if (element.type === 'context') {
@@ -162,8 +162,8 @@ async function _command(params, commandText, secrets = {}) {
 
   return {
     response_type: 'in_channel',
-    [client === 'slack' ? 'blocks' : 'text']:
-      client === 'slack' ? result : result.join('\n')
+    [client !== 'mattermost' ? 'blocks' : 'text']:
+      client !== 'mattermost' ? result : result.join('\n')
   };
 }
 
@@ -172,8 +172,12 @@ async function _command(params, commandText, secrets = {}) {
  * @property {string} text
  * @property {'in_channel'|'ephemeral'} [response_type]
  */
-const main = async (args) => ({
-  body: await _command(args.params, args.commandText, args.__secrets || {}).catch(error => ({
+const main = async args => ({
+  body: await _command(
+    args.params,
+    args.commandText,
+    args.__secrets || {}
+  ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
   }))
