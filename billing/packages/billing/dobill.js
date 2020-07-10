@@ -7,7 +7,7 @@
  */
 const mui = (element, client) => {
   const output = [];
-  if (client !== 'mattermost'
+  if (client !== 'mattermost') {
     return element;
   } else {
     if (element.type === 'context') {
@@ -547,8 +547,8 @@ const _command = async (params, commandText, secrets = {}) => {
 
   return {
     response_type: 'in_channel', // eslint-disable-line camelcase
-    [client !== 'mattermost' ?:
-      client !== 'mattermost' ?in('\n')
+    [client !== 'mattermost' ? 'blocks' : 'text']:
+      client !== 'mattermost' ? result : result.join('\n')
   };
 };
 

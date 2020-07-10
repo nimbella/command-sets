@@ -6,7 +6,7 @@
  * @param {string} client - name of the client
  */
 const mui = (element, client) => {
-  if (client !== 'mattermost'
+  if (client !== 'mattermost') {
     return element;
   }
 
