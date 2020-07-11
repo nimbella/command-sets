@@ -47,3 +47,5 @@ command_sets:
     description: Fetch DigitalOcean billing information from Slack using Nimbella Commander.
   twitter:
     description: Execute Twitter related operations.
+  kubernetes:
+    description: Interact with your Kubernetes cluster from Slack.
