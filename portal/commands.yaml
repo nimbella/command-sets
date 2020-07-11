@@ -1,0 +1,6 @@
+commands:
+  portal_connect:
+    description: Connects the commander by workspace to the Nimbella portal
+    parameters:
+      - name: name
+      - name: account_token
