@@ -8,12 +8,12 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {K8_TOKEN, K8_APISERVER, K8_CA} = secrets;
-  if (!K8_TOKEN || !K8_APISERVER || !K8_CA) {
+  const {K8S_TOKEN, K8S_APISERVER, K8S_CA} = secrets;
+  if (!K8S_TOKEN || !K8S_APISERVER || !K8S_CA) {
     return {
       response_type: 'ephemeral',
       text:
-        `Secrets named \`K8_TOKEN\`, \`K8_APISERVER\` & \`K8_CA\` with the ` +
+        `Secrets named \`K8S_TOKEN\`, \`K8S_APISERVER\` & \`K8S_CA\` with the ` +
         `access token, the address of your kubernetes cluster, and certificate ` +
         `authority data respectively are required to run this command set.`
     };
@@ -24,22 +24,22 @@ async function _command(params, commandText, secrets = {}) {
   const https = require('https');
   const prettyMS = require('pretty-ms');
   const axios = require('axios');
-  let requestURL = `${K8_APISERVER}/api/v1/namespaces/${namespace}/${objectName}`;
+  let requestURL = `${K8S_APISERVER}/api/v1/namespaces/${namespace}/${objectName}`;
 
   if (objectName.trim() === 'nodes') {
-    requestURL = `${K8_APISERVER}/api/v1/nodes`;
+    requestURL = `${K8S_APISERVER}/api/v1/nodes`;
   } else if (objectName.trim() === 'deployments') {
-    requestURL = `${K8_APISERVER}/apis/apps/v1/namespaces/${namespace}/deployments`;
+    requestURL = `${K8S_APISERVER}/apis/apps/v1/namespaces/${namespace}/deployments`;
   }
 
   const {
     data: {items}
   } = await axios.get(requestURL, {
     httpsAgent: new https.Agent({
-      ca: Buffer.from(K8_CA, 'base64')
+      ca: Buffer.from(K8S_CA, 'base64')
     }),
     headers: {
-      Authorization: `Bearer ${K8_TOKEN}`
+      Authorization: `Bearer ${K8S_TOKEN}`
     }
   });
 

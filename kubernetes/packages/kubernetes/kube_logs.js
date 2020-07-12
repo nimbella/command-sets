@@ -8,12 +8,12 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {K8_TOKEN, K8_APISERVER, K8_CA} = secrets;
-  if (!K8_TOKEN || !K8_APISERVER || !K8_CA) {
+  const {K8S_TOKEN, K8S_APISERVER, K8S_CA} = secrets;
+  if (!K8S_TOKEN || !K8S_APISERVER || !K8S_CA) {
     return {
       response_type: 'ephemeral',
       text:
-        `Secrets named \`K8_TOKEN\`, \`K8_APISERVER\` & \`K8_CA\` with the ` +
+        `Secrets named \`K8S_TOKEN\`, \`K8S_APISERVER\` & \`K8S_CA\` with the ` +
         `access token, the address of your kubernetes cluster, and certificate ` +
         `authority data respectively are required to run this command set.`
     };
@@ -24,13 +24,13 @@ async function _command(params, commandText, secrets = {}) {
   const https = require('https');
   const axios = require('axios');
   const {data} = await axios.get(
-    `${K8_APISERVER}/api/v1/namespaces/default/pods/${podName}/log?tailLines=${tailLines}`,
+    `${K8S_APISERVER}/api/v1/namespaces/default/pods/${podName}/log?tailLines=${tailLines}`,
     {
       httpsAgent: new https.Agent({
-        ca: Buffer.from(K8_CA, 'base64')
+        ca: Buffer.from(K8S_CA, 'base64')
       }),
       headers: {
-        Authorization: `Bearer ${K8_TOKEN}`
+        Authorization: `Bearer ${K8S_TOKEN}`
       }
     }
   );
