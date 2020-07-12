@@ -8,14 +8,13 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 async function _command(params, commandText, secrets = {}) {
-  const {K8S_TOKEN, K8S_APISERVER, K8S_CA} = secrets;
-  if (!K8S_TOKEN || !K8S_APISERVER || !K8S_CA) {
+  const {K8S_SERVER, K8S_TOKEN, K8S_CA} = secrets;
+  if (!K8S_TOKEN || !K8S_SERVER || !K8S_CA) {
     return {
       response_type: 'ephemeral',
       text:
-        `Secrets named \`K8S_TOKEN\`, \`K8S_APISERVER\` & \`K8S_CA\` with the ` +
-        `access token, the address of your kubernetes cluster, and certificate ` +
-        `authority data respectively are required to run this command set.`
+        `Secrets named \`K8S_SERVER\`, \`K8S_TOKEN\`, and \`K8S_CA\` are required to run this Command Set. ` +
+        `Read <https://github.com/satyarohith/command-sets/tree/k8/kubernetes#requirements|this> to learn more.`
     };
   }
 
@@ -24,12 +23,12 @@ async function _command(params, commandText, secrets = {}) {
   const https = require('https');
   const prettyMS = require('pretty-ms');
   const axios = require('axios');
-  let requestURL = `${K8S_APISERVER}/api/v1/namespaces/${namespace}/${objectName}`;
+  let requestURL = `${K8S_SERVER}/api/v1/namespaces/${namespace}/${objectName}`;
 
   if (objectName.trim() === 'nodes') {
-    requestURL = `${K8S_APISERVER}/api/v1/nodes`;
+    requestURL = `${K8S_SERVER}/api/v1/nodes`;
   } else if (objectName.trim() === 'deployments') {
-    requestURL = `${K8S_APISERVER}/apis/apps/v1/namespaces/${namespace}/deployments`;
+    requestURL = `${K8S_SERVER}/apis/apps/v1/namespaces/${namespace}/deployments`;
   }
 
   const {
@@ -39,7 +38,7 @@ async function _command(params, commandText, secrets = {}) {
       ca: Buffer.from(K8S_CA, 'base64')
     }),
     headers: {
-      Authorization: `Bearer ${K8S_TOKEN}`
+      Authorization: `Bearer ${Buffer.from(K8S_TOKEN, 'base64')}`
     }
   });
 
