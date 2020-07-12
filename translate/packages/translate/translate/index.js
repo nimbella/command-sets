@@ -106,7 +106,7 @@ async function _command(params, commandText, secrets = {}) {
             {
               type: 'mrkdwn',
               text: `add _translate_ to your ${client} with <${
-                client === 'slack' || client === 'msteams'
+                client === 'slack'
                   ? 'https://nimbella.com/blog/greet-your-friends-in-their-native-language-in-slack-with-nimbella-commander/'
                   : 'https://github.com/nimbella/command-sets/tree/master/translate'
               }|Commander>`

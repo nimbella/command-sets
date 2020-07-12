@@ -7,12 +7,7 @@
  */
 const mui = (element, client) => {
   const output = [];
-  if (
-    client === 'slack' || client === 'msteams' || client === 'msteams' ||
-    client === 'msteams' ||
-    client === 'msteams' ||
-    client === 'msteams'
-  ) {
+  if (client !== 'mattermost') {
     return element;
   } else {
     if (element.type === 'context') {
@@ -197,7 +192,7 @@ async function _command(params, commandText, secrets = {}) {
         },
         client
       )
-    )client === 'slack' || client === 'msteams' || client === 'msteams'
+    );
   }
 
   return {

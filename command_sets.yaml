@@ -49,3 +49,5 @@ command_sets:
     description: Execute Twitter related operations.
   kubernetes:
     description: Interact with your Kubernetes cluster.
+  portal:
+    description: Connect your workspace to Nimbella Portal.
