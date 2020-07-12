@@ -12,12 +12,12 @@ For the Command Set to communicate with your Kubernetes cluster, you need to set
 
 ## Commands
 
-- [`get`](#get) - Get information about objects (pods, nodes, services, deployments).
-- [`logs`](#log) - Get logs of a pod.
+- [`kube_get`](#kube_get) - Get information about objects (pods, nodes, services, deployments).
+- [`kube_logs`](#kube_logs) - Get logs of a pod.
 
 ## Usage
 
-### [`get`](packages/kubernetes/get/index.js)
+### [`kube_get`](packages/kubernetes/kube_get/index.js)
 
 Get information about objects (pods, nodes, services, deployments).
 
@@ -27,7 +27,7 @@ Get information about objects (pods, nodes, services, deployments).
 
 By default only 10 items are shown. The command supports pagination so you can skip through the list using `-skip` flag.
 
-### [`logs`](packages/kubernetes/logs.js)
+### [`kube_logs`](packages/kubernetes/kube_logs.js)
 
 Get logs of a pod.
 
