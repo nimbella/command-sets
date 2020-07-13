@@ -1,0 +1,8 @@
+{
+  "name": "kube_get",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "pretty-ms": "^7.0.0"
+  }
+}

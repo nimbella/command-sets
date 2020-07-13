@@ -42,10 +42,12 @@ command_sets:
   awsbill:
     description: Fetch AWS billing information.
   datadogbill:
-    description: Fetch Datadog billing information from Slack using Nimbella Commander.
+    description: Fetch Datadog billing information.
   dobill:
-    description: Fetch DigitalOcean billing information from Slack using Nimbella Commander.
+    description: Fetch DigitalOcean billing information.
   twitter:
     description: Execute Twitter related operations.
-  portal: 
-    description: Connect your workspace to Nimbella Portal. 
+  kubernetes:
+    description: Interact with your Kubernetes cluster.
+  portal:
+    description: Connect your workspace to Nimbella Portal.

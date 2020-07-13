@@ -1,0 +1,17 @@
+commands:
+  kube_logs:
+    description: Get logs of a pod.
+    options:
+      - name: n
+        value: tailLines
+    parameters:
+      - name: podName
+  kube_get:
+    description: Get information about objects (pods, services, deployments).
+    parameters:
+      - name: objectName
+    options:
+      - name: n
+        value: namespace
+      - name: skip
+        value: skip
