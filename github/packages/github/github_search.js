@@ -96,6 +96,7 @@ async function command(params, commandText, secrets = {}) {
       break;
     case 't':
     case 'topic':
+    case 'topics':
       entity = 'topics';
       displayEntity = 'Topics';
       headers.Accept = 'application/vnd.github.mercy-preview+json';
