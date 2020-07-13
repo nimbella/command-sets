@@ -71,6 +71,7 @@ async function command(params, commandText, secrets = {}) {
       break;
     case 'i':
     case 'issue':
+    case 'issues':
       entity = 'issues';
       displayEntity = 'Issues';
       query += '+is:issue';
