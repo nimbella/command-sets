@@ -6,7 +6,7 @@ Interact with your Kubernetes cluster from Messaging platforms like Slack, Matte
 
 The Command Set is intended to be used with [Nimbella Commander](https://nimbella.com/product/commander). So please make sure you've it installed on your messaging platform.
 
-For the Command Set to communicate with your Kubernetes cluster, we need to setup secrets named `K8S_SERVER`, `K8_TOKEN`, and `K8_CA` with the cluster IP address, an auth token and CA cert data respectively.
+For the Command Set to communicate with your Kubernetes cluster, we need to setup secrets named `K8S_SERVER`, `K8S_TOKEN`, and `K8S_CA` with the cluster IP address, an auth token and CA cert data respectively.
 
 **Obtaining the required values**
 
