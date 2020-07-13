@@ -61,7 +61,7 @@ To obtain your cluster IP address run:
 kubectl config view --minify -o yaml | grep "server"
 ```
 
-Copy the IP address and paste it in the value field of `k8S_SERVER` while creating the secrets.
+Copy the IP address and paste it in the value field of `K8S_SERVER` while creating the secrets.
 
 ## Commands
 
@@ -75,7 +75,7 @@ Copy the IP address and paste it in the value field of `k8S_SERVER` while creati
 Get information about objects (pods, nodes, services, deployments).
 
 ```sh
-/nc get <objectName> [-n <namespace>] [-skip <skip>]
+/nc kube_get <objectName> [-n <namespace>] [-skip <skip>]
 ```
 
 By default only 10 items are shown. The command supports pagination so you can skip through the list using `-skip` flag.
@@ -85,7 +85,7 @@ By default only 10 items are shown. The command supports pagination so you can s
 Get logs of a pod.
 
 ```sh
-/nc logs <podName> [-n <tailLines>]
+/nc kube_logs <podName> [-n <tailLines>]
 ```
 
 By default last 25 lines of logs are shown which you can modify the number of lines per request using `-n` flag.
