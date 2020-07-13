@@ -2,8 +2,10 @@ commands:
   kube_logs:
     description: Get logs of a pod.
     options:
-      - name: n
+      - name: l
         value: tailLines
+      - name: n
+        value: namespace
     parameters:
       - name: podName
   kube_get:
