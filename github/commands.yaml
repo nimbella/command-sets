@@ -68,14 +68,17 @@ commands:
     options:
       - name: state
         value: state
-  github_list:
-    description: Find repositories, commits, code, issues, pull requests, users and topics using keywords
+  github_search:
+    description: Search repositories, commits, code, issues, pull requests, users and topics using keywords
     parameters:
       - name: entity
       - name: keywords
+        optional: true
     options:
+      - name: q
+        value: query        
       - name: r
-        value: repository
+        value: repositories
       - name: l
         value: language
       - name: s

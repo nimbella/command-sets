@@ -7,12 +7,10 @@ A Nimbella Commander command set for interfacing with GitHub
 - Create an issue
 - Close an issue
 - Reopen an issue
-- Find pull requests by date
 - Label an issue/pull request
 - Request someone to review a pull request
 - View repository community statistics
-- View recent pull requests
-- Finding repositories, commits, code, issues, pull requests, users and topics using keywords
+- Searching repositories, commits, code, issues, pull requests, users and topics using given words
 - View GitHub command set documentation
 
 ## Install
@@ -61,14 +59,6 @@ Reopening an issue
 
 ![GitHub reopen_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/reopen_issue.png)
 
-Finding a pull request by date.
-
-```
-/nc github_find_pr <date> [-r <repository>] [-state <state>]
-```
-
-![GitHub find_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/find_pr.png)
-
 Labeling an issue.
 
 ```
@@ -85,21 +75,14 @@ Getting repository statistics
 
 ![GitHub stats command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/stats.png)
 
-Viewing recent pull requests
-
-```
-/nc github_view_pr [<repository>] [-state <state>]
-```
-
-![GitHub view_pr command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/view_pr.png)
 
 Finding repositories, commits, code, issues, pull requests, users and topics using keywords
 
 ```
-/nc github_list <entity> <keywords> [-r <repository>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]
+/nc github_search <entity> <keywords> [-q <query>] [-r <repositories>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]
 ```
 
-![GitHub list command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/list.png)
+![GitHub search command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/search.png)
 
 Entity can be passed in as an abbreviation:
 
@@ -110,7 +93,16 @@ Entity can be passed in as an abbreviation:
 - p - pull requests
 - u - users
 - t - topics
-  Multiple keywords can be combined using `+` sign `github+python`
+
+Multiple keywords can be combined using `+` sign. e.g. `atom+design`
+
+Optionally following options can be provided for more specific search 
+
+- [-q <query>] query can be formed using [github search syntax](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax)
+- [-r <repositories>] specific repositories can be given e.g. `-r microsoft/vscode,nimbella/command-sets`. In order to avoid having to type in repository names every time command needs to run, default repositories can be specified using `\nc secret_create` ![](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/secret_creator.png)   
+- [-l <language>] specific language can be mentioned e.g. `-l python`
+- [-s <pageSize>] number of records to be fetched in one go e.g. `-s 10`
+- [-n <pageNumber>] next set of records can be fetched using e.g. `-n 2`
 
 Viewing GitHub command set documentation
 

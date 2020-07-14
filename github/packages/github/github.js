@@ -40,11 +40,10 @@ async function _command(params, commandText, secrets = {}) {
       \n• Create an issue\
       \n• Close an issue\
       \n• Reopen an issue\
-      \n• Find pull requests by date\
       \n• Label an issue/pull request\
       \n• Request someone to review a pull request\
       \n• View repository community statistics\
-      \n• View recent pull requests\
+      \n• Search repositories, commits, code, issues, pull requests, users, topics matching given words\
       \n• View GitHub command set documentation\
       \n\n*Requirements*:\
       \nSet up a Personal Access Token on GitHub with repo access.\
@@ -71,11 +70,6 @@ async function _command(params, commandText, secrets = {}) {
       image(`${baseUrl}/reopen_issue.png`, 'github reopen issue command'),
       //
       section(
-        '*Finding a pull request by date:* \n`/nc github_find_pr <repo> <date>`'
-      ),
-      image(`${baseUrl}/find_pr.png`, 'github find_pr command'),
-      //
-      section(
         '*Labeling an issue or pull request:* \n`/nc github_label <repo> <number> <labels>`'
       ),
       image(`${baseUrl}/label.png`, 'github label command'),
@@ -83,7 +77,7 @@ async function _command(params, commandText, secrets = {}) {
       section('*Getting repository statistics:* \n`/nc github_stats <repo>`'),
       image(`${baseUrl}/stats.png`, 'github stats command'),
       //
-      section('*Finding repositories, commits, code, issues, pull requests, users and topics using keywords:* \n`/nc github_list <entity> <keywords> [-r <repository>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]`\nEntity can be passed in as an abbreviation:\
+      section('*Searching repositories, commits, code, issues, pull requests, users and topics using keywords:* \n`/nc github_search <entity> <keywords> [-q <query>] [-r <repositories>] [-l <language>] [-s <pageSize>] [-n <pageNumber>]`\nEntity can be passed in as an abbreviation:\
       \n r  - repositories\
       \n cm - commits\
       \n c  - code \
@@ -91,8 +85,15 @@ async function _command(params, commandText, secrets = {}) {
       \n p  - pull requests\
       \n u  - users \
       \n t  - topics\
-      \nMultiple keywords can be combined using `+` sign `github+python``'),
-      image(`${baseUrl}/list.png`, 'github list command'),
+      \nMultiple search words can be combined using `+` sign. e.g. `atom+design`\
+      \n\nOptionally following options can be provided for more specific search\
+      \n- [-q <query>] query can be formed using <https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax | github search syntax>\. In order to avoid having to type in repository names every time command needs to run, default repositories can be specified using `\\nc secret_create`\
+      \n- [-r <repositories>] specific repositories can be given e.g. `-r microsoft/vscode,nimbella/command-sets`\
+      \n- [-l <language>] specific language can be mentioned e.g. `-l python`\
+      \n- [-s <pageSize>] number of records to be fetched in one go e.g. `-s 10`\
+      \n- [-n <pageNumber>] next set of records can be fetched using e.g. `-n 2`\
+      '),
+      image(`${baseUrl}/search.png`, 'github search command'),
       //
       {
         type: 'divider'
@@ -103,7 +104,7 @@ async function _command(params, commandText, secrets = {}) {
           {
             type: 'mrkdwn',
             text:
-              '👀 View recent pull requests with `/nc github_view_pr <repo>`\n❓Get help on these commands with `/nc github`'
+              '❓Get help on these commands with `/nc github`'
           }
         ]
       }
