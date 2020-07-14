@@ -14,16 +14,16 @@ async function _command(params, commandText, secrets = {}) {
       response_type: 'ephemeral',
       text:
         `Secrets named \`K8S_SERVER\`, \`K8S_TOKEN\`, and \`K8S_CA\` are required to run this Command Set. ` +
-        `Read <https://github.com/satyarohith/command-sets/tree/k8/kubernetes#requirements|this> to learn more.`
+        `Read <https://github.com/nimbella/command-sets/tree/master/kubernetes#requirements|this> to learn more.`
     };
   }
 
-  const {podName, tailLines = 25} = params;
+  const {podName, tailLines = 25, namespace = 'default'} = params;
 
   const https = require('https');
   const axios = require('axios');
   const {data} = await axios.get(
-    `${K8S_SERVER}/api/v1/namespaces/default/pods/${podName}/log?tailLines=${tailLines}`,
+    `${K8S_SERVER}/api/v1/namespaces/${namespace}/pods/${podName}/log?tailLines=${tailLines}`,
     {
       httpsAgent: new https.Agent({
         ca: Buffer.from(K8S_CA, 'base64')

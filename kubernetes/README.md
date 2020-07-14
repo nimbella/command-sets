@@ -85,7 +85,7 @@ By default only 10 items are shown. The command supports pagination so you can s
 Get logs of a pod.
 
 ```sh
-/nc kube_logs <podName> [-n <tailLines>]
+/nc kube_logs <podName> [-n <namespace>] [-l <tailLines>]
 ```
 
 By default last 25 lines of logs are shown which you can modify the number of lines per request using `-n` flag.
