@@ -10,7 +10,7 @@ Interact with Amazon Web Services from messaging platforms like Slack, Mattermos
 
 ## Installation
 
-Please make sure you've Commander installed in your [Slack workspace](https://slack.com/apps/AS833QXL0-nimbella-commander) before executing this Slash command.
+Please make sure Commander is installed in your [Slack workspace](https://slack.com/apps/AS833QXL0-nimbella-commander) before executing this Slash command.
 
 ```
 /nc csm_install aws
@@ -108,9 +108,11 @@ To get notified when the bill exceeds a certain amount, follow the instructions 
 
      Replace `#general` with the slack channel you've added to commander.
 
-   - Run `/nc task_rate awsbill 1 minute` to set your task rate
+   - Run `/nc task_rate awsbill 1 hour` to set your task rate
 
-     This sets the task to run every minute. Learn more [here](https://nimbella.com/resources-commander/guide#view-or-set-the-task-rate).
+     This sets the task to run every hour. Learn more [here](https://nimbella.com/resources-commander/guide#view-or-set-the-task-rate).
+
+     **Note**: AWS charges \$0.01 for each request made to AWS Cost Explorer API. So please keep that in mind while setting the task rate.
 
    - Run `/nc task_start awsbill`
 
