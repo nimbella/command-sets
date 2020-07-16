@@ -31,3 +31,10 @@ commands:
     parameters:
       - name: hostname
       - name: ip_address
+  awsbill:
+    description: Shows your AWS bill.
+    parameters:
+      - name: month_year
+        optional: true
+    options:
+      - name: task
