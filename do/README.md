@@ -1,71 +1,95 @@
 # DigitalOcean (do)
 
-### Install
+Interact with DigitalOcean from messaging platforms like Slack, Mattermost & Microsoft Teams using [Nimbella Commander](https://nimbella.com/product/commander).
 
-Running the below command installs the whole DigitalOcean command set.
+- [Installation](#Installation)
+- [Requirements](#Requirements)
+- [Commands](#Commands)
+- [Usage](#Usage)
+- [Support](#support)
+
+## Installation
+
+Please make sure Commander is installed in your [Slack workspace](https://slack.com/apps/AS833QXL0-nimbella-commander) or [other messaging platforms](../README.md#installation) before executing this Slash command.
 
 ```
 /nc csm_install do
 ```
 
-### Commands
+## Requirements
 
-- `droplet_ip` - List IP addresses of a droplet.
-- `droplet_list` - Lists the droplets under your account.
-- `droplet_power` - Command to turn a droplet on and off.
-- `droplet_snap` - Snapshots a droplet.
-- `droplet_reboot` - Command to reboot a droplet.
-- `droplet_status` - Shows the current status of a droplet.
+We need a Nimbella Commander secret named `digitaloceanApiKey` with your DigitalOcean Personal Access Token to able to run this Command Set. Follow [this](https://www.digitalocean.com/docs/apis-clis/api/create-personal-access-token/) guide to obtain your Personal Access Token.
 
-### Requirements
+To create the secret, you need to type `/nc secret_create` inside your messaging platform and follow the instructions.
 
+## Commands
 
-To run this command set, we need the value of API key of the user's DigitalOcean Account, named as 'digitaloceanApiKey'.
-How to obtain this key, will be added soon.
+- [`dobill`](#dobill) - Fetch your DigitalOcean usage.
+- [`droplet_ip`](#droplet_ip) - List IP addresses of a droplet.
+- [`droplet_list`](#droplet_list) - List droplets.
+- [`droplet_power`](#droplet_power) - Power on/off a droplet.
+- [`droplet_reboot`](#droplet_reboot) - Reboot a droplet.
+- [`droplet_snap`](#droplet_snap) - Take a snapshot of a droplet.
+- [`droplet_status`](#droplet_status) - Know the status of all droplets or a single droplet.
 
+## Usage
 
-### Usage
+### [`dobill`](packages/do/dobill.js)
 
+Fetch your DigitalOcean usage.
 
-To view the ip addresses of a droplet:
 ```sh
-/nc droplet_ip <name>
-```
-Here, `name` refers to the id of the droplet.
-
-To view the droplets under your account:
-```sh
-/nc droplet_list
+/nc dobill
 ```
 
+### [`droplet_ip`](packages/do/droplet_ip.js)
 
-To reboot a droplet
+List IP addresses of a droplet.
+
 ```sh
-/nc droplet_reboot <name>
+/nc droplet_ip <id>
 ```
-Here, name refers to the id of the droplet which you want to reboot.
 
+### [`droplet_list`](packages/do/droplet_list.js)
 
-To power on/off your droplet
+List droplets.
+
 ```sh
-/nc droplet_power <cmd><droplet_id>
+/nc droplet_list [<page>]
 ```
-cmd:- On/Off command
-droplet_id:- unique identification id of the droplet
 
-To take a snapshot of your droplet
+### [`droplet_power`](packages/do/droplet_power.js)
+
+Power on/off a droplet.
+
 ```sh
-/nc droplet_snap <droplet_id><name>
+/nc droplet_power <cmd> <id>
 ```
-`name` is an optional parameter here.
 
-To view the current status of a droplet.
-```sh
-/nc droplet_status <droplet_id>
-``` 
-By entering a droplet_id, this command will show the status of that droplet. 
+### [`droplet_reboot`](packages/do/droplet_reboot.js)
 
-To view the status of all the droplets.
+Reboot a droplet.
+
 ```sh
-/nc droplet_status
+/nc droplet_reboot <id>
 ```
+
+### [`droplet_snap`](packages/do/droplet_snap.js)
+
+Take a snapshot of a droplet.
+
+```sh
+/nc droplet_snap <id> [<name>]
+```
+
+### [`droplet_status`](packages/do/droplet_status.js)
+
+Know the status of all droplets or a single droplet.
+
+```sh
+/nc droplet_status [<id>]
+```
+
+## Support
+
+We're always happy to help you with any issues you encounter. You may want to [join our Slack community](https://nimbella-community.slack.com/) to engage with us for a more rapid response.
