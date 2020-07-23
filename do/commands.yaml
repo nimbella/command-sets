@@ -1,30 +1,32 @@
 commands:
+  dobill:
+    description: Fetch your DigitalOcean usage.
   droplet_ip:
     description: List IP addresses of a droplet.
     parameters:
       - name: id
   droplet_list:
-    description: Lists your droplets.
+    description: List droplets.
     parameters:
       - name: page
         optional: true
   droplet_reboot:
-    description: Reboot your droplet.
+    description: Reboot a droplet.
     parameters:
       - name: id
   droplet_snap:
-    description: Take a snapshot of your droplet.
+    description: Take a snapshot of a droplet.
     parameters:
       - name: id
       - name: name
         optional: true
   droplet_power:
-    description: Power on/off your droplet.
+    description: Power on/off a droplet.
     parameters:
       - name: cmd
       - name: id
   droplet_status:
-    description: Know the status of all your droplets or a single droplet.
+    description: Know the status of all droplets or a single droplet.
     parameters:
       - name: id
         optional: true
