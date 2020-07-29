@@ -1,0 +1,13 @@
+{
+  "name": "gcloud",
+  "version": "1.0.0",
+  "description": "Google Cloud Command Set",
+  "license": "Apache",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimbella/command-sets.git"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^5.1.0"
+  }
+}

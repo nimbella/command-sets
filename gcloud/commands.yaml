@@ -2,5 +2,7 @@ commands:
   gcloudbill:
     description: Shows your Google Cloud bill
     parameters:
-    - name: month_year
+    - name: project
+      optional: false
+    - name: date
       optional: true
