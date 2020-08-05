@@ -48,7 +48,7 @@ Key: shopify_store_name / Value: Hostname
 
 View Command Set documentation.
 
-```sh
+```
 /nc shopify
 ```
 
@@ -56,7 +56,7 @@ View Command Set documentation.
 
 Add a note to an existing order.
 
-```sh
+```
 /nc shopify_add_note <order_id> <note>
 ```
 
@@ -70,7 +70,7 @@ Params: order_id (Unique ID of an order), note (Text to attach to order)
 
 Get inventory numbers for products.
 
-```sh
+```
 /nc shopify_inventory [<search_words>]
 ```
 
@@ -82,7 +82,7 @@ Params: search_words (Comma delimited list of text to filter by) EX: "textone, t
 
 Get a detailed list of orders.
 
-```sh
+```
 /nc shopify_orders
 ```
 
@@ -92,7 +92,7 @@ Get a detailed list of orders.
 
 Get number of products sold.
 
-```sh
+```
 /nc shopify_products_sold [<search_terms>]
 ```
 
