@@ -1,0 +1,15 @@
+sourceBasePath: https://raw.githubusercontent.com/nimbella/command-sets/master/circleci/src
+commands:
+  circleci_workflow_run:
+    sourcePath: /circleci_workflow_run.js
+    description: Trigger workflow to run all the jobs present in it for the default or specified branch.
+    parameters:
+      - name: projectName
+      - name: branchName
+        optional: true
+  circleci_workflow_list:
+    sourcePath: /circleci_workflow_list.js
+    description: To get the last 5 runs of the workflow.
+    parameters:
+      - name: projectName
+      - name: workflowName
