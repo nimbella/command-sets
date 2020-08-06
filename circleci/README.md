@@ -31,5 +31,6 @@ This secret should be created with the following naming convention. `projectName
 - `circleci_workflow_list`
  
 ```
-   /nc circleci_workflow_list
+   /nc circleci_workflow_list_ <projectName> <workflowName>
+   /nc circleci_workflow_list_ webApp Checks
 ```
