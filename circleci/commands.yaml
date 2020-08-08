@@ -1,0 +1,12 @@
+commands:
+  circleci_workflow_run:
+    description: Trigger workflow to run all the jobs present in it for the default or specified branch.
+    parameters:
+      - name: projectName
+      - name: branchName
+        optional: true
+  circleci_workflow_list:
+    description: To get the last 5 runs of the workflow.
+    parameters:
+      - name: projectName
+      - name: workflowName
