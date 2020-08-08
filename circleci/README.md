@@ -11,7 +11,7 @@ Running the below command to install the whole CircleCI command set.
 ### Prerequisite:
 To be able to run the commands below, you need to create 3 secrets.
  
-Those are :
+These are :
 `projectToken` - CircleCI allows you to create a Token on a project basis to access API, Make sure you provide the token here which can access all those branches which you want to use via this command.
  
 This secret should be created with the following naming convention. `projectName_token`. Where the project name is your circleCi project name. example `webApp_token`.
