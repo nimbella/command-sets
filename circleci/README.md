@@ -16,7 +16,7 @@ You will need to create the following 3 secrets to use this command set.
 This secret should be created with the following naming convention. `projectName_token`. Where the project name is your CircleCi project name. example `webApp_token`.
 
 - `vcsType`: The Version Control System. Only two values are currently supported. They are `gh` for GitHub, and `bb` for BitBucket. This property is optional and defaults to GitHub.
-`orgName` - Name of your GitHub or BitBucket organization or else account username if its a personal project. Creating a secret is optional and can be passed in command parameters, But, passing it in the parameter has a higher priority than a secret.
+- `orgName`: The name of your GitHub or BitBucket organization, or else your account username for personal projects. Creating this secret property is optional but convenient when you are working with just one organization. If you are using the command set with multiple organizations, you may want to pass this value as a command parameter. Note that using a command parameter for this property supersedes the secret.
 
 ### Available commands:
 - `circleci_workflow_run`
