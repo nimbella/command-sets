@@ -11,7 +11,7 @@ Run the command below to install the whole CircleCI command set.
 ### Prerequisite:
 You will need to create the following 3 secrets to use this command set.
 
-`projectToken` - This is your CircleCI API access token, Get yours here https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token
+- `projectToken`: This is your CircleCI API access token. You may generate one here https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token.
 
 This secret should be created with the following naming convention. `projectName_token`. Where the project name is your circleCi project name. example `webApp_token`.
 
