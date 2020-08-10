@@ -44,14 +44,14 @@ async function triggerWorkflow(apiBaseURL, projectName, vcsType, orgName, projec
  */
 async function _command(params, commandText, secrets = {}) {
 
-  const { projectName: projectName, branchName: branchName = '', __client } = params;
+  const { projectName: projectName, branchName: branchName = '', orgName = false, __client } = params;
   const tokenKey = projectName + "_token";
   const projectToken = secrets[tokenKey];
-  const vcsType = secrets.vcsType;
-  const orgName = secrets.orgName;
+  const vcsType = secrets.vcsType || 'gh';
+  const organization = orgName != false ? orgName : secrets.orgName;
   const apiBaseURL = "https://circleci.com/api/v2";
 
-  if (!projectToken || !vcsType || !orgName) {
+  if (!projectToken || !vcsType || !organization) {
     return {
       response_type: 'ephemeral', // eslint-disable-line camelcase
       text: `You must create secrets for \`${tokenKey}\`, \`vcsType\`, \`orgName\` to use this command`
@@ -61,7 +61,7 @@ async function _command(params, commandText, secrets = {}) {
   const client = __client.name;
 
   try {
-    const apiResponse = await triggerWorkflow(apiBaseURL, projectName, vcsType, orgName, projectToken, branchName);
+    const apiResponse = await triggerWorkflow(apiBaseURL, projectName, vcsType, organization, projectToken, branchName);
     const formattedResponse = `
     Workflow triggered successfully.
     Workflow number: \`${apiResponse.number}\`
