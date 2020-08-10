@@ -2,7 +2,7 @@
 
 ### Install
 
-Run the command below to install the whole CircleCI command set. 
+Run the command below to install the whole CircleCI command set.
 
 ```
 /nc csm_install circleci
