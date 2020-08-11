@@ -5,8 +5,14 @@ commands:
       - name: projectName
       - name: branchName
         optional: true
+    options:
+      - name: orgName
+        value: orgName
   circleci_workflow_list:
     description: To get the last 5 runs of the workflow.
     parameters:
       - name: projectName
       - name: workflowName
+    options:
+      - name: orgName
+        value: orgName
