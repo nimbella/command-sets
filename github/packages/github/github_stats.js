@@ -15,7 +15,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
+        'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
 
