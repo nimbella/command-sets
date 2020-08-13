@@ -120,6 +120,8 @@ Request someone to review a pull request
 
 ### [`github_search`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github_search.js)
 
+> **Note:** Mattermost support for this command is yet to be added.
+
 Search repositories, commits, code, issues, pull requests, users and topics using keywords.
 
 ```sh
