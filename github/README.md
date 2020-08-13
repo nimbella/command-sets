@@ -31,7 +31,7 @@ Please make sure Commander is installed in your [Slack workspace](https://slack.
 
 In order to use this command set, you need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with `github_token` as the key name. Use `/nc secret_create` to create secrets.
 
-Visit [this page](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to setup a Personal Access Token on GitHub.
+Get token from [here] or (https://github.com/settings/tokens) visit [this](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to setup a Personal Access Token on GitHub.
 
 Create a secret named `github_repos` to avoid passing repository (`-r`) to commands.
 
