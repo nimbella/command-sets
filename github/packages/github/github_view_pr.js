@@ -16,7 +16,7 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
+        'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
 
@@ -65,11 +65,8 @@ async function _command(params, commandText, secrets = {}) {
 
       // Matches <>
       const html = new RegExp(/<.*>/);
-      for (
-        let i = 0;
-        i < (data.length > 3 && githubRepos.length > 1 ? 3 : data.length);
-        i++
-      ) {
+      // Show 5 recent PRs.
+      for (let i = 0; i < (data.length > 5 ? 5 : data.length); i++) {
         const pr = data[i];
         const body = html.test(pr.body)
           ? `_couldn't render body of pr_`

@@ -15,14 +15,14 @@ async function _command(params, commandText, secrets = {}) {
     return {
       response_type: 'ephemeral',
       text:
-        'Either pass a repo name or create a secret named `github_default_repo` to avoid passing the repository.'
+        'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
 
   githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
-
+  const client = params.__client.name;
   const tokenMessage = githubToken
     ? ''
     : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
@@ -64,7 +64,10 @@ async function _command(params, commandText, secrets = {}) {
       result.push({
         color: 'good',
         text: body.join('\n'),
-        title: `<${data.html_url}|${data.full_name}> statistics`,
+        title:
+          client === 'mattermost'
+            ? `[${data.full_name}](${data.html_url})`
+            : `<${data.html_url}|${data.full_name}> statistics`,
         pretext:
           currReading < requestThreshold
             ? `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`
@@ -80,7 +83,10 @@ async function _command(params, commandText, secrets = {}) {
     } else if (error.response && error.response.status === 404) {
       result.push({
         color: 'danger',
-        text: `Repository not found: <https://github.com/${repo}|${repo}>.`
+        text:
+          client === 'mattermost'
+            ? `Repository not found: [${repo}](https://github.com/${repo})`
+            : `Repository not found: <https://github.com/${repo}|${repo}>.`
       });
     } else if (error.response && error.response.status) {
       result.push({
