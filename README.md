@@ -43,7 +43,7 @@ Coming soon.
 
 ### Mattermost
 
-Coming soon.
+Follow [this quickstart](https://nimbella.com/resources-commander/mattermost/quickstart#quickstart) to install Nimbella Commander on your Mattermost workspace. 
 
 ## Installing a Command Set
 
