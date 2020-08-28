@@ -39,7 +39,7 @@ Click the link below to install Nimbella Commander on your Slack workspace.
 
 ### Teams
 
-Coming soon.
+Click [here](https://teams.microsoft.com/l/app/be4751a5-db56-4e45-bb27-397e0aa614b1) to add Nimbella Commander to your Microsoft Teams workspace. 
 
 ### Mattermost
 
