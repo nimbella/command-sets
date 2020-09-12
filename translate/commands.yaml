@@ -1,3 +1,7 @@
 commands:
   translate:
     description: Translates text to a given language
+    parameters:
+      - name: language
+          optional: false
+      - name: "..."

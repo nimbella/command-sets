@@ -55,13 +55,7 @@ async function _command(params, commandText, secrets = {}) {
   const sourceLang = 'auto';
   let translatedText = '';
 
-  let parts = commandText.split(" ");
-  if (parts.length < 4) {
-    return {response_type: 'in_channel', text: 'invalid commandText please input <language> and <text>'};
-  }
-  let targetLang = parts[2];
-  let sourceText = commandText.substring(parts[0].length + parts[1].length + parts[2].length + 3);
-  let {__client} = params;
+  let {language: targetLang = 'en', varArgs: sourceText, __client} = params;
   const client = __client.name;
   const languageHelp =
     'Language can be a <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|2 character ISO6931 code> or a language name such as Spanish, Chinese, etc.';
