@@ -6,8 +6,8 @@ Available commands:
 ### Usage 
 
 ```
-/translate <text> [language]
+/translate <language> <text>
 ```
-e.g.  /translate 'The quick onyx goblin jumps over the lazy dwarf' hi
+e.g.  /translate es now i can just type the rest of my text without quotes
 
-🗒 Language is [two letter code](https://meta.wikimedia.org/wiki/Template:List_of_language_names_ordered_by_code), language is optional and defaults to en(english). 
+🗒 Language is [two letter code](https://meta.wikimedia.org/wiki/Template:List_of_language_names_ordered_by_code). 
