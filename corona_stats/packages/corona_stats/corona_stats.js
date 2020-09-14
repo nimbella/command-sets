@@ -304,7 +304,7 @@ const success = async (header, fields, footer, client, country, region) => {
     elements: [
       {
         type: 'mrkdwn',
-        text: `add _corona_stats_ to your ${client} with <${
+        text: `add _corona_stats_ to your ${client === 'msteams' ? 'Microsoft Teams' : client} with <${
           client === 'slack'
             ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
             : 'https://github.com/nimbella/command-sets'
@@ -422,7 +422,7 @@ const help = client => {
         elements: [
           {
             type: 'mrkdwn',
-            text: `add _corona_stats_ to your ${client} with <${
+            text: `add _corona_stats_ to your ${client === 'msteams' ? 'Microsoft Teams' : client} with <${
               client === 'slack'
                 ? 'https://nimbella.com/blog/get-live-coronavirus-stats-in-slack-with-nimbella-commander/'
                 : 'https://github.com/nimbella/command-sets'
