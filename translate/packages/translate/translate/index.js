@@ -1,17 +1,6 @@
 // jshint esversion: 9
 
 const translator = 'https://translate.googleapis.com/translate_a/single';
-let ISO6391;
-async function install(pkgs) {
-  pkgs = pkgs.join(' ');
-  return new Promise((resolve, reject) => {
-    const {exec} = require('child_process');
-    exec(`npm install ${pkgs}`, (err, stdout, stderr) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
 
 const mui = (element, client) => {
   if (client === 'mattermost') {
@@ -63,10 +52,6 @@ const fail = msg => {
  */
 async function _command(params, commandText, secrets = {}) {
   const axios = require('axios');
-  if (!ISO6391) {
-    await install(['iso-639-1']);
-    ISO6391 = require('iso-639-1');
-  }
   const sourceLang = 'auto';
   let translatedText = '';
 
@@ -80,9 +65,10 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     if (targetLang.length != 2) {
+      const ISO6391 = require('iso-639-1');
       targetLang = ISO6391.getCode(targetLang);
       if (!targetLang) {
-        return {response_type: 'in_channel', text: languageHelp};
+        return {response_type: 'ephemeral', text: languageHelp};
       }
     }
 
