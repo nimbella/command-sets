@@ -67,6 +67,9 @@ async function _command(params, commandText, secrets = {}) {
     if (targetLang.length != 2) {
       const ISO6391 = require('iso-639-1');
       targetLang = ISO6391.getCode(targetLang);
+      if (!targetLang) {
+        return {response_type: 'ephemeral', text: languageHelp};
+      }
     }
 
     const url = `${translator}?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q="${encodeURI(
