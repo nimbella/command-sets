@@ -1,6 +1,8 @@
 command_sets:
   billing:
     description: Commands to show cloud service bills.
+  circleci:
+    description: Commands to work with Circle CI builds.
   gcloud:
     description: Google Cloud commands (right now, just billing).
   echo:

@@ -54,7 +54,8 @@ async function _command(params, commandText, secrets = {}) {
   const axios = require('axios');
   const sourceLang = 'auto';
   let translatedText = '';
-  let {language: targetLang = 'en', text: sourceText, __client} = params;
+
+  let {language: targetLang = 'en', varArgs: sourceText, __client} = params;
   const client = __client.name;
   const languageHelp =
     'Language can be a <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|2 character ISO6931 code> or a language name such as Spanish, Chinese, etc.';
@@ -66,6 +67,9 @@ async function _command(params, commandText, secrets = {}) {
     if (targetLang.length != 2) {
       const ISO6391 = require('iso-639-1');
       targetLang = ISO6391.getCode(targetLang);
+      if (!targetLang) {
+        return {response_type: 'ephemeral', text: languageHelp};
+      }
     }
 
     const url = `${translator}?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q="${encodeURI(
@@ -105,7 +109,7 @@ async function _command(params, commandText, secrets = {}) {
           elements: [
             {
               type: 'mrkdwn',
-              text: `add _translate_ to your ${client} with <${
+              text: `add _translate_ to your ${client === 'msteams' ? 'Microsoft Teams' : client} with <${
                 client === 'slack'
                   ? 'https://nimbella.com/blog/greet-your-friends-in-their-native-language-in-slack-with-nimbella-commander/'
                   : 'https://github.com/nimbella/command-sets/tree/master/translate'
