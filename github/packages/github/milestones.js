@@ -6,9 +6,15 @@ const requestThreshold = 3
 const headers = {
   'Content-Type': 'application/json',
 };
+let tokenHost, baseURL = 'https://api.github.com/'
+
 async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
-  if (secrets.github_token) headers.Authorization = `Bearer ${secrets.github_token}`;
+  if (secrets.github_token) {
+    let token
+    [token, tokenHost] = secrets.github_token.split('@')
+    headers.Authorization = `Bearer ${token}`;
+  }
   return (axios({
     method: method,
     url,
@@ -38,12 +44,13 @@ async function command(params, commandText, secrets = {}) {
     sort = 'created',
     direction = 'desc',
     per_page = 100,
-    page = 1
+    page = 1,
+    host
   } = params;
   let method = 'GET'
   let data = {}
   let listing = false
-  const { github_repos } = secrets;
+  const { github_repos, github_host } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
@@ -94,7 +101,11 @@ async function command(params, commandText, secrets = {}) {
     default:
       return fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list' *`)
   }
-  const url = `https://api.github.com/repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
+
+  baseURL = host || tokenHost || github_host || baseURL
+  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+  const url = `${baseURL}repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {

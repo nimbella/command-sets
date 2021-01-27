@@ -7,8 +7,11 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
+let tokenHost, baseURL = 'https://api.github.com/'
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: defaultRepo = ''} = secrets;
+  let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -16,12 +19,15 @@ async function _command(params, commandText, secrets = {}) {
         'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
 
   // Extract the first repository.
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
-  const {issueNumber, labels} = params;
+  const {issueNumber, labels, host} = params;
   const repo = params.repo === false ? defaultRepo : params.repo;
   if (!repo && !defaultRepo) {
     return {
@@ -32,7 +38,10 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    const url = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
+    baseURL = host || tokenHost || github_host || baseURL
+    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+    const url = `${baseURL}repos/${repo}/issues/${issueNumber}`;
     const axios = require('axios');
 
     // Get current labels of the issue.

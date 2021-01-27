@@ -7,8 +7,11 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
+let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: defaultRepo = ''} = secrets;
+  let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -16,12 +19,14 @@ async function _command(params, commandText, secrets = {}) {
         'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
-
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
   // Extract the first repository.
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
-  const {prNumber, reviewers} = params;
+  const {prNumber, reviewers, host} = params;
   const repo = params.repo === false ? defaultRepo.trim() : params.repo.trim();
   if (!repo && !defaultRepo) {
     return {
@@ -32,7 +37,10 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/requested_reviewers`;
+    baseURL = host || tokenHost || github_host || baseURL
+    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+    const url = `${baseURL}repos/${repo}/pulls/${prNumber}/requested_reviewers`;
     const axios = require('axios');
     const {data} = await axios({
       method: 'POST',
@@ -54,7 +62,7 @@ async function _command(params, commandText, secrets = {}) {
           // Convert markdown links to slack format.
           .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
           // Covert Issues mentions to links
-          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`)
+          .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
           // Replace markdown headings with slack bold
           .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
@@ -65,11 +73,11 @@ async function _command(params, commandText, secrets = {}) {
       reviewers.forEach((reviewer, index) => {
         if (reviewers.length > 1 && index === reviewers.length - 1) {
           output.push(
-            `and <https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+            `and <${getRedirectURL(baseURL)}${reviewer.trim()}|${reviewer.trim()}>`
           );
         } else {
           output.push(
-            `<https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+            `<${getRedirectURL(baseURL)}${reviewer.trim()}|${reviewer.trim()}>`
           );
         }
       });
@@ -92,7 +100,7 @@ async function _command(params, commandText, secrets = {}) {
     if (error.response.status === 404) {
       result.push({
         color: 'danger',
-        text: `PR #${prNumber} not found for <https://github.com/${repo}|${repo}>.`
+        text: `PR #${prNumber} not found for <${getRedirectURL(baseURL)}${repo}|${repo}>.`
       });
     } else {
       result.push({
@@ -107,6 +115,8 @@ async function _command(params, commandText, secrets = {}) {
     attachments: result
   };
 }
+
+const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
 
 /**
  * @typedef {object} SlackBodyType

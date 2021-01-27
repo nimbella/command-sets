@@ -6,9 +6,15 @@ const requestThreshold = 3;
 const headers = {
   'Content-Type': 'application/json',
 };
+let tokenHost, baseURL = 'https://api.github.com/'
+
 async function getRequest(url, secrets) {
   console.log(url);
-  if (secrets.github_token) headers.Authorization = `Bearer ${secrets.github_token}`;
+  if (secrets.github_token) {
+    let token
+    [token, tokenHost] = secrets.github_token.split('@')
+    headers.Authorization = `Bearer ${token}`;
+  }
   return (axios({
     method: 'get',
     url,
@@ -32,14 +38,15 @@ async function command(params, commandText, secrets = {}) {
     repositories,
     language,
     pageSize,
-    pageNumber = 1
+    pageNumber = 1,
+    host
   } = params;
   const displayQuery = query;
   let displayEntity = entity;
   let adjustedPageSize = 20;
   let sort = 'sort:created'
 
-  const { github_repos } = secrets;
+  const { github_repos, github_host } = secrets;
   const default_repos = repositories ? repositories : github_repos;
   if (default_repos) {
     repositories = default_repos.split(',').map(repo => 'repo:' + repo.trim()).join('+');
@@ -111,7 +118,10 @@ async function command(params, commandText, secrets = {}) {
       if (!keywords) return fail('*please specify a keyword*')
       break;
   }
-  const url = `https://api.github.com/search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
+  baseURL = host || tokenHost || github_host || baseURL
+  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+  const url = `${baseURL}search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
   const res = await getRequest(url, secrets);
 
   if (res && res.data) {

@@ -7,8 +7,11 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
+let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: githubRepos} = secrets;
+  let {github_token: githubToken, github_repos: githubRepos, github_host} = secrets;
   githubRepos = params.repo ? params.repo : githubRepos;
 
   const {state = 'open'} = params;
@@ -19,11 +22,13 @@ async function _command(params, commandText, secrets = {}) {
         'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
-
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
   githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
-
+  const host = params.host
   const tokenMessage = githubToken
     ? ''
     : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
@@ -31,8 +36,11 @@ async function _command(params, commandText, secrets = {}) {
   try {
     const axios = require('axios');
     const networkRequests = [];
+    baseURL = host || tokenHost || github_host || baseURL
+    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
     for (const repo of githubRepos) {
-      const url = `https://api.github.com/repos/${repo}/pulls?state=${state}`;
+      const url = `${baseURL}repos/${repo}/pulls?state=${state}`;
       networkRequests.push(
         axios({
           method: 'GET',
@@ -76,7 +84,7 @@ async function _command(params, commandText, secrets = {}) {
               // Covert Issues mentions to links
               .replace(
                 /#(\d+)/g,
-                `<https://github.com/${githubRepos[i]}/issues/$1|#$1>`
+                `<${getRedirectURL(baseURL)}${githubRepos[i]}/issues/$1|#$1>`
               )
               // Replace markdown headings with slack bold
               .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
@@ -112,6 +120,7 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
+const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
 /**
  * @typedef {object} SlackBodyType
  * @property {string} text

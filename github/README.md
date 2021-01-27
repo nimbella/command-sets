@@ -31,7 +31,7 @@ Please make sure Commander is installed in your [Slack workspace](https://slack.
 
 In order to use this command set, you need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with `github_token` as the key name. Use `/nc secret_create` to create secrets.
 
-Get token from [here] or (https://github.com/settings/tokens) visit [this](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to setup a Personal Access Token on GitHub.
+Generate a token with `repo` access [here](https://github.com/settings/tokens) or click [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to create a Personal Access Token on GitHub.
 
 Create a secret named `github_repos` to avoid passing repository (`-r`) to commands.
 
@@ -39,6 +39,14 @@ Create a secret named `github_repos` to avoid passing repository (`-r`) to comma
 
 For commands that only work with single repository the first repository in `github_repos` is used.
 
+### Github Enterprise
+
+Only for Github Enterprise version, you need to specify the host. Below are the ways to do it, you can follow any of them
+- Specify `--host` or `-h` while invoking the command.
+- Append `github_token` secret value with host name, followed by `@`, i.e. <your_access_token>@<your_github_host>.
+- Create secret with key name `github_host` using `/nc secret_create`, add host as value.
+
+If you follow multiple ways, priority is decided top-down. 
 ## Commands
 
 - [`github`](#github) - View GitHub command set documentation.
