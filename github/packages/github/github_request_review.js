@@ -89,16 +89,23 @@ async function _command(params, commandText, secrets = {}) {
       }|#${data.number}>:`
     });
   } catch (error) {
-    if (error.response.status === 404) {
+    if (error.response && error.response.status === 403) {
+      result.push({
+        color: 'danger',
+        text: `:warning: *The api rate limit has been exhausted.*`
+      });
+    } else if (error.response && error.response.status === 404) {
       result.push({
         color: 'danger',
         text: `PR #${prNumber} not found for <https://github.com/${repo}|${repo}>.`
       });
-    } else {
+    } else if (error.response && error.response.status) {
       result.push({
         color: 'danger',
         text: `Error: ${error.response.status} ${error.response.data.message}`
       });
+    } else {
+      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
     }
   }
 

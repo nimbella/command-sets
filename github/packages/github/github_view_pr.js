@@ -93,16 +93,23 @@ async function _command(params, commandText, secrets = {}) {
       }
     }
   } catch (error) {
-    if (error.response.status === 403) {
+    if (error.response && error.response.status === 403) {
       result.push({
         color: 'danger',
         text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`
       });
-    } else {
+    } else if (error.response && error.response.status === 404) {
       result.push({
         color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message} `
+        text: 'Repository not found'
       });
+    } else if (error.response && error.response.status) {
+      result.push({
+        color: 'danger',
+        text: `Error: ${error.response.status} ${error.response.data.message}`
+      });
+    } else {
+      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
     }
   }
 

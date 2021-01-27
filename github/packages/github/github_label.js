@@ -80,16 +80,13 @@ async function _command(params, commandText, secrets = {}) {
       pretext: `Lable(s) added to <${data.html_url}|#${data.number}>`
     });
   } catch (error) {
-    if (error.response.status === 404) {
+    if (error.response && error.response.status === 404) {
       result.push({
         color: 'danger',
         text: `Issue #${issueNumber} not found for <https://github.com/${repo}|${repo}>.`
       });
     } else {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
+      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
     }
   }
 
