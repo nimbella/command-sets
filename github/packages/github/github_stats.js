@@ -9,6 +9,7 @@
  */
 
 
+
 async function _command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let { github_token: githubToken, github_repos: githubRepos = '', github_host } = secrets;
@@ -40,6 +41,7 @@ async function _command(params, commandText, secrets = {}) {
     const networkRequests = [];
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
+    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
     for (const repo of githubRepos) {
       const url = `${baseURL}/repos/${repo}`;
       networkRequests.push(
@@ -121,6 +123,8 @@ const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink,
   }
 }
 
+
+const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
 /**
  * @typedef {object} SlackBodyType
  * @property {string} text

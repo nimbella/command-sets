@@ -9,6 +9,7 @@
  */
 
 
+
 async function _command(params, commandText, secrets = {}) {
   let  tokenHost, baseURL = 'https://api.github.com'
   let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
@@ -41,6 +42,7 @@ async function _command(params, commandText, secrets = {}) {
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
     const url = `${baseURL}/repos/${repo}/issues/${issueNumber}`;
+    const url = `${baseURL}repos/${repo}/issues/${issueNumber}`;
     const axios = require('axios');
     const {data} = await axios({
       method: 'PATCH',

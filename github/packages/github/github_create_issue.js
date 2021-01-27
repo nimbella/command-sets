@@ -8,6 +8,8 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
+let tokenHost, baseURL = 'https://api.github.com/'
+
 async function _command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
@@ -37,10 +39,10 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    console.log(host)
-    console.log(tokenHost)
-    console.log(github_host)
-    console.log(baseURL)
+    baseURL = host || tokenHost || github_host || baseURL
+    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
+    const url = `${baseURL}/repos/${repo}/issues`;
     baseURL = host || tokenHost || github_host || baseURL
     console.log(baseURL)
     baseURL = updateURL(baseURL)
