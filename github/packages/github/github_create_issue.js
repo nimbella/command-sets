@@ -79,6 +79,8 @@ async function _command(params, commandText, secrets = {}) {
 }
 
 const updateURL = (url) => {
+  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
+  else { url = url.replace('<', '').replace('>', '') }
   if (!url.startsWith('http')) { url = 'https://' + url; }
   if (!url.includes('api')) { url += '/api/v3'; }
   return url
