@@ -8,9 +8,9 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-let tokenHost, baseURL = 'https://api.github.com/'
 
 async function _command(params, commandText, secrets = {}) {
+  let tokenHost, baseURL = 'https://api.github.com'
   let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
   if (!githubToken) {
     return {
@@ -40,7 +40,7 @@ async function _command(params, commandText, secrets = {}) {
   try {
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
-    const url = `${baseURL}repos/${repo}/issues/${issueNumber}`;
+    const url = `${baseURL}/repos/${repo}/issues/${issueNumber}`;
     const axios = require('axios');
 
     // Get current labels of the issue.
@@ -102,7 +102,7 @@ async function _command(params, commandText, secrets = {}) {
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 

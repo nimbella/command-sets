@@ -8,13 +8,13 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
-
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: githubRepos, github_host} = secrets;
+  let tokenHost, baseURL = 'https://api.github.com'
+  let { github_token: githubToken, github_repos: githubRepos, github_host } = secrets;
+
   githubRepos = params.repo ? params.repo : githubRepos;
 
-  const {state = 'open'} = params;
+  const { state = 'open' } = params;
   if (!githubRepos) {
     return {
       response_type: 'ephemeral',
@@ -37,18 +37,19 @@ async function _command(params, commandText, secrets = {}) {
     const axios = require('axios');
     const networkRequests = [];
     baseURL = host || tokenHost || github_host || baseURL
-    baseURL = updateURL(baseURL)  
+    baseURL = updateURL(baseURL)
     for (const repo of githubRepos) {
-      const url = `${baseURL}repos/${repo}/pulls?state=${state}`;
+      const url = `${baseURL}/repos/${repo}/pulls?state=${state}`;
+      console.log(url)
       networkRequests.push(
         axios({
           method: 'GET',
           url: url,
           headers: githubToken
             ? {
-                Authorization: `Bearer ${githubToken}`,
-                'Content-Type': 'application/json'
-              }
+              Authorization: `Bearer ${githubToken}`,
+              'Content-Type': 'application/json'
+            }
             : {}
         })
       );
@@ -57,7 +58,7 @@ async function _command(params, commandText, secrets = {}) {
     const responses = await Promise.all(networkRequests);
 
     for (let i = 0; i < responses.length; i++) {
-      const {data, headers} = responses[i];
+      const { data, headers } = responses[i];
       result.push({
         pretext: githubRepos[i]
       });
@@ -78,23 +79,22 @@ async function _command(params, commandText, secrets = {}) {
         const body = html.test(pr.body)
           ? `_couldn't render body of pr_`
           : pr.body
-              // Convert markdown links to slack format.
-              .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
-              // Covert Issues mentions to links
-              .replace(
-                /#(\d+)/g,
-                `<${getRedirectURL(baseURL)}${githubRepos[i]}/issues/$1|#$1>`
-              )
-              // Replace markdown headings with slack bold
-              .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+            // Convert markdown links to slack format.
+            .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
+            // Covert Issues mentions to links
+            .replace(
+              /#(\d+)/g,
+              `<${getRedirectURL(baseURL)}${githubRepos[i]}/issues/$1|#$1>`
+            )
+            // Replace markdown headings with slack bold
+            .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
         result.push({
           color: pr.state === 'open' ? 'good' : 'danger',
           title: `PR #${pr.number}: ${pr.title}`,
           // Convert ISO to slack format.
-          text: `_Last updated on <!date^${
-            new Date(pr.created_at).getTime() / 1000
-          }^{date_short} at {time}|${pr.created_at}>_\n${body}`,
+          text: `_Last updated on <!date^${new Date(pr.created_at).getTime() / 1000
+            }^{date_short} at {time}|${pr.created_at}>_\n${body}`,
           title_link: pr.html_url
         });
       }
@@ -112,16 +112,16 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
-const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 
 const getErrorMessage = (error) => {
-  console.error(error)
+  // console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status && error.response.data) {

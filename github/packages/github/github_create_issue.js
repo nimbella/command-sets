@@ -8,9 +8,8 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-let tokenHost, baseURL = 'https://api.github.com/'
-
 async function _command(params, commandText, secrets = {}) {
+  let tokenHost, baseURL = 'https://api.github.com'
   let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
   if (!githubToken) {
     return {
@@ -38,9 +37,16 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
+    console.log(host)
+    console.log(tokenHost)
+    console.log(github_host)
+    console.log(baseURL)
     baseURL = host || tokenHost || github_host || baseURL
-    baseURL = updateURL(baseURL) 
+    console.log(baseURL)
+    baseURL = updateURL(baseURL)
+    console.log(baseURL)
     const url = `${baseURL}/repos/${repo}/issues`;
+    console.log(url)
     const axios = require('axios');
     const {data} = await axios({
       method: 'POST',
@@ -74,12 +80,12 @@ async function _command(params, commandText, secrets = {}) {
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 
 const getErrorMessage = (error) => {
-  console.error(error)
+  // console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status && error.response.data) {

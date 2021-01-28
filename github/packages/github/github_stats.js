@@ -8,10 +8,11 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
 
 async function _command(params, commandText, secrets = {}) {
+  let tokenHost, baseURL = 'https://api.github.com'
   let { github_token: githubToken, github_repos: githubRepos = '', github_host } = secrets;
+  
   githubRepos = params.repo ? params.repo : githubRepos;
 
   if (!githubRepos) {
@@ -40,7 +41,7 @@ async function _command(params, commandText, secrets = {}) {
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
     for (const repo of githubRepos) {
-      const url = `${baseURL}repos/${repo}`;
+      const url = `${baseURL}/repos/${repo}`;
       networkRequests.push(
         axios({
           method: 'GET',
@@ -97,11 +98,11 @@ async function _command(params, commandText, secrets = {}) {
 }
 
 
-const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 

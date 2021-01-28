@@ -6,7 +6,7 @@ const requestThreshold = 3;
 const headers = {
   'Content-Type': 'application/json',
 };
-let tokenHost, baseURL = 'https://api.github.com/'
+
 
 async function getRequest(url, secrets) {
   console.log(url);
@@ -31,6 +31,7 @@ async function getRequest(url, secrets) {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function command(params, commandText, secrets = {}) {
+  let tokenHost, baseURL = 'https://api.github.com'
   let {
     entity,
     keywords = '',
@@ -120,7 +121,7 @@ async function command(params, commandText, secrets = {}) {
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
+  const url = `${baseURL}/search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
   const res = await getRequest(url, secrets);
 
   if (res && res.data) {
@@ -281,7 +282,7 @@ const success = async (entity, header, items, secrets) => {
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 
