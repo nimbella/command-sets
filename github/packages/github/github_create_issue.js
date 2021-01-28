@@ -40,8 +40,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
+    baseURL = updateURL(baseURL) 
     const url = `${baseURL}/repos/${repo}/issues`;
     baseURL = host || tokenHost || github_host || baseURL
     console.log(baseURL)

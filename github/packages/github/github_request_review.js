@@ -133,7 +133,27 @@ const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink)
   }
 }
 
-const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
+const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} #${entityNumber} not found for <${probeURL}${displayLink}|${displayLink}>.`
+  }
+  else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 /**
  * @typedef {object} SlackBodyType

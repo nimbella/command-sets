@@ -40,7 +40,6 @@ async function _command(params, commandText, secrets = {}) {
     const networkRequests = [];
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
     for (const repo of githubRepos) {
       const url = `${baseURL}/repos/${repo}/pulls?state=${state}`;
       console.log(url)
@@ -137,6 +136,24 @@ const getErrorMessage = (error) => {
 }
 
 const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
+
 /**
  * @typedef {object} SlackBodyType
  * @property {string} text
