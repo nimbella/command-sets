@@ -88,7 +88,7 @@ const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status === 404) {
-    return `${entityType} #${entityNumber} not found for <${probeURL}${displayLink}|${displayLink}>.`
+    return `${entityType} #${entityNumber} not found for <${probeURL}/${displayLink}|${displayLink}>.`
   } else if (error.response && error.response.status && error.response.data) {
     return `Error: ${error.response.status} ${error.response.data.message}`
   } else {

@@ -21,18 +21,6 @@ commands:
         value: repo
       - name: h
         value: host
-  github_find_pr:
-    description: Find pull requests by last update date
-    parameters:
-      - name: date
-        optional: false
-    options:
-      - name: r
-        value: repo
-      - name: state
-        value: state
-      - name: h
-        value: host
   github_label:
     description: Label an issue/pull request
     parameters:

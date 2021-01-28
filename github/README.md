@@ -52,7 +52,6 @@ If you follow multiple ways, priority is decided top-down.
 - [`github`](#github) - View GitHub command set documentation.
 - [`github_close_issue`](#github_close_issue) - Close an issue.
 - [`github_create_issue`](#github_create_issue) - Create an issue.
-- [`github_find_pr`](#github_find_pr) - Find pull requests by last update date.
 - [`github_label`](#github_label) - Label an issue/pull request.
 - [`github_reopen_issue`](#github_reopen_issue) - Reopen an issue.
 - [`github_request_review`](#github_request_review) - Request someone to review a pull request.
@@ -89,14 +88,6 @@ Create an issue.
 ```
 
 ![GitHub create_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.png)
-
-### [`github_find_pr`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github_find_pr.js)
-
-Find pull requests by last update date.
-
-```sh
-/nc github_find_pr <date> [-r <repo>] [-state <state>]
-```
 
 ### [`github_label`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github_label.js)
 
