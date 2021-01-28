@@ -11,7 +11,7 @@ async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
-    [token, tokenHost] = secrets.github_token.split('@')
+    [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
   return (axios({
@@ -138,6 +138,9 @@ async function command(params, commandText, secrets = {}) {
       break;
     default:
       return fail(`*Invalid Action. Expected options: 'create', 'update', 'get', 'list', 'lock', 'unlock' *`)
+  }
+  if (secrets.github_token) {
+    [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)

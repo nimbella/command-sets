@@ -12,7 +12,7 @@ async function getRequest(url, secrets) {
   console.log(url);
   if (secrets.github_token) {
     let token
-    [token, tokenHost] = secrets.github_token.split('@')
+    [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
   return (axios({
@@ -118,6 +118,9 @@ async function command(params, commandText, secrets = {}) {
       repositories = undefined;
       if (!keywords) return fail('*please specify a keyword*')
       break;
+  }
+  if (secrets.github_token) {
+    [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
