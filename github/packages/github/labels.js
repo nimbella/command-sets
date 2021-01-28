@@ -155,7 +155,7 @@ async function command(params, commandText, secrets = {}) {
       return fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list', 'add', 'set', 'remove', 'removeall' *`)
   }
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
   if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
   const url = `${baseURL}repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
   const res = await Request(url, action, method, data, secrets)

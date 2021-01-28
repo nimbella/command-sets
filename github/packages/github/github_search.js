@@ -119,7 +119,7 @@ async function command(params, commandText, secrets = {}) {
       break;
   }
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
   if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
   const url = `${baseURL}search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
   const res = await getRequest(url, secrets);

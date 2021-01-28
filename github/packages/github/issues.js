@@ -140,7 +140,7 @@ async function command(params, commandText, secrets = {}) {
       return fail(`*Invalid Action. Expected options: 'create', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
   if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
   const url = `${baseURL}${listing ? list_path : `/repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
 

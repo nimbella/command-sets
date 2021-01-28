@@ -39,7 +39,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
     if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
     const url = `${baseURL}/repos/${repo}/issues`;
     const axios = require('axios');

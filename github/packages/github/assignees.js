@@ -88,7 +88,7 @@ async function command(params, commandText, secrets = {}) {
       return fail(`*Invalid Action. Expected options:  'add', 'remove', 'check', 'list' *`)
   }
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
   if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
   const url = `${baseURL}repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/assignees${assignee ? `/${assignee}` : ''}`
   const res = await Request(url, action, method, data, secrets)

@@ -37,7 +37,7 @@ async function _command(params, commandText, secrets = {}) {
     const axios = require('axios');
     const networkRequests = [];
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.includes(':')) { baseURL = "https://" + baseURL }
+    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
     if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
     for (const repo of githubRepos) {
       const url = `${baseURL}repos/${repo}/pulls?state=${state}`;
