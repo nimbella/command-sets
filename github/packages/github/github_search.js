@@ -119,8 +119,7 @@ async function command(params, commandText, secrets = {}) {
       break;
   }
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-  if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+  baseURL = updateURL(baseURL)
   const url = `${baseURL}search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
   const res = await getRequest(url, secrets);
 
@@ -279,6 +278,23 @@ const success = async (entity, header, items, secrets) => {
   });
   return response;
 };
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 const main = async (args) => ({
   body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({

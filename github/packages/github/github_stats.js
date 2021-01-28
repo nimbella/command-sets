@@ -11,7 +11,7 @@
 let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
 
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: githubRepos = '', github_host} = secrets;
+  let { github_token: githubToken, github_repos: githubRepos = '', github_host } = secrets;
   githubRepos = params.repo ? params.repo : githubRepos;
 
   if (!githubRepos) {
@@ -38,8 +38,7 @@ async function _command(params, commandText, secrets = {}) {
     const axios = require('axios');
     const networkRequests = [];
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+    baseURL = updateURL(baseURL)
     for (const repo of githubRepos) {
       const url = `${baseURL}repos/${repo}`;
       networkRequests.push(
@@ -48,9 +47,9 @@ async function _command(params, commandText, secrets = {}) {
           url: url,
           headers: githubToken
             ? {
-                Authorization: `Bearer ${githubToken}`,
-                'Content-Type': 'application/json'
-              }
+              Authorization: `Bearer ${githubToken}`,
+              'Content-Type': 'application/json'
+            }
             : {}
         })
       );
@@ -59,7 +58,7 @@ async function _command(params, commandText, secrets = {}) {
     const responses = await Promise.all(networkRequests);
 
     for (const response of responses) {
-      const {data, headers} = response;
+      const { data, headers } = response;
       const requestThreshold = 3;
       const currReading = parseInt(headers['x-ratelimit-remaining']);
       const body = [
@@ -85,27 +84,10 @@ async function _command(params, commandText, secrets = {}) {
       });
     }
   } catch (error) {
-    if (error.response && error.response.status === 403) {
-      result.push({
-        color: 'danger',
-        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`
-      });
-    } else if (error.response && error.response.status === 404) {
-      result.push({
-        color: 'danger',
-        text:
-          client === 'mattermost'
-            ? `Repository not found: [${repo}](${getRedirectURL(baseURL)}${repo})`
-            : `Repository not found: <${getRedirectURL(baseURL)}${repo}|${repo}>.`
-      });
-    } else if (error.response && error.response.status) {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
-    } else {
-      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
-    }
+    result.push({
+      color: 'danger',
+      text: getErrorMessage(error, 'Repository', repo, getRedirectURL(baseURL), repo, client)
+    });
   }
 
   return {
@@ -115,7 +97,27 @@ async function _command(params, commandText, secrets = {}) {
 }
 
 
-const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
+const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink, client) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} not found: ${client === 'mattermost' ? `[${displayLink}](${probeURL}${entityNumber})` : `<${probeURL}${entityNumber}|${displayLink}>`}.`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
+
 /**
  * @typedef {object} SlackBodyType
  * @property {string} text

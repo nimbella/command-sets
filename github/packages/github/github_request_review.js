@@ -11,7 +11,7 @@
 let redirectURL, tokenHost, baseURL = 'https://api.github.com/'
 
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
+  let { github_token: githubToken, github_repos: defaultRepo = '', github_host } = secrets;
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -26,7 +26,7 @@ async function _command(params, commandText, secrets = {}) {
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
-  const {prNumber, reviewers, host} = params;
+  const { prNumber, reviewers, host } = params;
   const repo = params.repo === false ? defaultRepo.trim() : params.repo.trim();
   if (!repo && !defaultRepo) {
     return {
@@ -38,11 +38,10 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+    baseURL = updateURL(baseURL)
     const url = `${baseURL}repos/${repo}/pulls/${prNumber}/requested_reviewers`;
     const axios = require('axios');
-    const {data} = await axios({
+    const { data } = await axios({
       method: 'POST',
       url: url,
       data: {
@@ -59,12 +58,12 @@ async function _command(params, commandText, secrets = {}) {
     const body = html.test(data.body)
       ? `_couldn't render body of issue_`
       : data.body
-          // Convert markdown links to slack format.
-          .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
-          // Covert Issues mentions to links
-          .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
-          // Replace markdown headings with slack bold
-          .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+        // Convert markdown links to slack format.
+        .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
+        // Covert Issues mentions to links
+        .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
+        // Replace markdown headings with slack bold
+        .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
     // output formatted text
     const getReviewers = reviewers => {
@@ -87,27 +86,18 @@ async function _command(params, commandText, secrets = {}) {
 
     result.push({
       color: data.state == 'open' ? 'good' : 'danger',
-      text: `_Created on <!date^${
-        new Date(data.created_at).getTime() / 1000
-      }^{date_short} at {time}|${data.created_at}>_\n${body}`,
+      text: `_Created on <!date^${new Date(data.created_at).getTime() / 1000
+        }^{date_short} at {time}|${data.created_at}>_\n${body}`,
       title_link: data.html_url,
       title: `PR #${data.number}: ${data.title}`,
-      pretext: `${getReviewers(reviewers)} has been requested to review <${
-        data.html_url
-      }|#${data.number}>:`
+      pretext: `${getReviewers(reviewers)} has been requested to review <${data.html_url
+        }|#${data.number}>:`
     });
   } catch (error) {
-    if (error.response.status === 404) {
-      result.push({
-        color: 'danger',
-        text: `PR #${prNumber} not found for <${getRedirectURL(baseURL)}${repo}|${repo}>.`
-      });
-    } else {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
-    }
+    result.push({
+      color: 'danger',
+      text: getErrorMessage(error, 'PR', prNumber, getRedirectURL(baseURL), repo)
+    });
   }
 
   return {
@@ -116,7 +106,27 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
-const getRedirectURL = url => redirectURL|| (redirectURL= url.replace('api.','').replace('api/v3',''))
+const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} #${entityNumber} not found for <${probeURL}${displayLink}|${displayLink}>.`
+  }
+  else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 /**
  * @typedef {object} SlackBodyType

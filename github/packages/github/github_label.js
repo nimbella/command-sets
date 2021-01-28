@@ -39,8 +39,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+    baseURL = updateURL(baseURL)
     const url = `${baseURL}repos/${repo}/issues/${issueNumber}`;
     const axios = require('axios');
 
@@ -89,23 +88,35 @@ async function _command(params, commandText, secrets = {}) {
       pretext: `Lable(s) added to <${data.html_url}|#${data.number}>`
     });
   } catch (error) {
-    if (error.response.status === 404) {
-      result.push({
-        color: 'danger',
-        text: `Issue #${issueNumber} not found for <https://github.com/${repo}|${repo}>.`
-      });
-    } else {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
-    }
+    result.push({
+      color: 'danger',
+      text: getErrorMessage(error, 'Issue', issueNumber, getRedirectURL(baseURL), repo)
+    });
   }
 
   return {
     response_type: 'in_channel',
     attachments: result
   };
+}
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} #${entityNumber} not found for <${probeURL}${displayLink}|${displayLink}>.`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 }
 
 /**

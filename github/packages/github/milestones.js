@@ -103,8 +103,7 @@ async function command(params, commandText, secrets = {}) {
   }
 
   baseURL = host || tokenHost || github_host || baseURL
-  if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-  if (!baseURL.includes('api')) { baseURL += '/api/v3/' }
+  baseURL = updateURL(baseURL)
   const url = `${baseURL}repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
   const res = await Request(url, action, method, data, secrets)
 
@@ -187,10 +186,17 @@ const success = async (action, header, data, secrets) => {
   return response
 };
 
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
 const main = async (args) => ({
   body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
 });
+
 module.exports = main;

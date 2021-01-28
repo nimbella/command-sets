@@ -39,8 +39,7 @@ async function _command(params, commandText, secrets = {}) {
 
   try {
     baseURL = host || tokenHost || github_host || baseURL
-    if (!baseURL.startsWith('http')) { baseURL = 'https://' + baseURL }
-    if (!baseURL.includes('api')) { baseURL += '/api/v3/' }    
+    baseURL = updateURL(baseURL) 
     const url = `${baseURL}/repos/${repo}/issues`;
     const axios = require('axios');
     const {data} = await axios({
@@ -63,7 +62,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     result.push({
       color: 'danger',
-      text: `Error: ${error.response.status} ${error.response.data.message}`
+      text: getErrorMessage(error)
     });
   }
 
@@ -71,6 +70,23 @@ async function _command(params, commandText, secrets = {}) {
     response_type: 'in_channel',
     attachments: result
   };
+}
+
+const updateURL = (url) => {
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3/'; }
+  return url
+}
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 }
 
 /**
