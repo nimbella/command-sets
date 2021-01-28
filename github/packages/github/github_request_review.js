@@ -42,7 +42,6 @@ async function _command(params, commandText, secrets = {}) {
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
     const url = `${baseURL}/repos/${repo}/pulls/${prNumber}/requested_reviewers`;
-    const url = `${baseURL}repos/${repo}/pulls/${prNumber}/requested_reviewers`;
     const axios = require('axios');
     const { data } = await axios({
       method: 'POST',
@@ -133,11 +132,11 @@ const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink)
   }
 }
 
-const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 

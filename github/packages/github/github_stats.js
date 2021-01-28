@@ -123,11 +123,11 @@ const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink,
 }
 
 
-const getRedirectURL = url => redirectURL || (redirectURL = url.replace('api.', '').replace('api/v3', ''))
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
 
 const updateURL = (url) => {
   if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3/'; }
+  if (!url.includes('api')) { url += '/api/v3'; }
   return url
 }
 
