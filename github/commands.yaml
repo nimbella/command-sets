@@ -21,8 +21,6 @@ commands:
         value: repo
       - name: h
         value: host
-      - name: h
-        value: host
   github_label:
     description: Label an issue/pull request
     parameters:
