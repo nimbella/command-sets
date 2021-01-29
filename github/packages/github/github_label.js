@@ -101,6 +101,8 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
+
 const updateURL = (url) => {
   if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
   else { url = url.replace('<', '').replace('>', '') }

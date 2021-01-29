@@ -20,11 +20,8 @@ async function Request(url, action, method, data, secrets) {
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  }).then(res => res))
 }
-
 
 /**
  * @description 
@@ -59,6 +56,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -106,7 +104,7 @@ async function command(params, commandText, secrets = {}) {
   const url = `${baseURL}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
   const res = await Request(url, action, method, data, secrets)
 
-  if (res) {
+  if (res && res.headers) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\nComment *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
@@ -119,7 +117,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const image = (source, alt) => ({
@@ -142,13 +140,26 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
 };
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 const _get = (item, response) => {
   const block = {

@@ -60,7 +60,11 @@ If you use more than one of the approaches listed above, the precedence is decid
 - [`github_search`](#github_search) - Search repositories, commits, code, issues, pull requests, users and topics using keywords.
 - [`github_stats`](#github_stats) - View repository community statistics.
 - [`github_view_pr`](#github_view_pr) - View recent pull requests.
-
+- [`assignees`](#assignees) - Manage Assignees.
+- [`comments`](#comments) - Manage Comments.
+- [`issues`](#issues) - Manage Issues and PRs.
+- [`labels`](#labels) - Manage Labels.
+- [`milestones`](#milestones) - Manage Milestones.
 ## Usage
 
 ### [`github`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github.js)
@@ -167,6 +171,33 @@ View recent pull requests.
 
 ```sh
 /nc github_view_pr [<repo>] [-state <state>]
+```
+
+### [`assignees`](/github/packages/github/assignees.js) 
+Manage Assignees.
+```sh
+/nc assignees (add|remove|check|list) [-a <assignees>] [-i <issue_number|pr_number>] [-r <repo>] [-h <host>]
+```
+### [`comments`](/github/packages/github/comments.js) 
+Manage Comments.
+```sh
+/nc comments (add|update|delete|get|list) [-c <comment_id>] [-i <issue_number|pr_number>] [-b <body>] [-r <repo>] [-h <host>]
+```
+### [`issues`](/github/packages/github/issues.js) 
+Manage Issues and PRs.
+```sh
+/nc issues (add|update|get|list|lock|unlock) [-i <issue_number|pr_number>] [-a <assignees>] [-t <title>] [-b <body>] [-m <milestone>] [-l <labels>] [-s <state>] [-reason (off-topic|too heated|resolved|spam)] [-list_option (repository|org|user|all)] [-o <org>] [-r <repo>] [-h <host>]
+```
+### [`labels`](/github/packages/github/labels.js) 
+Manage Labels.
+```sh
+/nc labels (create|add|update|get|list|set|remove|removeall) [-i <issue_number|pr_number>] [-m <milestone_number>] [-l <labels>] [-n <name>] [-new_name] [-c <color>] [-d <description>] [-list_option (repo|issue|milestone)] [-r <repo>] [-h <host>]
+```
+
+### [`milestones`](/github/packages/github/milestones.js) 
+Manage Milestones.
+```sh
+/nc milestones (add|update|get|list|delete) [-m <milestone_number>] [-t <title>] [-due_on ] [-s <state>] [-d <description>] [-r <repo>] [-h <host>]
 ```
 
 ## Support

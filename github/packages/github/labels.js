@@ -20,9 +20,7 @@ async function Request(url, action, method, data, secrets) {
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  }).then(res => res))
 }
 
 
@@ -176,7 +174,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const mdText = (text) => ({
@@ -189,12 +187,25 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
+};
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 };
 
 const _get = (item, response) => {

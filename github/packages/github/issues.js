@@ -20,11 +20,8 @@ async function Request(url, action, method, data, secrets) {
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  }).then(res => res))
 }
-
 
 /**
  * @description 
@@ -68,6 +65,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
+    case 'add':      
     case 'create':
       action = 'create'
       method = 'POST'
@@ -138,7 +136,7 @@ async function command(params, commandText, secrets = {}) {
       if (!issue_number) return fail('*please specify an issue number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'create', 'update', 'get', 'list', 'lock', 'unlock' *`)
+      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
   if (secrets.github_token) {
     [, tokenHost] = secrets.github_token.split('@')
@@ -163,7 +161,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const image = (source, alt) => ({
@@ -186,12 +184,25 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
+};
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 };
 
 const _get = (item, response) => {

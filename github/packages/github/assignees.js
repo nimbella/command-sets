@@ -20,9 +20,7 @@ async function Request(url, action, method, data, secrets) {
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  }).then(res => res))
 }
 
 
@@ -53,6 +51,7 @@ async function command(params, commandText, secrets = {}) {
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'a':
     case 'add':
@@ -60,6 +59,7 @@ async function command(params, commandText, secrets = {}) {
       method = 'POST'
       if (assignees.length === 0) return fail('*please specify assignee*')
       if (!issue_number) return fail('*please specify an issue number*')
+
       data = {
         assignees: assignees.split(',').map(a => a.trim())
       }
@@ -96,7 +96,7 @@ async function command(params, commandText, secrets = {}) {
   const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/assignees${assignee ? `/${assignee}` : ''}`
   const res = await Request(url, action, method, data, secrets)
 
-  if (res) {
+  if (res && res.headers) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\nAssignee *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
@@ -109,7 +109,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const image = (source, alt) => ({
@@ -128,13 +128,26 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
 };
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 const _assignee = (item, response) => {
   const block = {

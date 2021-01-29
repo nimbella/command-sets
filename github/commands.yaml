@@ -144,7 +144,7 @@ commands:
         value: labels
       - name: s
         value: state
-      - name: r
+      - name: reason
         value: reason
       - name: list_option
         value: list_option
