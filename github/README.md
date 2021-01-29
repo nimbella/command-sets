@@ -193,7 +193,7 @@ Manage Labels.
 ```sh
 /nc labels (create|add|update|get|list|set|remove|removeall) [-i <issue_number|pr_number>] [-m <milestone_number>] [-l <labels>] [-n <name>] [-new_name] [-c <color>] [-d <description>] [-list_option (repo|issue|milestone)] [-r <repo>] [-h <host>]
 ```
-
+Note: `set` purges the labels whereas `add` only augments. Both create labels if they don't exist already
 ### [`milestones`](/github/packages/github/milestones.js) 
 Manage Milestones.
 ```sh

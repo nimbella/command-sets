@@ -54,6 +54,7 @@ async function command(params, commandText, secrets = {}) {
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
@@ -64,10 +65,10 @@ async function command(params, commandText, secrets = {}) {
       if (!title) return fail('*please enter name*')
       data = {
         title,
-        state,
-        description,
-        due_on
+        state:'open',
+        description
       }
+      if(due_on) data.due_on = due_on
       break;
     case 'u':
     case 'up':
@@ -78,9 +79,9 @@ async function command(params, commandText, secrets = {}) {
       data = {
         title,
         state,
-        description,
-        due_on
+        description
       }
+      if(due_on) data.due_on = due_on
       break;
     case 'g':
     case 'get':
@@ -91,6 +92,7 @@ async function command(params, commandText, secrets = {}) {
     case 'ls':
     case 'list':
       action = 'list'
+      if (milestone_number) return fail('*milestone_number can\'t be specified while fetching list*')
       break;
     case 'd':
     case 'delete':
@@ -108,12 +110,13 @@ async function command(params, commandText, secrets = {}) {
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nLabel *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
+    let header = `\nMilestones *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
     if (currReading < requestThreshold) {
       header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
     }
@@ -161,13 +164,11 @@ const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.number}> \n ${item.title}
-      Open: ${item.open_issues} \nClosed: ${item.closed_issues} 
-      `),
+      mdText(`<${item.html_url}|${item.number}> \n ${item.title}\nOpen: ${item.open_issues} \nClosed: ${item.closed_issues}`),
       mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} 
       \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> 
       \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  
-      \n*Due:* <!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}>  
+      \n*Due:* ${item.due_on?`<!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}> `:'NA'} 
       ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
       mdText(`Creator: <${item.creator.avatar_url}|${item.creator.login}>`)
     ],

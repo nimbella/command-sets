@@ -88,7 +88,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     result.push({
       color: 'danger',
-      text: getErrorMessage(error, 'Repository', repo, getRedirectURL(baseURL), repo, client)
+      text: getErrorMessage(error)
     });
   }
 
@@ -109,12 +109,12 @@ const updateURL = (url) => {
   return url
 }
 
-const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink, client) => {
+const getErrorMessage = (error) => {
   console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status === 404) {
-    return `${entityType} not found: ${client === 'mattermost' ? `[${displayLink}](${probeURL}${entityNumber})` : `<${probeURL}${entityNumber}|${displayLink}>`}.`
+    return `Repository not found.`
   } else if (error.response && error.response.status && error.response.data) {
     return `Error: ${error.response.status} ${error.response.data.message}`
   } else {

@@ -69,6 +69,7 @@ async function command(params, commandText, secrets = {}) {
     case 'create':
       action = 'create'
       method = 'POST'
+      if (!repository) return fail('*please specify repository*')
       if (!title) return fail('*please enter issue title*')
       data = {
         title,
@@ -83,6 +84,7 @@ async function command(params, commandText, secrets = {}) {
     case 'update':
       action = 'update'
       method = 'PATCH'
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       data = {
         title,
@@ -96,6 +98,7 @@ async function command(params, commandText, secrets = {}) {
     case 'g':
     case 'get':
       action = 'get';
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       break;
     case 'l':
@@ -120,6 +123,7 @@ async function command(params, commandText, secrets = {}) {
       action = 'lock'
       method = 'PUT'
       lock = true
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       if (!['', undefined, 'off-topic', 'too heated', 'resolved', 'spam'].includes(reason))
         return fail(`*expected reason to be one of  'off-topic','too heated', 'resolved', 'spam'*`)
@@ -133,6 +137,7 @@ async function command(params, commandText, secrets = {}) {
       action = 'unlock'
       method = 'DELETE'
       lock = true
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       break;
     default:
@@ -143,9 +148,8 @@ async function command(params, commandText, secrets = {}) {
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/${listing ? list_path : `/repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
-
-
+  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {

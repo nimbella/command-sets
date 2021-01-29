@@ -304,17 +304,6 @@ const updateURL = (url) => {
   return url
 }
 
-const getErrorMessage = (error) => {
-  console.error(error)
-  if (error.response && error.response.status === 403) {
-    return `:warning: *The api rate limit has been exhausted.*`
-  } else if (error.response && error.response.status && error.response.data) {
-    return `Error: ${error.response.status} ${error.response.data.message}`
-  } else {
-    return error.message
-  }
-}
-
 const main = async (args) => ({
   body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
     response_type: 'ephemeral',

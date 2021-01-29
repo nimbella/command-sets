@@ -59,6 +59,7 @@ async function command(params, commandText, secrets = {}) {
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
@@ -66,6 +67,7 @@ async function command(params, commandText, secrets = {}) {
       action = 'create'
       method = 'POST'
       if (!name) return fail('*please enter name*')
+      if (issue_number) return fail('*can\'t specify issue_number while creating*')
       if (!color) return fail('*please specify a hexadecimal color code for the label, without the leading #*')
       data = {
         name,
@@ -159,6 +161,7 @@ async function command(params, commandText, secrets = {}) {
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {

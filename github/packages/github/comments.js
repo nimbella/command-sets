@@ -53,6 +53,7 @@ async function command(params, commandText, secrets = {}) {
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
@@ -159,7 +160,7 @@ const getErrorMessage = (error) => {
   } else {
     return error.message
   }
-}
+};
 
 const _get = (item, response) => {
   const block = {
@@ -169,7 +170,7 @@ const _get = (item, response) => {
       mdText(`*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>`),
     ],
   }
-  block.accessory = image(item.user.avatar_url, item.user.login)
+  if(item.user) block.accessory = image(item.user.avatar_url, item.user.login)
   response.blocks.push(block)
   if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
