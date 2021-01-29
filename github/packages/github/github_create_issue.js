@@ -87,7 +87,7 @@ const updateURL = (url) => {
 }
 
 const getErrorMessage = (error) => {
-  // console.error(error)
+  console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status && error.response.data) {
