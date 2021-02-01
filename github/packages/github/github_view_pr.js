@@ -133,25 +133,6 @@ const getErrorMessage = (error) => {
   }
 }
 
-const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
-
-const updateURL = (url) => {
-  if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3'; }
-  return url
-}
-
-const getErrorMessage = (error) => {
-  // console.error(error)
-  if (error.response && error.response.status === 403) {
-    return `:warning: *The api rate limit has been exhausted.*`
-  } else if (error.response && error.response.status && error.response.data) {
-    return `Error: ${error.response.status} ${error.response.data.message}`
-  } else {
-    return error.message
-  }
-}
-
 /**
  * @typedef {object} SlackBodyType
  * @property {string} text
