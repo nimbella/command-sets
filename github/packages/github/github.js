@@ -97,6 +97,12 @@ async function _command(params, commandText, secrets = {}) {
     \nCreate secrets using.\
     \n `/nc secret_create`\
     \n<https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|Click> to learn how to setup a Personal Access Token on GitHub\
+    \n\n*Github Enterprise*:\
+    \nOnly for Github Enterprise version, you need to specify the host. Below are the ways to do it, you can follow any of them\
+    \n• Specify `--host` or `-h` while invoking the command.\
+    \n• Append `github_token` secret value with host name, followed by `@`, i.e. <your_access_token>@<your_github_host>. For example `mysecret@example.com`.\
+    \n• Create secret with key name `github_host` using `/nc secret_create`, add host as value.\
+    \nIf you follow multiple ways, priority is decided top-down.\
     \n\n\n*Usage*:'
       ),
       client

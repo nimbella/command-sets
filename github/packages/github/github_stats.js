@@ -7,8 +7,12 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: githubRepos = ''} = secrets;
+  let tokenHost, baseURL = 'https://api.github.com'
+  let { github_token: githubToken, github_repos: githubRepos = '', github_host } = secrets;
+  
   githubRepos = params.repo ? params.repo : githubRepos;
 
   if (!githubRepos) {
@@ -18,11 +22,15 @@ async function _command(params, commandText, secrets = {}) {
         'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
 
   githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
   const client = params.__client.name;
+  const host = params.host
   const tokenMessage = githubToken
     ? ''
     : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
@@ -30,17 +38,19 @@ async function _command(params, commandText, secrets = {}) {
   try {
     const axios = require('axios');
     const networkRequests = [];
+    baseURL = host || tokenHost || github_host || baseURL
+    baseURL = updateURL(baseURL)
     for (const repo of githubRepos) {
-      const url = `https://api.github.com/repos/${repo}`;
+      const url = `${baseURL}/repos/${repo}`;
       networkRequests.push(
         axios({
           method: 'GET',
           url: url,
           headers: githubToken
             ? {
-                Authorization: `Bearer ${githubToken}`,
-                'Content-Type': 'application/json'
-              }
+              Authorization: `Bearer ${githubToken}`,
+              'Content-Type': 'application/json'
+            }
             : {}
         })
       );
@@ -49,7 +59,7 @@ async function _command(params, commandText, secrets = {}) {
     const responses = await Promise.all(networkRequests);
 
     for (const response of responses) {
-      const {data, headers} = response;
+      const { data, headers } = response;
       const requestThreshold = 3;
       const currReading = parseInt(headers['x-ratelimit-remaining']);
       const body = [
@@ -75,33 +85,40 @@ async function _command(params, commandText, secrets = {}) {
       });
     }
   } catch (error) {
-    if (error.response && error.response.status === 403) {
-      result.push({
-        color: 'danger',
-        text: `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`
-      });
-    } else if (error.response && error.response.status === 404) {
-      result.push({
-        color: 'danger',
-        text:
-          client === 'mattermost'
-            ? `Repository not found: [${repo}](https://github.com/${repo})`
-            : `Repository not found: <https://github.com/${repo}|${repo}>.`
-      });
-    } else if (error.response && error.response.status) {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
-    } else {
-      result.push({color: 'danger', text: `Error: ${JSON.stringify(error)}`});
-    }
+    result.push({
+      color: 'danger',
+      text: getErrorMessage(error, 'Repository', repo, getRedirectURL(baseURL), repo, client)
+    });
   }
 
   return {
     response_type: 'in_channel',
     attachments: result
   };
+}
+
+
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
+
+const updateURL = (url) => {
+  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
+  else { url = url.replace('<', '').replace('>', '') }
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink, client) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} not found: ${client === 'mattermost' ? `[${displayLink}](${probeURL}${entityNumber})` : `<${probeURL}${entityNumber}|${displayLink}>`}.`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 }
 
 /**

@@ -7,8 +7,12 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: defaultRepo = ''} = secrets;
+  let  tokenHost, baseURL = 'https://api.github.com'
+  let { github_token: githubToken, github_repos: defaultRepo = '', github_host } = secrets;
+  
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -16,12 +20,14 @@ async function _command(params, commandText, secrets = {}) {
         'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
-
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
   // Extract the first repository.
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
-  const {prNumber, reviewers} = params;
+  const { prNumber, reviewers, host } = params;
   const repo = params.repo === false ? defaultRepo.trim() : params.repo.trim();
   if (!repo && !defaultRepo) {
     return {
@@ -32,9 +38,11 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/requested_reviewers`;
+    baseURL = host || tokenHost || github_host || baseURL
+    baseURL = updateURL(baseURL)
+    const url = `${baseURL}/repos/${repo}/pulls/${prNumber}/requested_reviewers`;
     const axios = require('axios');
-    const {data} = await axios({
+    const { data } = await axios({
       method: 'POST',
       url: url,
       data: {
@@ -51,12 +59,12 @@ async function _command(params, commandText, secrets = {}) {
     const body = html.test(data.body)
       ? `_couldn't render body of issue_`
       : data.body
-          // Convert markdown links to slack format.
-          .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
-          // Covert Issues mentions to links
-          .replace(/#(\d+)/g, `<https://github.com/${repo}/issues/$1|#$1>`)
-          // Replace markdown headings with slack bold
-          .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+        // Convert markdown links to slack format.
+        .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
+        // Covert Issues mentions to links
+        .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
+        // Replace markdown headings with slack bold
+        .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
 
     // output formatted text
     const getReviewers = reviewers => {
@@ -65,11 +73,11 @@ async function _command(params, commandText, secrets = {}) {
       reviewers.forEach((reviewer, index) => {
         if (reviewers.length > 1 && index === reviewers.length - 1) {
           output.push(
-            `and <https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+            `and <${getRedirectURL(baseURL)}${reviewer.trim()}|${reviewer.trim()}>`
           );
         } else {
           output.push(
-            `<https://github.com/${reviewer.trim()}|${reviewer.trim()}>`
+            `<${getRedirectURL(baseURL)}${reviewer.trim()}|${reviewer.trim()}>`
           );
         }
       });
@@ -79,33 +87,48 @@ async function _command(params, commandText, secrets = {}) {
 
     result.push({
       color: data.state == 'open' ? 'good' : 'danger',
-      text: `_Created on <!date^${
-        new Date(data.created_at).getTime() / 1000
-      }^{date_short} at {time}|${data.created_at}>_\n${body}`,
+      text: `_Created on <!date^${new Date(data.created_at).getTime() / 1000
+        }^{date_short} at {time}|${data.created_at}>_\n${body}`,
       title_link: data.html_url,
       title: `PR #${data.number}: ${data.title}`,
-      pretext: `${getReviewers(reviewers)} has been requested to review <${
-        data.html_url
-      }|#${data.number}>:`
+      pretext: `${getReviewers(reviewers)} has been requested to review <${data.html_url
+        }|#${data.number}>:`
     });
   } catch (error) {
-    if (error.response.status === 404) {
-      result.push({
-        color: 'danger',
-        text: `PR #${prNumber} not found for <https://github.com/${repo}|${repo}>.`
-      });
-    } else {
-      result.push({
-        color: 'danger',
-        text: `Error: ${error.response.status} ${error.response.data.message}`
-      });
-    }
+    result.push({
+      color: 'danger',
+      text: getErrorMessage(error, 'PR', prNumber, getRedirectURL(baseURL), repo)
+    });
   }
 
   return {
     response_type: 'in_channel',
     attachments: result
   };
+}
+
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
+
+const updateURL = (url) => {
+  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
+  else { url = url.replace('<', '').replace('>', '') }
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3'; }
+  return url
+}
+
+const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status === 404) {
+    return `${entityType} #${entityNumber} not found for <${probeURL}/${displayLink}|${displayLink}>.`
+  }
+  else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 }
 
 /**

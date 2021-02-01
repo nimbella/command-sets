@@ -6,9 +6,15 @@ const requestThreshold = 3;
 const headers = {
   'Content-Type': 'application/json',
 };
+
+
 async function getRequest(url, secrets) {
   console.log(url);
-  if (secrets.github_token) headers.Authorization = `Bearer ${secrets.github_token}`;
+  if (secrets.github_token) {
+    let token
+    [token,] = secrets.github_token.split('@')
+    headers.Authorization = `Bearer ${token}`;
+  }
   return (axios({
     method: 'get',
     url,
@@ -25,6 +31,7 @@ async function getRequest(url, secrets) {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function command(params, commandText, secrets = {}) {
+  let tokenHost, baseURL = 'https://api.github.com'
   let {
     entity,
     keywords = '',
@@ -32,14 +39,15 @@ async function command(params, commandText, secrets = {}) {
     repositories,
     language,
     pageSize,
-    pageNumber = 1
+    pageNumber = 1,
+    host
   } = params;
   const displayQuery = query;
   let displayEntity = entity;
   let adjustedPageSize = 20;
   let sort = 'sort:created'
 
-  const { github_repos } = secrets;
+  const { github_repos, github_host } = secrets;
   const default_repos = repositories ? repositories : github_repos;
   if (default_repos) {
     repositories = default_repos.split(',').map(repo => 'repo:' + repo.trim()).join('+');
@@ -111,7 +119,12 @@ async function command(params, commandText, secrets = {}) {
       if (!keywords) return fail('*please specify a keyword*')
       break;
   }
-  const url = `https://api.github.com/search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
+  if (secrets.github_token) {
+    [, tokenHost] = secrets.github_token.split('@')
+  }
+  baseURL = host || tokenHost || github_host || baseURL
+  baseURL = updateURL(baseURL)
+  const url = `${baseURL}/search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
   const res = await getRequest(url, secrets);
 
   if (res && res.data) {
@@ -269,6 +282,25 @@ const success = async (entity, header, items, secrets) => {
   });
   return response;
 };
+
+const updateURL = (url) => {
+  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
+  else { url = url.replace('<', '').replace('>', '') }
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3'; }
+  return url
+}
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
+}
 
 const main = async (args) => ({
   body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({

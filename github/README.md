@@ -31,7 +31,7 @@ Please make sure Commander is installed in your [Slack workspace](https://slack.
 
 In order to use this command set, you need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with `github_token` as the key name. Use `/nc secret_create` to create secrets.
 
-Visit [this page](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to setup a Personal Access Token on GitHub.
+Generate a token with `repo` access [here](https://github.com/settings/tokens) or click [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to create a Personal Access Token on GitHub.
 
 Create a secret named `github_repos` to avoid passing repository (`-r`) to commands.
 
@@ -39,12 +39,21 @@ Create a secret named `github_repos` to avoid passing repository (`-r`) to comma
 
 For commands that only work with single repository the first repository in `github_repos` is used.
 
+### Github Enterprise
+
+Only for Github Enterprise version, you need to specify the host. Below are the ways to do it, you can follow any of them
+- Specify `--host` or `-h` while invoking the command.
+- Append the host name to your `github_token` following this format: `access_token@github_host`. For example `mysecret@example.com`.
+
+- Create a secret with key name `github_host` using `/nc secret_create`, and add the host as the value.
+
+
+If you use more than one of the approaches listed above, the precedence is decided top-down (e.g., command line supersedes all others).
 ## Commands
 
 - [`github`](#github) - View GitHub command set documentation.
 - [`github_close_issue`](#github_close_issue) - Close an issue.
 - [`github_create_issue`](#github_create_issue) - Create an issue.
-- [`github_find_pr`](#github_find_pr) - Find pull requests by last update date.
 - [`github_label`](#github_label) - Label an issue/pull request.
 - [`github_reopen_issue`](#github_reopen_issue) - Reopen an issue.
 - [`github_request_review`](#github_request_review) - Request someone to review a pull request.
@@ -81,14 +90,6 @@ Create an issue.
 ```
 
 ![GitHub create_issue command](https://raw.githubusercontent.com/nimbella/command-sets/master/github/screenshots/create_issue.png)
-
-### [`github_find_pr`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github_find_pr.js)
-
-Find pull requests by last update date.
-
-```sh
-/nc github_find_pr <date> [-r <repo>] [-state <state>]
-```
 
 ### [`github_label`](https://github.com/nimbella/command-sets/blob/master/github/packages/github/github_label.js)
 

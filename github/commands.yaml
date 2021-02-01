@@ -7,6 +7,8 @@ commands:
     options:
       - name: r
         value: repo
+      - name: h
+        value: host
   github_create_issue:
     description: Create an issue
     parameters:
@@ -17,16 +19,8 @@ commands:
     options:
       - name: r
         value: repo
-  github_find_pr:
-    description: Find pull requests by last update date
-    parameters:
-      - name: date
-        optional: false
-    options:
-      - name: r
-        value: repo
-      - name: state
-        value: state
+      - name: h
+        value: host
   github_label:
     description: Label an issue/pull request
     parameters:
@@ -37,6 +31,8 @@ commands:
     options:
       - name: r
         value: repo
+      - name: h
+        value: host
   github_reopen_issue:
     description: Reopen an issue
     parameters:
@@ -45,6 +41,8 @@ commands:
     options:
       - name: r
         value: repo
+      - name: h
+        value: host
   github_request_review:
     description: Request someone to review a pull request
     parameters:
@@ -55,11 +53,16 @@ commands:
     options:
       - name: r
         value: repo
+      - name: h
+        value: host
   github_stats:
     description: View repository community statistics
     parameters:
       - name: repo
         optional: true
+    options:
+      - name: h
+        value: host
   github_view_pr:
     description: View recent pull requests
     parameters:
@@ -68,6 +71,8 @@ commands:
     options:
       - name: state
         value: state
+      - name: h
+        value: host
   github_search:
     description: Search repositories, commits, code, issues, pull requests, users and topics using keywords
     parameters:
@@ -85,5 +90,113 @@ commands:
         value: pageSize
       - name: n
         value: pageNumber
+      - name: h
+        value: host
+  assignees:
+    description: Manage Assignees
+    parameters:
+      - name: action
+        optional: true
+    options:
+      - name: r
+        value: repository
+      - name: i
+        value: issue_number
+      - name: a
+        value: assignees
+      - name: h
+        value: host
+  comments:
+    description: Manage Comments
+    parameters:
+      - name: action
+        optional: true
+    options:
+      - name: r
+        value: repository
+      - name: i
+        value: issue_number
+      - name: c
+        value: comment_id
+      - name: b
+        value: body        
+      - name: h
+        value: host
+  issues:
+    description: Manage Issues and PRs
+    parameters:
+      - name: action
+        optional: true
+    options:
+      - name: r
+        value: repository
+      - name: i
+        value: issue_number
+      - name: a
+        value: assignees
+      - name: t
+        value: title
+      - name: b
+        value: body
+      - name: m
+        value: milestone
+      - name: l
+        value: labels
+      - name: s
+        value: state
+      - name: r
+        value: reason
+      - name: list_option
+        value: list_option
+      - name: o
+        value: org
+      - name: h
+        value: host
+  labels:
+    description: Manage Labels
+    parameters:
+      - name: action
+        optional: true
+    options:
+      - name: r
+        value: repository
+      - name: i
+        value: issue_number
+      - name: l
+        value: labels
+      - name: n
+        value: name
+      - name: new_name
+        value: new_name
+      - name: c
+        value: color
+      - name: d
+        value: description
+      - name: m
+        value: milestone_number
+      - name: list_option
+        value: list_option
+      - name: h
+        value: host
+  milestones:
+    description: Manage Milestones
+    parameters:
+      - name: action
+        optional: true
+    options:
+      - name: r
+        value: repository
+      - name: t
+        value: title
+      - name: due_on
+        value: due_on
+      - name: s
+        value: state
+      - name: d
+        value: description
+      - name: m
+        value: milestone_number
+      - name: h
+        value: host
   github:
     description: View GitHub command set documentation

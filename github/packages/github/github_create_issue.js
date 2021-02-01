@@ -7,8 +7,10 @@
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
+
 async function _command(params, commandText, secrets = {}) {
-  let {github_token: githubToken, github_repos: defaultRepo = ''} = secrets;
+  let tokenHost, baseURL = 'https://api.github.com'
+  let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
   if (!githubToken) {
     return {
       response_type: 'ephemeral',
@@ -16,12 +18,15 @@ async function _command(params, commandText, secrets = {}) {
         'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
     };
   }
+  if (secrets.github_token) {
+    [githubToken, tokenHost] = secrets.github_token.split('@')
+  }
 
   // Extract the first repository.
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
   const result = [];
-  const {title, body} = params;
+  const {title, body, host} = params;
   const repo = params.repo === false ? defaultRepo : params.repo;
   if (!repo && !defaultRepo) {
     return {
@@ -32,7 +37,16 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    const url = `https://api.github.com/repos/${repo}/issues`;
+    console.log(host)
+    console.log(tokenHost)
+    console.log(github_host)
+    console.log(baseURL)
+    baseURL = host || tokenHost || github_host || baseURL
+    console.log(baseURL)
+    baseURL = updateURL(baseURL)
+    console.log(baseURL)
+    const url = `${baseURL}/repos/${repo}/issues`;
+    console.log(url)
     const axios = require('axios');
     const {data} = await axios({
       method: 'POST',
@@ -54,7 +68,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     result.push({
       color: 'danger',
-      text: `Error: ${error.response.status} ${error.response.data.message}`
+      text: getErrorMessage(error)
     });
   }
 
@@ -62,6 +76,25 @@ async function _command(params, commandText, secrets = {}) {
     response_type: 'in_channel',
     attachments: result
   };
+}
+
+const updateURL = (url) => {
+  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
+  else { url = url.replace('<', '').replace('>', '') }
+  if (!url.startsWith('http')) { url = 'https://' + url; }
+  if (!url.includes('api')) { url += '/api/v3'; }
+  return url
+}
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 }
 
 /**
