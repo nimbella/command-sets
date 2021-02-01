@@ -43,7 +43,8 @@ For commands that only work with single repository the first repository in `gith
 
 Only for Github Enterprise version, you need to specify the host. Below are the ways to do it, you can follow any of them
 - Specify `--host` or `-h` while invoking the command.
-- Append `github_token` secret value with host name, followed by `@`, i.e. <your_access_token>@<your_github_host>. For example `mysecret@example.com`.
+- Append the host name to your `github_token` following this format: `access_token@github_host`. For example `mysecret@example.com`.
+
 - Create a secret with key name `github_host` using `/nc secret_create`, and add the host as the value.
 
 
