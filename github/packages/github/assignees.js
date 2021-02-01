@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // jshint esversion: 9
 
 const axios = require('axios');
@@ -15,12 +16,12 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then(res => res))
+  })
 }
 
 
@@ -182,7 +183,7 @@ const _get = (item, response) => {
 };
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],

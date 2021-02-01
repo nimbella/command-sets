@@ -15,12 +15,12 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then(res => res))
+  })
 }
 
 
@@ -53,7 +53,7 @@ async function command(params, commandText, secrets = {}) {
   } = params;
   let method = 'GET'
   let data = {}
-  let listing = false
+  let list_path, listing = false
   const { github_repos, github_host } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
@@ -228,7 +228,7 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],

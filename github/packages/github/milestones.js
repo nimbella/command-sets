@@ -12,15 +12,15 @@ async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
-    [token, ] = secrets.github_token.split('@')
+    [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then(res => res))
+  })
 }
 
 /**
@@ -37,7 +37,7 @@ async function command(params, commandText, secrets = {}) {
     repository,
     title,
     due_on,
-    state ,
+    state,
     description,
     milestone_number,
     sort = 'created',
@@ -48,7 +48,6 @@ async function command(params, commandText, secrets = {}) {
   } = params;
   let method = 'GET'
   let data = {}
-  let listing = false
   const { github_repos, github_host } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
@@ -65,10 +64,10 @@ async function command(params, commandText, secrets = {}) {
       if (!title) return fail('*please enter name*')
       data = {
         title,
-        state:'open',
+        state: 'open',
         description
       }
-      if(due_on) data.due_on = due_on
+      if (due_on) data.due_on = due_on
       break;
     case 'u':
     case 'up':
@@ -81,7 +80,7 @@ async function command(params, commandText, secrets = {}) {
         state,
         description
       }
-      if(due_on) data.due_on = due_on
+      if (due_on) data.due_on = due_on
       break;
     case 'g':
     case 'get':
@@ -168,7 +167,7 @@ const _get = (item, response) => {
       mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} 
       \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>
       \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>
-      \n*Due:* ${item.due_on?`<!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}>`:'-'}
+      \n*Due:* ${item.due_on ? `<!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}>` : '-'}
       ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
       mdText(`Creator: <${item.creator.avatar_url}|${item.creator.login}>`)
     ],
@@ -182,7 +181,7 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],

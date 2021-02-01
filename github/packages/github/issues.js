@@ -15,12 +15,12 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then(res => res))
+  })
 }
 
 /**
@@ -50,8 +50,6 @@ async function command(params, commandText, secrets = {}) {
     page = 1,
     host
   } = params;
-  let adjustedPageSize = 20;
-  let sort = 'sort:created';
   let method = 'GET'
   let data = {}
   let lock = false
@@ -89,9 +87,9 @@ async function command(params, commandText, secrets = {}) {
       data = {
         title,
         body,
-        assignees: assignees.split(',').map(a => a.trim()),
-        milestone,
-        labels: labels.split(',').map(l => l.trim()),
+        assignees: assignees ? assignees.split(',').map(a => a.trim()) : [],
+        milestone: milestone ? milestone : null,
+        labels: labels ? labels.split(',').map(l => l.trim()) : [],
         state
       }
       break;
@@ -180,7 +178,7 @@ const mdText = (text) => ({
     // Convert markdown links to slack format.
     .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
     // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
+    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({

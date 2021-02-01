@@ -15,11 +15,11 @@ async function getRequest(url, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: 'get',
     url,
     headers,
-  }).then(res => res))
+  })
 }
 
 
@@ -155,7 +155,7 @@ const mdText = (text) => ({
     // Convert markdown links to slack format.
     .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
     // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
+    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({

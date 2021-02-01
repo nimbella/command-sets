@@ -63,7 +63,7 @@ async function _command(params, commandText, secrets = {}) {
           // Covert Issues mentions to links
           .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
           // Replace markdown headings with slack bold
-          .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+          .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*');
 
     result.push({
       color: 'good',

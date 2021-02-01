@@ -193,12 +193,13 @@ Manage Labels.
 ```sh
 /nc labels (create|add|update|get|list|set|remove|removeall) [-i <issue_number|pr_number>] [-m <milestone_number>] [-l <labels>] [-n <name>] [-new_name] [-c <color>] [-d <description>] [-list_option (repo|issue|milestone)] [-r <repo>] [-h <host>]
 ```
-Note: `set` purges the labels whereas `add` only augments. Both create labels if they don't exist already
+Note: `set` purges the labels whereas `add` only augments. Both create labels if they don't exist already.
 ### [`milestones`](/github/packages/github/milestones.js) 
 Manage Milestones.
 ```sh
 /nc milestones (add|update|get|list|delete) [-m <milestone_number>] [-t <title>] [-due_on ] [-s <state>] [-d <description>] [-r <repo>] [-h <host>]
 ```
+Note: `due_on` accepts a timestamp in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM-DDTHH:MM:SSZ`.
 
 ## Support
 

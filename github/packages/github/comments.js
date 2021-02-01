@@ -15,12 +15,12 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then(res => res))
+  })
 }
 
 /**
@@ -91,7 +91,6 @@ async function command(params, commandText, secrets = {}) {
     case 'delete':
       action = 'delete'
       method = 'DELETE'
-      lock = true
       if (!comment_id) return fail('*please specify comment id*')
       break;
     default:
@@ -133,7 +132,7 @@ const mdText = (text) => ({
     // Convert markdown links to slack format.
     .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
     // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
+    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({
@@ -166,7 +165,7 @@ const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.id}>`),
+      mdText(item.id?`<${item.html_url}|${item.id}>`:''),
       mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
       \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
     ],
@@ -181,7 +180,7 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],
