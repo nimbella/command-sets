@@ -167,10 +167,11 @@ const _get = (item, response) => {
     type: 'section',
     fields: [
       mdText(`<${item.html_url}|${item.id}>`),
-      mdText(`*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>`),
+      mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
+      \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
     ],
   }
-  if(item.user) block.accessory = image(item.user.avatar_url, item.user.login)
+  if (item.user) block.accessory = image(item.user.avatar_url, item.user.login)
   response.blocks.push(block)
   if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };

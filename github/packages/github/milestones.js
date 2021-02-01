@@ -166,9 +166,9 @@ const _get = (item, response) => {
     fields: [
       mdText(`<${item.html_url}|${item.number}> \n ${item.title}\nOpen: ${item.open_issues} \nClosed: ${item.closed_issues}`),
       mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} 
-      \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> 
-      \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  
-      \n*Due:* ${item.due_on?`<!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}> `:'NA'} 
+      \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>
+      \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>
+      \n*Due:* ${item.due_on?`<!date^${Math.floor(new Date(item.due_on).getTime() / 1000)}^{date_pretty} at {time}|${item.due_on}>`:'-'}
       ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
       mdText(`Creator: <${item.creator.avatar_url}|${item.creator.login}>`)
     ],
