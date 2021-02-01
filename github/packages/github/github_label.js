@@ -41,7 +41,8 @@ async function _command(params, commandText, secrets = {}) {
   try {
     baseURL = host || tokenHost || github_host || baseURL
     baseURL = updateURL(baseURL)
-    
+    const url = `${baseURL}/repos/${repo}/issues/${issueNumber}`;
+
     const axios = require('axios');
 
     // Get current labels of the issue.
