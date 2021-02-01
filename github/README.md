@@ -46,7 +46,7 @@ Only for Github Enterprise version, you need to specify the host. Below are the 
 - Append `github_token` secret value with host name, followed by `@`, i.e. <your_access_token>@<your_github_host>. For example `mysecret@example.com`.
 - Create secret with key name `github_host` using `/nc secret_create`, add host as value.
 
-If you follow multiple ways, priority is decided top-down. 
+If you use more than one of the approaches listed above, the precedence is decided top-down (e.g., command line supersedes all others).
 ## Commands
 
 - [`github`](#github) - View GitHub command set documentation.
