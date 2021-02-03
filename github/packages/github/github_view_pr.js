@@ -87,7 +87,7 @@ async function _command(params, commandText, secrets = {}) {
               `<${getRedirectURL(baseURL)}${githubRepos[i]}/issues/$1|#$1>`
             )
             // Replace markdown headings with slack bold
-            .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+            .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*');
 
         result.push({
           color: pr.state === 'open' ? 'good' : 'danger',

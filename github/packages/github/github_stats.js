@@ -9,6 +9,7 @@
  */
 
 
+
 async function _command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let { github_token: githubToken, github_repos: githubRepos = '', github_host } = secrets;
@@ -87,7 +88,7 @@ async function _command(params, commandText, secrets = {}) {
   } catch (error) {
     result.push({
       color: 'danger',
-      text: getErrorMessage(error, 'Repository', repo, getRedirectURL(baseURL), repo, client)
+      text: getErrorMessage(error)
     });
   }
 
@@ -97,9 +98,6 @@ async function _command(params, commandText, secrets = {}) {
   };
 }
 
-
-const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
-
 const updateURL = (url) => {
   if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
   else { url = url.replace('<', '').replace('>', '') }
@@ -108,12 +106,12 @@ const updateURL = (url) => {
   return url
 }
 
-const getErrorMessage = (error, entityType, entityNumber, probeURL, displayLink, client) => {
+const getErrorMessage = (error) => {
   console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
   } else if (error.response && error.response.status === 404) {
-    return `${entityType} not found: ${client === 'mattermost' ? `[${displayLink}](${probeURL}${entityNumber})` : `<${probeURL}${entityNumber}|${displayLink}>`}.`
+    return `Repository not found.`
   } else if (error.response && error.response.status && error.response.data) {
     return `Error: ${error.response.status} ${error.response.data.message}`
   } else {

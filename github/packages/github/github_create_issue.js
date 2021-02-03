@@ -37,16 +37,9 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    console.log(host)
-    console.log(tokenHost)
-    console.log(github_host)
-    console.log(baseURL)
     baseURL = host || tokenHost || github_host || baseURL
-    console.log(baseURL)
     baseURL = updateURL(baseURL)
-    console.log(baseURL)
     const url = `${baseURL}/repos/${repo}/issues`;
-    console.log(url)
     const axios = require('axios');
     const {data} = await axios({
       method: 'POST',

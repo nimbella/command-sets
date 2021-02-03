@@ -7,6 +7,7 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+
 async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
@@ -14,14 +15,12 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  })
 }
 
 
@@ -54,12 +53,13 @@ async function command(params, commandText, secrets = {}) {
   } = params;
   let method = 'GET'
   let data = {}
-  let listing = false
+  let list_path, listing = false
   const { github_repos, github_host } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
@@ -67,6 +67,7 @@ async function command(params, commandText, secrets = {}) {
       action = 'create'
       method = 'POST'
       if (!name) return fail('*please enter name*')
+      if (issue_number) return fail('*can\'t specify issue_number while creating*')
       if (!color) return fail('*please specify a hexadecimal color code for the label, without the leading #*')
       data = {
         name,
@@ -160,6 +161,7 @@ async function command(params, commandText, secrets = {}) {
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {
@@ -175,7 +177,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const mdText = (text) => ({
@@ -188,12 +190,25 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
+};
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 };
 
 const _get = (item, response) => {
@@ -213,7 +228,7 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],

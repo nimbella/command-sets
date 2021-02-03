@@ -7,6 +7,7 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+
 async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
@@ -14,16 +15,13 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  })
 }
-
 
 /**
  * @description 
@@ -52,8 +50,6 @@ async function command(params, commandText, secrets = {}) {
     page = 1,
     host
   } = params;
-  let adjustedPageSize = 20;
-  let sort = 'sort:created';
   let method = 'GET'
   let data = {}
   let lock = false
@@ -67,9 +63,11 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
+    case 'add':      
     case 'create':
       action = 'create'
       method = 'POST'
+      if (!repository) return fail('*please specify repository*')
       if (!title) return fail('*please enter issue title*')
       data = {
         title,
@@ -84,19 +82,21 @@ async function command(params, commandText, secrets = {}) {
     case 'update':
       action = 'update'
       method = 'PATCH'
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       data = {
         title,
         body,
-        assignees: assignees.split(',').map(a => a.trim()),
-        milestone,
-        labels: labels.split(',').map(l => l.trim()),
+        assignees: assignees ? assignees.split(',').map(a => a.trim()) : [],
+        milestone: milestone ? milestone : null,
+        labels: labels ? labels.split(',').map(l => l.trim()) : [],
         state
       }
       break;
     case 'g':
     case 'get':
       action = 'get';
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       break;
     case 'l':
@@ -121,6 +121,7 @@ async function command(params, commandText, secrets = {}) {
       action = 'lock'
       method = 'PUT'
       lock = true
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       if (!['', undefined, 'off-topic', 'too heated', 'resolved', 'spam'].includes(reason))
         return fail(`*expected reason to be one of  'off-topic','too heated', 'resolved', 'spam'*`)
@@ -134,19 +135,19 @@ async function command(params, commandText, secrets = {}) {
       action = 'unlock'
       method = 'DELETE'
       lock = true
+      if (!repository) return fail('*please specify repository*')
       if (!issue_number) return fail('*please specify an issue number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'create', 'update', 'get', 'list', 'lock', 'unlock' *`)
+      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
   if (secrets.github_token) {
     [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/${listing ? list_path : `/repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
-
-
+  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
   if (res) {
@@ -162,7 +163,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const image = (source, alt) => ({
@@ -177,7 +178,7 @@ const mdText = (text) => ({
     // Convert markdown links to slack format.
     .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
     // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
+    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({
@@ -185,12 +186,25 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
+};
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 };
 
 const _get = (item, response) => {
@@ -201,7 +215,10 @@ const _get = (item, response) => {
       ${item.assignees.length > 0 ? `\n ${item.assignees.map(a => `<${a.html_url}|${a.login}>`).join()}` : ''} 
       ${item.labels.length > 0 ? `\n ${item.labels.map(l => l.name).join()}` : ''} 
       `),
-      mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
+      mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)}
+      \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>
+      \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>
+      ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
     ],
   }
   if (item.assignee) block.accessory = image(item.assignee.avatar_url, item.assignee.login)

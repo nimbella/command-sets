@@ -9,6 +9,7 @@
  */
 
 
+
 async function _command(params, commandText, secrets = {}) {
   let  tokenHost, baseURL = 'https://api.github.com'
   let { github_token: githubToken, github_repos: defaultRepo = '', github_host } = secrets;
@@ -64,7 +65,7 @@ async function _command(params, commandText, secrets = {}) {
         // Covert Issues mentions to links
         .replace(/#(\d+)/g, `<${getRedirectURL(baseURL)}${repo}/issues/$1|#$1>`)
         // Replace markdown headings with slack bold
-        .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*');
+        .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*');
 
     // output formatted text
     const getReviewers = reviewers => {

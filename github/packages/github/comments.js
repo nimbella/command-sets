@@ -7,6 +7,7 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+
 async function Request(url, action, method, data, secrets) {
   if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
@@ -14,16 +15,13 @@ async function Request(url, action, method, data, secrets) {
     [token,] = secrets.github_token.split('@')
     headers.Authorization = `Bearer ${token}`;
   }
-  return (axios({
+  return axios({
     method: method,
     url,
     headers,
     data
-  }).then((res) => res).catch(
-    (err) => console.log(err)
-  ))
+  })
 }
-
 
 /**
  * @description 
@@ -55,9 +53,11 @@ async function command(params, commandText, secrets = {}) {
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
+  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -91,7 +91,6 @@ async function command(params, commandText, secrets = {}) {
     case 'delete':
       action = 'delete'
       method = 'DELETE'
-      lock = true
       if (!comment_id) return fail('*please specify comment id*')
       break;
     default:
@@ -105,7 +104,7 @@ async function command(params, commandText, secrets = {}) {
   const url = `${baseURL}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
   const res = await Request(url, action, method, data, secrets)
 
-  if (res) {
+  if (res && res.headers) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\nComment *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
@@ -118,7 +117,7 @@ async function command(params, commandText, secrets = {}) {
     }
     return success(action, header, res.data, secrets);
   }
-  return fail();
+  return fail(undefined, res);
 }
 
 const image = (source, alt) => ({
@@ -133,7 +132,7 @@ const mdText = (text) => ({
     // Convert markdown links to slack format.
     .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
     // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:\R(?!#(?!#)).*)*/g, '*$1*'),
+    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
 const section = (text) => ({
@@ -141,23 +140,37 @@ const section = (text) => ({
   text: mdText(text),
 });
 
-const fail = (msg) => {
+const fail = (msg, err) => {
+  let errMsg
+  if (err) errMsg = getErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || '*couldn\'t get action results*'}`)],
+    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
+};
+
+const getErrorMessage = (error) => {
+  console.error(error)
+  if (error.response && error.response.status === 403) {
+    return `:warning: *The api rate limit has been exhausted.*`
+  } else if (error.response && error.response.status && error.response.data) {
+    return `Error: ${error.response.status} ${error.response.data.message}`
+  } else {
+    return error.message
+  }
 };
 
 const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.id}>`),
-      mdText(`*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>`),
+      mdText(item.id?`<${item.html_url}|${item.id}>`:''),
+      mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
+      \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
     ],
   }
-  block.accessory = image(item.user.avatar_url, item.user.login)
+  if (item.user) block.accessory = image(item.user.avatar_url, item.user.login)
   response.blocks.push(block)
   if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
@@ -167,7 +180,7 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data, secrets) => {
+const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],

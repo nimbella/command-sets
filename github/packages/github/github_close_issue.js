@@ -9,6 +9,7 @@
  */
 
 
+
 async function _command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let { github_token: githubToken, github_repos: defaultRepo = '', github_host } = secrets;
@@ -76,6 +77,8 @@ async function _command(params, commandText, secrets = {}) {
     attachments: result
   };
 }
+
+const getRedirectURL = url =>  url.replace('api.', '').replace('/api/v3', '')
 
 const updateURL = (url) => {
   if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
