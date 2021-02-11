@@ -1,0 +1,32 @@
+commands:
+  auth:
+    description: Add, Remove and List Identity Providers, Specify which provider to use for how long.
+    parameters:
+      - name: action
+      - name: entity
+        optional: true
+    options:
+      - name: n
+        value: provider_name
+      - name: g
+        value: grant_type
+      - name: c
+        value: callback_url
+      - name: a
+        value: auth_url
+      - name: b
+        value: base_url
+      - name: t
+        value: access_token_url
+      - name: i
+        value: client_id
+      - name: s
+        value: client_secret
+      - name: p
+        value: scope
+      - name: d
+        value: duration
+  callback:
+    description: callback for oauth flow.
+    annotations:
+          provide-api-key: true
