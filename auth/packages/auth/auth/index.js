@@ -86,7 +86,7 @@ async function command(params, commandText, secrets = {}) {
     auth_url,
     access_token_url,
     base_url,
-    callback_url = 'https://apigcp.nimbella.io/api/v1/web/pslat20n-memkpwiprzv/auth/callback',
+    callback_url = `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth','/callback')}`,
     client_id,
     client_secret,
     scope = 'user:email,read:org',
@@ -111,7 +111,6 @@ async function command(params, commandText, secrets = {}) {
       if (!provider_name) return fail('*please specify provider name* e.g. -n twitter')
       if (!(auth_url || base_url)) return fail('*please specify auth_url or base_url* e.g. -b github.com')
       if (!(access_token_url || base_url)) return fail('*please specify access_token_url or base_url* e.g. -b github.com')
-      if (!callback_url) return fail('*please specify callback_url*')
       if (!client_id) return fail('*please specify client_id* e.g. -i xxxxx261xxxxx016xxxx')
       if (!client_secret) return fail('*please specify client_secret* e.g. -s xxxxx6edfdd975dxxxxx354680xxxxxb3b9xxxxx')
       if (!scope) return fail('*please specify scope*')
@@ -145,6 +144,8 @@ async function command(params, commandText, secrets = {}) {
     case 'g':
     case 'get':
       action = 'get'
+      if (!callback_url)
+      return success(undefined, `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth','/callback')}`, undefined);
       if (!provider_name) return fail('*please specify provider name* e.g. -n twitter')
       data = {
         provider_name,
@@ -328,12 +329,9 @@ const main = async (args) => {
   console.log(args);
   if (args.state && args.access_token) {
     const { webhook, response } = await saveToken(args.access_token, args.state)
-    console.log('webhook post:' + webhook);
-    console.log(response)
     return await postResult(webhook, response)
   }
   else {
-    console.log('webhook pre:' + args.params.__client.response_url);
     const _command = command(args.params, args.commandText, args.__secrets || {})
     return {
       body: await _command.catch((error) => ({

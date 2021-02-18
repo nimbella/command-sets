@@ -26,6 +26,8 @@ commands:
         value: scope
       - name: d
         value: duration
+    limits:
+        logs: 10        
   callback:
     description: callback for oauth flow.
     annotations:
