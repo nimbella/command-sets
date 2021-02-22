@@ -8,24 +8,24 @@ commands:
     options:
       - name: n
         value: provider_name
-      - name: g
-        value: grant_type
-      - name: c
-        value: callback_url
       - name: a
         value: auth_url
       - name: b
         value: base_url
-      - name: t
-        value: access_token_url
-      - name: i
-        value: client_id
-      - name: s
-        value: client_secret
-      - name: p
-        value: scope
+      - name: c
+        value: callback_url
       - name: d
         value: duration
+      - name: g
+        value: grant_type
+      - name: i
+        value: client_id
+      - name: p
+        value: scope
+      - name: s
+        value: client_secret
+      - name: t
+        value: access_token_url
     limits:
         logs: 10        
   callback:

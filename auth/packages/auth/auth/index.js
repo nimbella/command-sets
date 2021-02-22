@@ -11,7 +11,7 @@ const { encrypt, decrypt } = require('./encrypt')
 const https = require('https')
 const { URL } = require('url')
 const entities = ['provider']
-const actions = ['list', 'add', 'get', 'remove', 'use']
+const actions = ['list', 'add', 'get', 'remove', 'use', 'getcallback']
 const grants = ['Authorization Code', 'Client Credentials', 'Password Credentials', 'Implicit']
 const authLinkValidity = 30 // in seconds
 async function executer(action, data) {
@@ -86,7 +86,7 @@ async function command(params, commandText, secrets = {}) {
     auth_url,
     access_token_url,
     base_url,
-    callback_url = `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth','/callback')}`,
+    callback_url = `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth', '/callback')}`,
     client_id,
     client_secret,
     scope = 'user:email,read:org',
@@ -144,8 +144,6 @@ async function command(params, commandText, secrets = {}) {
     case 'g':
     case 'get':
       action = 'get'
-      if (!callback_url)
-      return success(undefined, `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth','/callback')}`, undefined);
       if (!provider_name) return fail('*please specify provider name* e.g. -n twitter')
       data = {
         provider_name,
@@ -172,8 +170,13 @@ async function command(params, commandText, secrets = {}) {
         user_id: params.__client.user_id,
       }
       break;
+    case 'gc':
+    case 'callback':
+    case 'getcallback':
+      action = 'getcallback'
+      return success(undefined, `https://apigcp.nimbella.io/api/v1/web/${process.env.__OW_ACTION_NAME.replace('/auth', '/callback')}`, undefined);
     default:
-      return fail(`*Invalid Action. Expected options:  'add', 'remove', 'use', 'list' *`)
+      return fail(`*Invalid Action. Expected options:  'add', 'remove', 'use', 'list','getcallback' *`)
   }
   const res = await executer(action, data)
   if (res) {
@@ -258,7 +261,7 @@ const extractURL = (url) => {
 }
 
 async function saveToken(access_token, state) {
-  let response='', webhook
+  let response = '', webhook
   const savedState = await kv.getAsync(state)
   console.log(savedState);
   if (savedState) {
