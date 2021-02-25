@@ -108,11 +108,7 @@ const success = (fields, client) => {
     body.fields.push(
       {
         type: 'mrkdwn',
-        text: `*${key}*`
-      },
-      {
-        type: 'mrkdwn',
-        text: `*${fields[key].split('\n')[0]}*`
+        text: `*${key}*: ${fields[key].split('\n')[0]}`
       }
     );
   });
