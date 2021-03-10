@@ -43,7 +43,7 @@ async function command(params, commandText, secrets = {}) {
       "secret":"",
       "url": "https://example.com/webhook"
     } ,
-    events= e ['push'],
+    events,
     add_events= [],
     remove_events =[],
     active = true,
@@ -68,7 +68,7 @@ async function command(params, commandText, secrets = {}) {
       data = {
         name,
         config,
-        events,
+        events: events ? events.split(',').map(a => a.trim()) : ['push'],
         active,
       }
       break;
