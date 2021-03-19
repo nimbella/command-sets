@@ -1,0 +1,9 @@
+{
+  "name": "GithubCommandSet",
+  "version": "1.0.0",
+  "description": "Nimbella Commander GitHub Command Set",
+  "main": "github.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -76,7 +76,19 @@ async function _command(params, commandText, secrets = {}) {
       }
     };
   };
-
+  if (params.version) {
+    const pjson = require('package.json');
+    return {
+      response_type: 'in_channel',
+      [client !== 'mattermost' ? 'blocks' : 'text']:
+        mui(
+          section(
+            `*${pjson.version}*`
+          ),
+          client
+        )
+    };
+  }
   const result = [
     mui(
       section(
