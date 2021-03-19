@@ -198,6 +198,18 @@ commands:
         value: milestone_number
       - name: h
         value: host
+  billing:
+    description: Manage Billing
+    parameters:
+      - name: action        
+  hooks:
+    description: Manage Hooks
+    parameters:
+      - name: action
+  pulls:
+    description: Manage Pulls
+    parameters:
+      - name: action            
   github:
     description: View GitHub command set documentation
     options:
