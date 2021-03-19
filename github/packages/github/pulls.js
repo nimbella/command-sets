@@ -9,7 +9,8 @@ const headers = {
 
 
 async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
+  // get, list for public repos do not need access token 
+  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -36,12 +37,12 @@ async function command(params, commandText, secrets = {}) {
     action,
     repository,
     pr_number = '',
-    issue='',
+    issue = '',
     title = '',
-    head='',
-    base='',
+    head = '',
+    base = '',
     body = '',
-    draft =false,
+    draft = false,
     maintainer_can_modify = false,
     assignees = '',
     milestone = '',
@@ -67,7 +68,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
-    case 'add':      
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -111,7 +112,7 @@ async function command(params, commandText, secrets = {}) {
     case 'list':
       action = 'list'
       listing = true
-      if (!['commits', 'files', 'reviews', 'comments','pulls'].includes(list_option))
+      if (!['commits', 'files', 'reviews', 'comments', 'pulls'].includes(list_option))
         return fail(`*expected list_option to be one of 'commits', 'files', 'reviews', 'comments','pulls'*`)
       if (list_option === 'org') {
         if (!org)
@@ -258,8 +259,6 @@ const success = async (action, header, data, secrets) => {
 };
 
 const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
   if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
   else { url = url.replace('<', '').replace('>', '') }
   if (!url.startsWith('http')) { url = 'https://' + url; }

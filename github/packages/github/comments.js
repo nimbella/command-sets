@@ -9,7 +9,8 @@ const headers = {
 
 
 async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
+  // get, list for public repos do not need access token 
+  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -165,7 +166,7 @@ const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(item.id?`<${item.html_url}|${item.id}>`:''),
+      mdText(item.id ? `<${item.html_url}|${item.id}>` : ''),
       mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
       \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
     ],

@@ -9,7 +9,8 @@ const headers = {
 
 
 async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
+  // get, list for public repos do not need access token 
+  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')

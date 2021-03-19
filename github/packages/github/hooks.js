@@ -9,7 +9,6 @@ const headers = {
 
 
 async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -33,19 +32,19 @@ async function Request(url, action, method, data, secrets) {
 async function command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let {
-    type="repos",
+    type = "repos",
     id,
-    name ='web',
+    name = 'web',
     repository,
-    config= {
+    config = {
       "content_type": "json",
       "insecure_ssl": "0",
-      "secret":"",
+      "secret": "",
       "url": "https://example.com/webhook"
-    } ,
+    },
     events,
-    add_events= [],
-    remove_events =[],
+    add_events = [],
+    remove_events = [],
     active = true,
   } = params;
   let method = 'GET'
@@ -60,7 +59,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
-    case 'add':      
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -99,7 +98,7 @@ async function command(params, commandText, secrets = {}) {
     case 'list':
       action = 'list'
       listing = true
-      if (!['commits', 'files', 'reviews', 'comments','pulls'].includes(list_option))
+      if (!['commits', 'files', 'reviews', 'comments', 'pulls'].includes(list_option))
         return fail(`*expected list_option to be one of 'commits', 'files', 'reviews', 'comments','pulls'*`)
       if (list_option === 'org') {
         if (!org)
@@ -137,7 +136,7 @@ async function command(params, commandText, secrets = {}) {
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/${type ==='repos' ? `repos/${repository}` : `orgs/${org}`}/hooks${id ? `/${id}` : ''}${ping ? `/ping` : ''}`
+  const url = `${baseURL}/${type === 'repos' ? `repos/${repository}` : `orgs/${org}`}/hooks${id ? `/${id}` : ''}${ping ? `/ping` : ''}`
   // /orgs/{org}/hooks
   console.log(url);
   const res = await Request(url, action, method, data, secrets)
@@ -247,8 +246,6 @@ const success = async (action, header, data, secrets) => {
 };
 
 const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
   if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
   else { url = url.replace('<', '').replace('>', '') }
   if (!url.startsWith('http')) { url = 'https://' + url; }
