@@ -10,7 +10,7 @@ const headers = {
 
 async function Request(url, action, method, data, secrets) {
   // get, list for public repos do not need access token 
-  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
+  if (!secrets.github_token && !['list', 'get', 'check'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -42,7 +42,7 @@ async function command(params, commandText, secrets = {}) {
     head = '',
     base = '',
     body = '',
-    draft = false,
+    draft: d,
     maintainer_can_modify = false,
     assignees = '',
     milestone = '',
@@ -55,10 +55,10 @@ async function command(params, commandText, secrets = {}) {
     page = 1,
     host
   } = params;
-  list_option =  list_option || 'pulls'
+  list_option = list_option || 'pulls'
   let method = 'GET'
   let data = {}
-  let lock = false
+  let merge = false
   let listing = false
   let list_path = ''
   const { github_repos, github_host } = secrets;
@@ -81,7 +81,7 @@ async function command(params, commandText, secrets = {}) {
         head,
         base,
         body,
-        draft,
+        draft: d,
         issue,
         maintainer_can_modify
       }
@@ -115,43 +115,34 @@ async function command(params, commandText, secrets = {}) {
       listing = true
       if (!['commits', 'files', 'reviews', 'comments', 'pulls'].includes(list_option))
         return fail(`*expected list_option to be one of 'commits', 'files', 'reviews', 'comments','pulls'*`)
-      if (list_option === 'org') {
-        if (!org)
-          return fail('*please specify org name*')
-        list_path = `/orgs/${org}`
-      }
-      if (list_option === 'user')
-        list_path = `/user`
-      if (list_option === 'repository')
+      if (list_option === 'pulls')
         listing = false
+      else
+        list_path = `/${list_option}`
       break;
     case 'ch':
     case 'check':
       action = 'check'
-      lock = true
       if (!repository) return fail('*please specify repository*')
       if (!pr_number) return fail('*please specify pr number*')
-      data = {
-        locked: true,
-      }
       break;
     case 'm':
     case 'merge':
       action = 'merge'
       method = 'PUT'
-      lock = true
+      merge = true
       if (!repository) return fail('*please specify repository*')
       if (!pr_number) return fail('*please specify a pr number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
+      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'check', 'merge' *`)
   }
   if (secrets.github_token) {
     [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/pulls${pr_number ? `/${pr_number}` : ''}${lock ? `/lock` : ''}`
+  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/pulls${pr_number ? `/${pr_number}` : ''}${merge ? `/merge` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
@@ -243,10 +234,6 @@ const success = async (action, header, data, secrets) => {
   };
   if (action === 'list')
     _list(data || [], response)
-  else if (action === 'lock')
-    response.blocks.push(section(`Pull Locked.`))
-  else if (action === 'unlock')
-    response.blocks.push(section(`Pull Unlocked.`))
   else
     _get(data, response)
 
