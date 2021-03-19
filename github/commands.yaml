@@ -214,4 +214,3 @@ commands:
     description: View GitHub command set documentation
     options:
       - name: v
-        value: version    
