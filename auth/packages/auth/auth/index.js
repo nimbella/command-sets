@@ -93,10 +93,6 @@ async function command(params, commandText, secrets = {}) {
     duration = 1 // in seconds
   } = params;
 
-  // const key = 'vOVH6pripNWjRRIqRodrdxchalwHzfr3'
-  // const e = encrypt('testEncrypt', key)
-  // console.log(decrypt(e, key))
-
   auth_url = extractURL(auth_url)
   access_token_url = extractURL(access_token_url)
   base_url = extractURL(base_url)

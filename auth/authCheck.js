@@ -1,4 +1,4 @@
-const nimbella = require('./oauth/node_modules/@nimbella/sdk')
+const nimbella = require('@nimbella/sdk')
 const kv = nimbella.redis()
 const baseUrl = 'https://github.com'
 const authorizePath = '/login/oauth/authorize'
