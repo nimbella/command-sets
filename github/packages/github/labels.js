@@ -43,7 +43,7 @@ async function command(params, commandText, secrets = {}) {
     color,
     description,
     labels = [],
-    list_option = 'repo',
+    list_option,
     milestone_number,
     since,
     sort = 'created',
@@ -52,6 +52,7 @@ async function command(params, commandText, secrets = {}) {
     page = 1,
     host
   } = params;
+  list_option =  list_option || 'repo'
   let method = 'GET'
   let data = {}
   let list_path, listing = false

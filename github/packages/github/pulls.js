@@ -48,13 +48,14 @@ async function command(params, commandText, secrets = {}) {
     milestone = '',
     labels = '',
     state = '',
-    list_option = 'pulls',
+    list_option,
     org = '',
     since = '',
     per_page = 50,
     page = 1,
     host
   } = params;
+  list_option =  list_option || 'pulls'
   let method = 'GET'
   let data = {}
   let lock = false

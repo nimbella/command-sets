@@ -44,14 +44,14 @@ async function command(params, commandText, secrets = {}) {
     labels = '',
     state = '',
     reason = '',
-    list_option = 'repository',
+    list_option,
     org = '',
     since = '',
     per_page = 50,
     page = 1,
     host
   } = params;
-  console.log(params);
+  list_option = list_option || 'repository'
   let method = 'GET'
   let data = {}
   let lock = false
@@ -65,7 +65,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
-    case 'add':      
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
