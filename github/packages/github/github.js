@@ -84,7 +84,7 @@ async function _command(params, commandText, secrets = {}) {
       [client !== 'mattermost' ? 'blocks' : 'text']:
         [mui(
           section(
-            `*${pjson.version}*`
+            `GitHub Command Set Version: *${pjson.version}*`
           ),
           client
         )]
