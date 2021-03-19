@@ -10,7 +10,7 @@ const headers = {
 
 async function Request(url, action, method, data, secrets) {
   // get, list for public repos do not need access token 
-  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
+  if (!secrets.github_token && !['list', 'get', 'check'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -36,25 +36,36 @@ async function command(params, commandText, secrets = {}) {
   let {
     action,
     repository,
-    issue_number = '',
-    comment_id = '',
-    body,
-    since,
-    sort = 'created',
-    direction = 'desc',
-    per_page = 100,
+    pr_number = '',
+    issue = '',
+    title = '',
+    head = '',
+    base = '',
+    body = '',
+    draft: d,
+    maintainer_can_modify = false,
+    assignees = '',
+    milestone = '',
+    labels = '',
+    state = '',
+    list_option,
+    org = '',
+    since = '',
+    per_page = 50,
     page = 1,
     host
   } = params;
+  list_option = list_option || 'pulls'
   let method = 'GET'
   let data = {}
-
+  let merge = false
+  let listing = false
+  let list_path = ''
   const { github_repos, github_host } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
   }
-  if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
@@ -62,10 +73,17 @@ async function command(params, commandText, secrets = {}) {
     case 'create':
       action = 'create'
       method = 'POST'
-      if (!body) return fail('*please enter comment*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (!repository) return fail('*please specify repository*')
+      if (!head) return fail('*please enter head branch*')
+      if (!base) return fail('*please enter base branch*')
       data = {
-        body
+        title,
+        head,
+        base,
+        body,
+        draft: d,
+        issue,
+        maintainer_can_modify
       }
       break;
     case 'u':
@@ -73,42 +91,65 @@ async function command(params, commandText, secrets = {}) {
     case 'update':
       action = 'update'
       method = 'PATCH'
-      if (!comment_id) return fail('*please specify comment id*')
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
       data = {
-        body
+        title,
+        body,
+        assignees: assignees ? assignees.split(',').map(a => a.trim()) : [],
+        milestone: milestone ? milestone : null,
+        labels: labels ? labels.split(',').map(l => l.trim()) : [],
+        state
       }
       break;
     case 'g':
     case 'get':
       action = 'get';
-      if (!comment_id) return fail('*please specify comment id*')
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
       break;
     case 'l':
     case 'ls':
     case 'list':
       action = 'list'
+      listing = true
+      if (!['commits', 'files', 'reviews', 'comments', 'pulls'].includes(list_option))
+        return fail(`*expected list_option to be one of 'commits', 'files', 'reviews', 'comments','pulls'*`)
+      if (list_option === 'pulls')
+        listing = false
+      else
+        list_path = `/${list_option}`
       break;
-    case 'd':
-    case 'delete':
-      action = 'delete'
-      method = 'DELETE'
-      if (!comment_id) return fail('*please specify comment id*')
+    case 'ch':
+    case 'check':
+      action = 'check'
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
+      break;
+    case 'm':
+    case 'merge':
+      action = 'merge'
+      method = 'PUT'
+      merge = true
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify a pr number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'add', 'update', 'delete', 'get', 'list' *`)
+      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'check', 'merge' *`)
   }
   if (secrets.github_token) {
     [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
+  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/pulls${pr_number ? `/${pr_number}` : ''}${merge ? `/merge` : ''}`
+  console.log(url);
   const res = await Request(url, action, method, data, secrets)
 
-  if (res && res.headers) {
+  if (res) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nComment *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
+    let header = `\nPull *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
     if (currReading < requestThreshold) {
       header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
     }
@@ -166,14 +207,19 @@ const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(item.id ? `<${item.html_url}|${item.id}>` : ''),
-      mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
-      \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
+      mdText(`<${item.html_url}|${item.number}> \n ${item.title} ${item.milestone ? `\n ${item.milestone.title}` : ''}
+      ${item.assignees.length > 0 ? `\n ${item.assignees.map(a => `<${a.html_url}|${a.login}>`).join()}` : ''} 
+      ${item.labels.length > 0 ? `\n ${item.labels.map(l => l.name).join()}` : ''} 
+      `),
+      mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)}
+      \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>
+      \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>
+      ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
     ],
   }
-  if (item.user) block.accessory = image(item.user.avatar_url, item.user.login)
+  if (item.assignee) block.accessory = image(item.assignee.avatar_url, item.assignee.login)
   response.blocks.push(block)
-  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
+  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/pulls/$1|#$1>`)));
 };
 
 const _list = (items, response) => (items).forEach((item) => {
@@ -181,15 +227,13 @@ const _list = (items, response) => (items).forEach((item) => {
 });
 
 
-const success = async (action, header, data) => {
+const success = async (action, header, data, secrets) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],
   };
   if (action === 'list')
     _list(data || [], response)
-  else if (action === 'unlock')
-    response.blocks.push(section(`Comment Deleted.`))
   else
     _get(data, response)
 

@@ -1,0 +1,7 @@
+packages:
+  - name: auth
+    actions:
+      - name: callback
+        annotations:
+          provide-api-key: true
+      - name: auth

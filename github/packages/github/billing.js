@@ -9,8 +9,6 @@ const headers = {
 
 
 async function Request(url, action, method, data, secrets) {
-  // get, list for public repos do not need access token 
-  if (!secrets.github_token && !['list', 'get'].includes(action)) { return fail('*please add github_token secret*') }
   if (secrets.github_token) {
     let token
     [token,] = secrets.github_token.split('@')
@@ -34,81 +32,57 @@ async function Request(url, action, method, data, secrets) {
 async function command(params, commandText, secrets = {}) {
   let tokenHost, baseURL = 'https://api.github.com'
   let {
-    action,
-    repository,
-    issue_number = '',
-    comment_id = '',
-    body,
-    since,
-    sort = 'created',
-    direction = 'desc',
-    per_page = 100,
-    page = 1,
+    entity = 'package',
+    type,
+    org,
+    user,
     host
   } = params;
+
   let method = 'GET'
   let data = {}
+  let list_path = ''
+  const { github_host } = secrets;
+  type = type || 'user'
 
-  const { github_repos, github_host } = secrets;
-  const default_repos = repository ? repository : github_repos;
-  if (default_repos) {
-    repository = default_repos.split(',').map(repo => repo.trim())[0];
-  }
-  if (!repository) return fail('*please specify repository*')
-  switch (action) {
-    case 'c':
-    case 'cr':
-    case 'add':
-    case 'create':
-      action = 'create'
-      method = 'POST'
-      if (!body) return fail('*please enter comment*')
-      if (!issue_number) return fail('*please specify an issue number*')
-      data = {
-        body
-      }
+  if (type === 'org' && !org) return fail('*please specify organization*')
+  if (type === 'user' && !user) return fail('*please specify user*')
+
+  if (!['org', 'user'].includes(type))
+    return fail(`*expected type to be one of 'org', 'user'*`)
+
+  switch (entity) {
+    case 'a':
+    case 'action':
+      entity = 'action';
+      list_path = 'actions'
       break;
-    case 'u':
-    case 'up':
-    case 'update':
-      action = 'update'
-      method = 'PATCH'
-      if (!comment_id) return fail('*please specify comment id*')
-      data = {
-        body
-      }
+    case 'p':
+    case 'package':
+      entity = 'package'
+      list_path = 'packages'
       break;
-    case 'g':
-    case 'get':
-      action = 'get';
-      if (!comment_id) return fail('*please specify comment id*')
-      break;
-    case 'l':
-    case 'ls':
-    case 'list':
-      action = 'list'
-      break;
-    case 'd':
-    case 'delete':
-      action = 'delete'
-      method = 'DELETE'
-      if (!comment_id) return fail('*please specify comment id*')
+    case 's':
+    case 'storage':
+      entity = 'storage'
+      list_path = 'shared-storage'
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'add', 'update', 'delete', 'get', 'list' *`)
+      return fail(`*Invalid Entity. Expected options: 'action', 'package', 'storage' *`)
   }
   if (secrets.github_token) {
     [, tokenHost] = secrets.github_token.split('@')
   }
   baseURL = host || tokenHost || github_host || baseURL
   baseURL = updateURL(baseURL)
-  const url = `${baseURL}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
-  const res = await Request(url, action, method, data, secrets)
+  const url = `${baseURL}/${type}s/${type === 'org' ? org : user}/settings/billing/${list_path}`
+  console.log(url);
+  const res = await Request(url, entity, method, data, secrets)
 
-  if (res && res.headers) {
+  if (res) {
     const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nComment *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
+    let header = `\nBilling *${entity.charAt(0).toUpperCase() + entity.substr(1)}* Request Result:`;
     if (currReading < requestThreshold) {
       header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
     }
@@ -116,7 +90,7 @@ async function command(params, commandText, secrets = {}) {
       header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
       return fail(header);
     }
-    return success(action, header, res.data, secrets);
+    return success(entity, header, res.data, secrets);
   }
   return fail(undefined, res);
 }
@@ -162,36 +136,55 @@ const getErrorMessage = (error) => {
   }
 };
 
-const _get = (item, response) => {
+const _actions = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(item.id ? `<${item.html_url}|${item.id}>` : ''),
-      mdText(`*Created:* ${item.created_at ? `<!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>` : '-'}
-      \n*Updated:* ${item.updated_at ? `<!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>` : '-'} `),
+      mdText(`*Total Minutes Used:* ${item.total_minutes_used}
+      \n*Total Paid Minutes Used:* ${item.total_paid_minutes_used}
+      \n*Included Minutes:* ${item.included_minutes}
+      \n*Minutes Used Breakdown:* _Ubuntu_ ${item.minutes_used_breakdown.UBUNTU}, _Mac_ ${item.minutes_used_breakdown.MACOS}, 
+      _Windows_ ${item.minutes_used_breakdown.WINDOWS}`),
     ],
   }
-  if (item.user) block.accessory = image(item.user.avatar_url, item.user.login)
   response.blocks.push(block)
-  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
 
-const _list = (items, response) => (items).forEach((item) => {
-  _get(item, response)
-});
+const _packages = (item, response) => {
+  const block = {
+    type: 'section',
+    fields: [
+      mdText(`*Total Gigabytes Bandwidth Used:* ${item.total_gigabytes_bandwidth_used}
+      \n*Total Paid Gigabytes Bandwidth Used:* ${item.total_paid_gigabytes_bandwidth_used}
+      \n*Included Gigabytes Bandwidth:* ${item.included_gigabytes_bandwidth}`),
+    ],
+  }
+  response.blocks.push(block)
+};
 
+const _storage = (item, response) => {
+  const block = {
+    type: 'section',
+    fields: [
+      mdText(`*Days Left In Billing Cycle:* ${item.days_left_in_billing_cycle}
+      \n*Estimated Paid Storage For Month:* ${item.estimated_paid_storage_for_month}
+      \n*Estimated Storage For Month:* ${item.estimated_storage_for_month}`),
+    ],
+  }
+  response.blocks.push(block)
+};
 
-const success = async (action, header, data) => {
+const success = async (entity, header, data, secrets) => {
   const response = {
     response_type: 'in_channel',
     blocks: [section(header)],
   };
-  if (action === 'list')
-    _list(data || [], response)
-  else if (action === 'unlock')
-    response.blocks.push(section(`Comment Deleted.`))
+  if (entity === 'package')
+    _packages(data || [], response)
+  else if (entity === 'storage')
+    _storage(data || [], response)
   else
-    _get(data, response)
+    _actions(data, response)
 
   response.blocks.push({
     type: 'context',

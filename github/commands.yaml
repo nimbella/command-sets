@@ -81,7 +81,7 @@ commands:
         optional: true
     options:
       - name: q
-        value: query        
+        value: query
       - name: r
         value: repositories
       - name: l
@@ -119,11 +119,11 @@ commands:
       - name: c
         value: comment_id
       - name: b
-        value: body        
+        value: body
       - name: h
         value: host
   issues:
-    description: Manage Issues and PRs
+    description: Manage Issues
     parameters:
       - name: action
         optional: true
@@ -198,5 +198,58 @@ commands:
         value: milestone_number
       - name: h
         value: host
+  billing:
+    description: See Billing Details
+    parameters:
+      - name: entity
+    options:
+      - name: t
+        value: type
+      - name: o
+        value: org
+      - name: u
+        value: user
+      - name: h
+        value: host
+  hooks:
+    description: Manage Hooks
+    parameters:
+      - name: action
+  pulls:
+    description: Manage Pulls
+    parameters:
+      - name: action
+    options:
+      - name: r
+        value: repository
+      - name: p
+        value: pr_number
+      - name: i
+        value: issue
+      - name: a
+        value: assignees
+      - name: t
+        value: title
+      - name: b
+        value: body
+      - name: head
+        value: head
+      - name: base
+        value: base
+      - name: l
+        value: labels
+      - name: s
+        value: state
+      - name: reason
+        value: reason
+      - name: list_option
+        value: list_option
+      - name: o
+        value: org
+      - name: h
+        value: host
+      - name: d
   github:
     description: View GitHub command set documentation
+    options:
+      - name: v
