@@ -2,5 +2,4 @@ commands:
   weather:
     description: weather conditions for a city
     parameters:
-      - name: city
-        optional: false
+      - name: ...
