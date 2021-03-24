@@ -6,7 +6,7 @@ const fail = (msg) => {
   console.log(msg);
   return {
     response_type: 'in_channel',
-    text: 'Couldn\'t get the weather conditions.',
+    text: msg || 'Couldn\'t get the weather conditions.',
   };
 };
 
@@ -87,12 +87,16 @@ const success = (data) => {
 
 async function _command(params, commandText, secrets = {}) {
   let response;
+  const { varArgs: city } = params
+  if (!city) return fail('Please specify city name');
   try {
-    response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${params.city}&appid=fbbf85ca2d738ae130d6c070c7df7bb7`);
+    response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURI(city)}&appid=fbbf85ca2d738ae130d6c070c7df7bb7`);
     if (response.status !== 200) {
       return fail(response.status);
     }
   } catch (err) {
+    if (err.response && err.response.status === 404)
+      return fail();
     return fail(err.message);
   }
   if (!response) return fail();
