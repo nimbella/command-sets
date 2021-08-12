@@ -10,20 +10,16 @@
 
 
 
-async function _command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
-  let {github_token: githubToken, github_repos: defaultRepo = '', github_host} = secrets;
-  if (!githubToken) {
+async function _command(params, commandText, secrets = {}, token = null) {
+  let baseURL = 'https://api.github.com'
+  let {github_repos: defaultRepo = '', github_host} = secrets;
+  if (!token) {
     return {
       response_type: 'ephemeral',
       text:
-        'Missing GitHub Personal Access Token! Create a secret named `github_token` with your personal access token.'
+        '*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*'
     };
   }
-  if (secrets.github_token) {
-    [githubToken, tokenHost] = secrets.github_token.split('@')
-  }
-
   // Extract the first repository.
   defaultRepo = defaultRepo.split(',').map(repo => repo.trim())[0];
 
@@ -39,7 +35,7 @@ async function _command(params, commandText, secrets = {}) {
   }
 
   try {
-    baseURL = host || tokenHost || github_host || baseURL
+    baseURL = host || github_host || baseURL
     baseURL = updateURL(baseURL)
     const url = `${baseURL}/repos/${repo}/issues/${issueNumber}`;
 
@@ -52,7 +48,7 @@ async function _command(params, commandText, secrets = {}) {
       method: 'GET',
       url: url,
       headers: {
-        Authorization: `Bearer ${githubToken}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -69,7 +65,7 @@ async function _command(params, commandText, secrets = {}) {
         ]
       },
       headers: {
-        Authorization: `Bearer ${githubToken}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -135,7 +131,8 @@ const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
-    args.__secrets || {}
+    args.__secrets || {},
+    args.token || null
   ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`

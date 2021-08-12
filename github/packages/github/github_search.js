@@ -8,11 +8,8 @@ const headers = {
 };
 
 
-async function getRequest(url, secrets) {
-  console.log(url);
-  if (secrets.github_token) {
-    let token
-    [token,] = secrets.github_token.split('@')
+async function getRequest(url, token) {
+  if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
   return axios({
@@ -30,8 +27,8 @@ async function getRequest(url, secrets) {
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
+async function command(params, commandText, secrets = {}, token = null) {
+  let baseURL = 'https://api.github.com'
   let {
     entity,
     keywords = '',
@@ -119,16 +116,13 @@ async function command(params, commandText, secrets = {}) {
       if (!keywords) return fail('*please specify a keyword*')
       break;
   }
-  if (secrets.github_token) {
-    [, tokenHost] = secrets.github_token.split('@')
-  }
-  baseURL = host || tokenHost || github_host || baseURL
+  baseURL = host || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/search/${entity}?q=${keywords}+${query}+${repositories || ''}${language ? `+language:${language}` : ''}+${sort}&page=${pageNumber}&per_page=${pageSize ? pageSize : adjustedPageSize}`;
-  const res = await getRequest(url, secrets);
+  const res = await getRequest(url, token);
 
   if (res && res.data) {
-    const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
+    const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\n\n*${displayEntity}:* ${keywords ? ` with keyword(s) _*${keywords}*_` : ''} ${displayQuery ? `matching query _*${displayQuery}*_` : ''} found *${res.data.total_count}* result(s). ${res.data.total_count > 10 ? 'Use `-n` flag to get next set of results' : ''}`;
     if (currReading < requestThreshold) {
@@ -305,7 +299,7 @@ const updateURL = (url) => {
 }
 
 const main = async (args) => ({
-  body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),

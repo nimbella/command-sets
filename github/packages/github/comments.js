@@ -8,11 +8,9 @@ const headers = {
 };
 
 
-async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
-  if (secrets.github_token) {
-    let token
-    [token,] = secrets.github_token.split('@')
+async function Request(url, action, method, data, token) {
+  if (!token && (action !== 'list' || action !== 'get')) { return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | add github as oauth provider>*') }
+  if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
   return axios({
@@ -30,8 +28,8 @@ async function Request(url, action, method, data, secrets) {
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
+async function command(params, commandText, secrets = {}, token = null) {
+  let baseURL = 'https://api.github.com'
   let {
     action,
     repository,
@@ -96,16 +94,13 @@ async function command(params, commandText, secrets = {}) {
     default:
       return fail(`*Invalid Action. Expected options: 'add', 'update', 'delete', 'get', 'list' *`)
   }
-  if (secrets.github_token) {
-    [, tokenHost] = secrets.github_token.split('@')
-  }
-  baseURL = host || tokenHost || github_host || baseURL
+  baseURL = host || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
-  const res = await Request(url, action, method, data, secrets)
+  const res = await Request(url, action, method, data, token)
 
   if (res && res.headers) {
-    const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
+    const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\nComment *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
     if (currReading < requestThreshold) {
@@ -210,7 +205,7 @@ const updateURL = (url) => {
 }
 
 const main = async (args) => ({
-  body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
