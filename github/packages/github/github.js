@@ -203,7 +203,7 @@ async function _command(params, commandText, secrets = {}) {
         elements: [
           {
             type: 'mrkdwn',
-            text: '❓Get help on these commands with `/nc github`'
+            text: '❓Get help on these commands with `/nc github`. See installed version with `/nc github -v`'
           }
         ]
       },
