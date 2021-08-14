@@ -9,7 +9,9 @@ const headers = {
 
 
 async function Request(url, action, method, data, token) {
-  if (!token && (action !== 'list' || action !== 'get')) { return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*') }
+  if (!token && !['list', 'get'].includes(action)) {
+    return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*')
+  }
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -41,19 +43,23 @@ async function command(params, commandText, secrets = {}, token = null) {
     labels = '',
     state = '',
     reason = '',
-    list_option = 'repository',
+    list_option,
     org = '',
     since = '',
     per_page = 50,
     page = 1,
     host
   } = params;
+  list_option = list_option || 'repository'
   let method = 'GET'
   let data = {}
   let lock = false
   let listing = false
   let list_path = ''
-  const { github_repos, github_host } = secrets;
+  const {
+    github_repos,
+    github_host
+  } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
@@ -61,7 +67,7 @@ async function command(params, commandText, secrets = {}, token = null) {
   switch (action) {
     case 'c':
     case 'cr':
-    case 'add':      
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -147,15 +153,18 @@ async function command(params, commandText, secrets = {}, token = null) {
 
   if (res) {
     const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
-    const currReading = parseInt(res.headers['x-ratelimit-remaining']);
     let header = `\nIssue *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (currReading < requestThreshold) {
-      header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
+    if (res.headers) {
+      const currReading = parseInt(res.headers['x-ratelimit-remaining']);
+      if (currReading < requestThreshold) {
+        header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
+      }
+      if (currReading === 0) {
+        header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
+        return fail(header);
+      }
     }
-    if (currReading === 0) {
-      header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
-      return fail(header);
-    }
+
     return success(action, header, res.data, secrets);
   }
   return fail(undefined, res);
@@ -250,12 +259,17 @@ const success = async (action, header, data, secrets) => {
 };
 
 const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3'; }
+  if (url.includes('|')) {
+    url = (url.split('|')[1] || '').replace('>', '')
+  } else {
+    url = url.replace('<', '').replace('>', '')
+  }
+  if (!url.startsWith('http')) {
+    url = 'https://' + url;
+  }
+  if (!url.includes('api')) {
+    url += '/api/v3';
+  }
   return url
 }
 

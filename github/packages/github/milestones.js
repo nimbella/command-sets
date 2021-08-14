@@ -9,7 +9,7 @@ const headers = {
 
 
 async function Request(url, action, method, data, token) {
-  if (!token && (action !== 'list' || action !== 'get')) { return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*') }
+  if (!token && !['list', 'get'].includes(action)) { return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*') }
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
