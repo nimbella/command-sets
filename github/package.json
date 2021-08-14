@@ -1,0 +1,7 @@
+{
+    "name": "github",
+    "version": "1.0.0",
+    "description": "Nimbella Commander GitHub Command Set",
+    "main": "packages/github/github.js",
+    "license": "Apache-2.0"
+}

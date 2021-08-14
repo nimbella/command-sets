@@ -77,6 +77,20 @@ async function _command(params, commandText, secrets = {}) {
     };
   };
 
+  if (params.v) {
+    const pjson = require('../../package.json');
+    return {
+      response_type: 'in_channel',
+      [client !== 'mattermost' ? 'blocks' : 'text']:
+        [mui(
+          section(
+            `GitHub Command Set Version: *${pjson.version}*`
+          ),
+          client
+        )]
+    };
+  }
+
   const result = [
     mui(
       section(
@@ -189,7 +203,7 @@ async function _command(params, commandText, secrets = {}) {
         elements: [
           {
             type: 'mrkdwn',
-            text: '❓Get help on these commands with `/nc github`'
+            text: '❓Get help on these commands with `/nc github`. See installed version with `/nc github -v`'
           }
         ]
       },
