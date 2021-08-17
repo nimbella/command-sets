@@ -2,10 +2,16 @@
 // jshint esversion: 9
 
 import {
-  UpdateURL,
+  GetHeader,
+  GetFooter,
+  GetRepository,
+  GetBaseUrl,
+  Fail,
   Request,
-  GetErrorMessage
-} from 'util'
+  Image,
+  Text,
+  Section
+} from './common'
 
 /**
  * @description 
@@ -15,7 +21,6 @@ import {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function command(params, commandText, secrets = {}, token = null) {
-  let baseURL = 'https://api.github.com'
   let {
     action,
     repository,
@@ -29,19 +34,16 @@ async function command(params, commandText, secrets = {}, token = null) {
   let assignee = ''
   let data = {}
 
-  const { github_repos, github_host } = secrets;
-  const default_repos = repository ? repository : github_repos;
-  if (default_repos) {
-    repository = default_repos.split(',').map(repo => repo.trim())[0];
-  }
-  if (!repository) return fail('*please specify repository*')
+  repository = GetRepository(secrets.github_repos, repository)
+  if (!repository) return Fail('*please specify repository*')
+
   switch (action) {
     case 'a':
     case 'add':
       action = 'add'
       method = 'POST'
-      if (assignees.length === 0) return fail('*please specify assignee*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (assignees.length === 0) return Fail('*please specify assignee*')
+      if (!issue_number) return Fail('*please specify an issue number*')
 
       data = {
         assignees: assignees.split(',').map(a => a.trim())
@@ -51,8 +53,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'remove':
       action = 'remove'
       method = 'DELETE'
-      if (assignees.length === 0) return fail('*please specify assignee*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (assignees.length === 0) return Fail('*please specify assignee*')
+      if (!issue_number) return Fail('*please specify an issue number*')
       data = {
         assignees: assignees.split(',').map(a => a.trim())
       }
@@ -60,7 +62,7 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'c':
     case 'check':
       action = 'check'
-      if (assignees.length === 0) return fail('*please specify assignee*')
+      if (assignees.length === 0) return Fail('*please specify assignee*')
       assignee = assignees.split(',').map(a => a.trim())[0]
       break;
     case 'l':
@@ -69,65 +71,28 @@ async function command(params, commandText, secrets = {}, token = null) {
       action = 'list'
       break;
     default:
-      return fail(`*Invalid Action. Expected options:  'add', 'remove', 'check', 'list' *`)
+      return Fail(`*Invalid Action. Expected options:  'add', 'remove', 'check', 'list' *`)
   }
-  baseURL = host || github_host || baseURL
-  baseURL = UpdateURL(baseURL)
-  const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/assignees${assignee ? `/${assignee}` : ''}`
+
+  const url = `${GetBaseUrl(host, secrets.github_host)}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/assignees${assignee ? `/${assignee}` : ''}`
   const res = await Request(url, action, method, data, token)
-
-  if (res && res.headers) {
-    const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
-    const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nAssignee *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (currReading < requestThreshold) {
-      header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
-    }
-    if (currReading === 0) {
-      header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
-      return fail(header);
-    }
-    return success(action, header, res.data, secrets);
+  const { header, currReading } = GetHeader(res, token)
+  if (currReading === 0) {
+    return Fail(header);
   }
-  return fail(undefined, res);
+  return success(action, header, res.data, secrets);
 }
-
-const image = (source, alt) => ({
-  type: 'image',
-  image_url: source,
-  alt_text: alt,
-});
-
-const mdText = (text) => ({
-  type: 'mrkdwn',
-  text: text
-});
-
-const section = (text) => ({
-  type: 'section',
-  text: mdText(text),
-});
-
-const fail = (msg, err) => {
-  let errMsg
-  if (err) errMsg = GetErrorMessage(err)
-  const response = {
-    response_type: 'in_channel',
-    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
-  };
-  return response
-};
 
 const _assignee = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.login}>`)
+      Text(`<${item.html_url}|${item.login}>`)
     ],
-    accessory: image(item.avatar_url, item.login)
+    accessory: Image(item.avatar_url, item.login)
   }
   response.blocks.push(block)
-  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
+  if (item.body) response.blocks.push(Section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
 
 const _assignees = (items, response) => (items).forEach((item) => {
@@ -138,23 +103,23 @@ const _get = (item, response) => {
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.number}> \n ${item.title} ${item.milestone ? `\n ${item.milestone.title}` : ''}
+      Text(`<${item.html_url}|${item.number}> \n ${item.title} ${item.milestone ? `\n ${item.milestone.title}` : ''}
       ${item.assignees.length > 0 ? `\n ${item.assignees.map(a => `<${a.html_url}|${a.login}>`).join()}` : ''} 
       ${item.labels.length > 0 ? `\n ${item.labels.map(l => l.name).join()}` : ''} 
       `),
-      mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
+      Text(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
     ],
   }
-  if (item.assignee) block.accessory = image(item.assignee.avatar_url, item.assignee.login)
+  if (item.assignee) block.accessory = Image(item.assignee.avatar_url, item.assignee.login)
   response.blocks.push(block)
-  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
+  if (item.body) response.blocks.push(Section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
 
 
 const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [section(header)],
+    blocks: [Section(header)],
   };
   if (action === 'list')
     _assignees(data || [], response)
@@ -163,13 +128,8 @@ const success = async (action, header, data) => {
   else if (action === 'remove')
     _get(data || [], response)
   else if (action === 'check')
-    response.blocks.push(section(`Can be assigned`))
-  response.blocks.push({
-    type: 'context',
-    elements: [
-      mdText('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
-    ],
-  });
+    response.blocks.push(Section(`Can be assigned`))
+  response.blocks.push(GetFooter());
   return response
 };
 

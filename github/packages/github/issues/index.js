@@ -1,10 +1,16 @@
 // jshint esversion: 9
 
 import {
-  UpdateURL,
+  GetHeader,
+  GetFooter,
+  GetRepository,
+  GetBaseUrl,
+  Fail,
   Request,
-  GetErrorMessage
-} from 'util'
+  Image,
+  Text,
+  Section
+} from './common'
 
 /**
  * @description 
@@ -14,7 +20,6 @@ import {
  * @return {Promise<SlackBodyType>} Response body
  */
 async function command(params, commandText, secrets = {}, token = null) {
-  let baseURL = 'https://api.github.com'
   let {
     action,
     repository,
@@ -39,14 +44,7 @@ async function command(params, commandText, secrets = {}, token = null) {
   let lock = false
   let listing = false
   let list_path = ''
-  const {
-    github_repos,
-    github_host
-  } = secrets;
-  const default_repos = repository ? repository : github_repos;
-  if (default_repos) {
-    repository = default_repos.split(',').map(repo => repo.trim())[0];
-  }
+  repository = GetRepository(secrets.github_repos, repository)
   switch (action) {
     case 'c':
     case 'cr':
@@ -54,8 +52,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'create':
       action = 'create'
       method = 'POST'
-      if (!repository) return fail('*please specify repository*')
-      if (!title) return fail('*please enter issue title*')
+      if (!repository) return Fail('*please specify repository*')
+      if (!title) return Fail('*please enter issue title*')
       data = {
         title,
         body,
@@ -69,8 +67,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'update':
       action = 'update'
       method = 'PATCH'
-      if (!repository) return fail('*please specify repository*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (!repository) return Fail('*please specify repository*')
+      if (!issue_number) return Fail('*please specify an issue number*')
       data = {
         title,
         body,
@@ -83,8 +81,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'g':
     case 'get':
       action = 'get';
-      if (!repository) return fail('*please specify repository*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (!repository) return Fail('*please specify repository*')
+      if (!issue_number) return Fail('*please specify an issue number*')
       break;
     case 'l':
     case 'ls':
@@ -92,10 +90,10 @@ async function command(params, commandText, secrets = {}, token = null) {
       action = 'list'
       listing = true
       if (!['repository', 'org', 'user', 'all'].includes(list_option))
-        return fail(`*expected list_option to be one of 'repository', 'org', 'user', 'all'*`)
+        return Fail(`*expected list_option to be one of 'repository', 'org', 'user', 'all'*`)
       if (list_option === 'org') {
         if (!org)
-          return fail('*please specify org name*')
+          return Fail('*please specify org name*')
         list_path = `/orgs/${org}`
       }
       if (list_option === 'user')
@@ -108,10 +106,10 @@ async function command(params, commandText, secrets = {}, token = null) {
       action = 'lock'
       method = 'PUT'
       lock = true
-      if (!repository) return fail('*please specify repository*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (!repository) return Fail('*please specify repository*')
+      if (!issue_number) return Fail('*please specify an issue number*')
       if (!['', undefined, 'off-topic', 'too heated', 'resolved', 'spam'].includes(reason))
-        return fail(`*expected reason to be one of  'off-topic','too heated', 'resolved', 'spam'*`)
+        return Fail(`*expected reason to be one of  'off-topic','too heated', 'resolved', 'spam'*`)
       data = {
         locked: true,
         active_lock_reason: reason || 'resolved'
@@ -122,85 +120,41 @@ async function command(params, commandText, secrets = {}, token = null) {
       action = 'unlock'
       method = 'DELETE'
       lock = true
-      if (!repository) return fail('*please specify repository*')
-      if (!issue_number) return fail('*please specify an issue number*')
+      if (!repository) return Fail('*please specify repository*')
+      if (!issue_number) return Fail('*please specify an issue number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
+      return Fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
-  baseURL = host || github_host || baseURL
-  baseURL = UpdateURL(baseURL)
-  const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host)}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
-  if (res) {
-    const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
-    let header = `\nIssue *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (res.headers) {
-      const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-      if (currReading < requestThreshold) {
-        header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
-      }
-      if (currReading === 0) {
-        header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
-        return fail(header);
-      }
-    }
-
-    return success(action, header, res.data, secrets);
+  const { header, currReading } = GetHeader(res, token)
+  if (currReading === 0) {
+    return Fail(header);
   }
-  return fail(undefined, res);
+  return success(action, header, res.data, secrets);
 }
-
-const image = (source, alt) => ({
-  type: 'image',
-  image_url: source,
-  alt_text: alt,
-});
-
-const mdText = (text) => ({
-  type: 'mrkdwn',
-  text: text
-    // Convert markdown links to slack format.
-    .replace(/!*\[(.*)\]\((.*)\)/g, '<$2|$1>')
-    // Replace markdown headings with slack bold
-    .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
-});
-
-const section = (text) => ({
-  type: 'section',
-  text: mdText(text),
-});
-
-const fail = (msg, err) => {
-  let errMsg
-  if (err) errMsg = GetErrorMessage(err)
-  const response = {
-    response_type: 'in_channel',
-    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
-  };
-  return response
-};
-
+ 
 const _get = (item, response) => {
   console.log(item)
   const block = {
     type: 'section',
     fields: [
-      mdText(`<${item.html_url}|${item.number}> \n ${item.title} ${item.milestone ? `\n ${item.milestone.title}` : ''}
+      Text(`<${item.html_url}|${item.number}> \n ${item.title} ${item.milestone ? `\n ${item.milestone.title}` : ''}
       ${item.assignees.length > 0 ? `\n ${item.assignees.map(a => `<${a.html_url}|${a.login}>`).join()}` : ''} 
       ${item.labels.length > 0 ? `\n ${item.labels.map(l => l.name).join()}` : ''} 
       `),
-      mdText(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)}
+      Text(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)}
       \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}>
       \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>
       ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
     ],
   }
-  if (item.assignee) block.accessory = image(item.assignee.avatar_url, item.assignee.login)
+  if (item.assignee) block.accessory = Image(item.assignee.avatar_url, item.assignee.login)
   response.blocks.push(block)
-  if (item.body) response.blocks.push(section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
+  if (item.body) response.blocks.push(Section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
 };
 
 const _list = (items, response) => (items).forEach((item) => {
@@ -210,23 +164,18 @@ const _list = (items, response) => (items).forEach((item) => {
 const success = async (action, header, data, secrets) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [section(header)],
+    blocks: [Section(header)],
   };
   if (action === 'list')
     _list(data || [], response)
   else if (action === 'lock')
-    response.blocks.push(section(`Issue Locked.`))
+    response.blocks.push(Section(`Issue Locked.`))
   else if (action === 'unlock')
-    response.blocks.push(section(`Issue Unlocked.`))
+    response.blocks.push(Section(`Issue Unlocked.`))
   else
     _get(data, response)
 
-  response.blocks.push({
-    type: 'context',
-    elements: [
-      mdText('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
-    ],
-  });
+  response.blocks.push(GetFooter());
   return response
 };
 
