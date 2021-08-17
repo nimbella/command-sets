@@ -1,27 +1,11 @@
 /* eslint-disable camelcase */
 // jshint esversion: 9
 
-const axios = require('axios');
-
-const requestThreshold = 3
-const headers = {
-  'Content-Type': 'application/json',
-};
-
-
-async function Request(url, action, method, data, token) {
-  if (!token && !['list', 'get'].includes(action)) { return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*') }
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  return axios({
-    method: method,
-    url,
-    headers,
-    data
-  })
-}
-
+import {
+  UpdateURL,
+  Request,
+  GetErrorMessage
+} from 'util'
 
 /**
  * @description 
@@ -88,7 +72,7 @@ async function command(params, commandText, secrets = {}, token = null) {
       return fail(`*Invalid Action. Expected options:  'add', 'remove', 'check', 'list' *`)
   }
   baseURL = host || github_host || baseURL
-  baseURL = updateURL(baseURL)
+  baseURL = UpdateURL(baseURL)
   const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/assignees${assignee ? `/${assignee}` : ''}`
   const res = await Request(url, action, method, data, token)
 
@@ -126,24 +110,13 @@ const section = (text) => ({
 
 const fail = (msg, err) => {
   let errMsg
-  if (err) errMsg = getErrorMessage(err)
+  if (err) errMsg = GetErrorMessage(err)
   const response = {
     response_type: 'in_channel',
     blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
 };
-
-const getErrorMessage = (error) => {
-  console.error(error)
-  if (error.response && error.response.status === 403) {
-    return `:warning: *The api rate limit has been exhausted.*`
-  } else if (error.response && error.response.status && error.response.data) {
-    return `Error: ${error.response.status} ${error.response.data.message}`
-  } else {
-    return error.message
-  }
-}
 
 const _assignee = (item, response) => {
   const block = {
@@ -200,13 +173,7 @@ const success = async (action, header, data) => {
   return response
 };
 
-const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3'; }
-  return url
-}
+
 
 const main = async (args) => ({
   body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
