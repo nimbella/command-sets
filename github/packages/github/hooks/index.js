@@ -23,27 +23,23 @@ import {
  */
 async function command(params, commandText, secrets = {}, token = null) {
   let {
-    action,
+    type = "repos",
+    id,
+    name = 'web',
     repository,
-    issue_number = '',
-    title = '',
-    body = '',
-    assignees = '',
-    milestone = '',
-    labels = '',
-    state = '',
-    reason = '',
-    list_option,
-    org = '',
-    since = '',
-    per_page = 50,
-    page = 1,
-    host
+    config = {
+      "content_type": "json",
+      "insecure_ssl": "0",
+      "secret": "",
+      "url": "https://example.com/webhook"
+    },
+    events,
+    add_events = [],
+    remove_events = [],
+    active = true,
   } = params;
-  list_option = list_option || 'repository'
   let method = 'GET'
   let data = {}
-  let lock = false
   let listing = false
   let list_path = ''
   repository = GetRepository(secrets.github_repos, repository)
@@ -54,14 +50,12 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'create':
       action = 'create'
       method = 'POST'
-      if (!repository) return Fail('*please specify repository*')
-      if (!title) return Fail('*please enter issue title*')
+      if (!name) return fail('*please specify a name*')
       data = {
-        title,
-        body,
-        assignees: assignees ? assignees.split(',').map(a => a.trim()) : [],
-        milestone: milestone ? milestone : null,
-        labels: labels ? labels.split(',').map(l => l.trim()) : []
+        name,
+        config,
+        events: events ? events.split(',').map(a => a.trim()) : ['push'],
+        active,
       }
       break;
     case 'u':
@@ -69,8 +63,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'update':
       action = 'update'
       method = 'PATCH'
-      if (!repository) return Fail('*please specify repository*')
-      if (!issue_number) return Fail('*please specify an issue number*')
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
       data = {
         title,
         body,
@@ -83,19 +77,19 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'g':
     case 'get':
       action = 'get';
-      if (!repository) return Fail('*please specify repository*')
-      if (!issue_number) return Fail('*please specify an issue number*')
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
       break;
     case 'l':
     case 'ls':
     case 'list':
       action = 'list'
       listing = true
-      if (!['repository', 'org', 'user', 'all'].includes(list_option))
-        return Fail(`*expected list_option to be one of 'repository', 'org', 'user', 'all'*`)
+      if (!['commits', 'files', 'reviews', 'comments', 'pulls'].includes(list_option))
+        return fail(`*expected list_option to be one of 'commits', 'files', 'reviews', 'comments','pulls'*`)
       if (list_option === 'org') {
         if (!org)
-          return Fail('*please specify org name*')
+          return fail('*please specify org name*')
         list_path = `/orgs/${org}`
       }
       if (list_option === 'user')
@@ -103,32 +97,29 @@ async function command(params, commandText, secrets = {}, token = null) {
       if (list_option === 'repository')
         listing = false
       break;
-    case 'lc':
-    case 'lock':
-      action = 'lock'
-      method = 'PUT'
+    case 'ch':
+    case 'check':
+      action = 'check'
       lock = true
-      if (!repository) return Fail('*please specify repository*')
-      if (!issue_number) return Fail('*please specify an issue number*')
-      if (!['', undefined, 'off-topic', 'too heated', 'resolved', 'spam'].includes(reason))
-        return Fail(`*expected reason to be one of  'off-topic','too heated', 'resolved', 'spam'*`)
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify pr number*')
       data = {
         locked: true,
-        active_lock_reason: reason || 'resolved'
       }
       break;
-    case 'ul':
-    case 'unlock':
-      action = 'unlock'
-      method = 'DELETE'
+    case 'm':
+    case 'merge':
+      action = 'merge'
+      method = 'PUT'
       lock = true
-      if (!repository) return Fail('*please specify repository*')
-      if (!issue_number) return Fail('*please specify an issue number*')
+      if (!repository) return fail('*please specify repository*')
+      if (!pr_number) return fail('*please specify a pr number*')
       break;
     default:
-      return Fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
+      return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
-  const url = `${GetBaseUrl(host, secrets.github_host)}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
+
+  const url = `${GetBaseUrl(host, secrets.github_host)}/${type === 'repos' ? `repos/${repository}` : `orgs/${org}`}/hooks${id ? `/${id}` : ''}${ping ? `/ping` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
@@ -138,9 +129,8 @@ async function command(params, commandText, secrets = {}, token = null) {
   }
   return success(action, header, res.data, secrets);
 }
- 
+
 const _get = (item, response) => {
-  console.log(item)
   const block = {
     type: 'section',
     fields: [
@@ -156,7 +146,7 @@ const _get = (item, response) => {
   }
   if (item.assignee) block.accessory = Image(item.assignee.avatar_url, item.assignee.login)
   response.blocks.push(block)
-  if (item.body) response.blocks.push(Section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/issues/$1|#$1>`)));
+  if (item.body) response.blocks.push(Section(`${item.body.length > 500 ? item.body.substr(0, 500) + '...' : item.body}`.replace(/#(\d+)/g, `<${item.html_url.split('/').splice(0, 5).join('/')}/pulls/$1|#$1>`)));
 };
 
 const _list = (items, response) => (items).forEach((item) => {
@@ -171,9 +161,9 @@ const success = async (action, header, data, secrets) => {
   if (action === 'list')
     _list(data || [], response)
   else if (action === 'lock')
-    response.blocks.push(Section(`Issue Locked.`))
+    response.blocks.push(Section(`Pull Locked.`))
   else if (action === 'unlock')
-    response.blocks.push(Section(`Issue Unlocked.`))
+    response.blocks.push(Section(`Pull Unlocked.`))
   else
     _get(data, response)
 

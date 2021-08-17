@@ -5,6 +5,7 @@ import {
   GetHeader,
   GetFooter,
   GetRepository,
+  GetPrettyDate,
   GetBaseUrl,
   Fail,
   Request,
@@ -107,7 +108,7 @@ const _get = (item, response) => {
       ${item.assignees.length > 0 ? `\n ${item.assignees.map(a => `<${a.html_url}|${a.login}>`).join()}` : ''} 
       ${item.labels.length > 0 ? `\n ${item.labels.map(l => l.name).join()}` : ''} 
       `),
-      Text(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} \n*Created:* <!date^${Math.floor(new Date(item.created_at).getTime() / 1000)}^{date_pretty} at {time}|${item.created_at}> \n*Updated:* <!date^${Math.floor(new Date(item.updated_at).getTime() / 1000)}^{date_pretty} at {time}|${item.updated_at}>  ${item.closed_at ? `\n*Closed:* <!date^${Math.floor(new Date(item.closed_at).getTime() / 1000)}^{date_pretty} at {time}|${item.closed_at}>` : ''}`),
+      Text(`*State:* ${item.state.charAt(0).toUpperCase() + item.state.substr(1)} \n*Created:* ${GetPrettyDate(item.created_at)}\n*Updated:* ${GetPrettyDate(item.updated_at)} ${item.closed_at ? `\n*Closed:* ${GetPrettyDate(item.closed_at)}` : ''}`),
     ],
   }
   if (item.assignee) block.accessory = Image(item.assignee.avatar_url, item.assignee.login)

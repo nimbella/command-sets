@@ -65,6 +65,15 @@ export const GetHeader = (res, token) => {
   }
 }
 
+export const GetFooter = () => {
+  return {
+    type: 'context',
+    elements: [
+      Text('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
+    ],
+  }
+}
+
 export const Fail = (msg, err) => {
   let errMsg
   if (err) errMsg = GetErrorMessage(err)
@@ -107,12 +116,6 @@ export const Section = (text) => ({
   text: Text(text),
 });
 
-
-export const GetFooter = () => {
-  return {
-    type: 'context',
-    elements: [
-      Text('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
-    ],
-  }
+export const GetPrettyDate = (date) => {
+  return `<!date^${Math.floor(new Date(date).getTime() / 1000)}^{date_pretty} at {time}|${date}>`
 }
