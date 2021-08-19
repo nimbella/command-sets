@@ -3,11 +3,11 @@ const axios = require('axios');
 const headers = {
   'Content-Type': 'application/json',
 };
-export const RequestThreshold = 3
+const RequestThreshold = 3
 const baseURL = 'https://api.github.com'
 
 
-export async function Request(url, action, method, data, token) {
+async function Request(url, action, method, data, token) {
   if (!token && !['list', 'get'].includes(action)) {
     return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*')
   }
@@ -23,7 +23,7 @@ export async function Request(url, action, method, data, token) {
 }
 
 
-export const UpdateURL = (url) => {
+const UpdateURL = (url) => {
   if (url.includes('|')) {
     url = (url.split('|')[1] || '').replace('>', '')
   } else {
@@ -39,7 +39,7 @@ export const UpdateURL = (url) => {
 }
 
 
-export const GetErrorMessage = (error) => {
+const GetErrorMessage = (error) => {
   console.error(error)
   if (error.response && error.response.status === 403) {
     return `:warning: *The api rate limit has been exhausted.*`
@@ -50,7 +50,7 @@ export const GetErrorMessage = (error) => {
   }
 };
 
-export const GetHeader = (res, token) => {
+const GetHeader = (res, token) => {
   if (res && res.headers) {
     const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
@@ -65,7 +65,7 @@ export const GetHeader = (res, token) => {
   }
 }
 
-export const GetFooter = () => {
+const GetFooter = () => {
   return {
     type: 'context',
     elements: [
@@ -74,7 +74,7 @@ export const GetFooter = () => {
   }
 }
 
-export const Fail = (msg, err) => {
+const Fail = (msg, err) => {
   let errMsg
   if (err) errMsg = GetErrorMessage(err)
   const response = {
@@ -84,7 +84,7 @@ export const Fail = (msg, err) => {
   return response
 };
 
-export const GetRepository = (github_repos, repository) => {
+const GetRepository = (github_repos, repository) => {
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
@@ -92,17 +92,17 @@ export const GetRepository = (github_repos, repository) => {
   return repository
 }
 
-export const GetBaseUrl = (host, secrets) => {
+const GetBaseUrl = (host, secrets) => {
   return UpdateURL(host || secrets.github_host || baseURL)
 }
 
-export const Image = (source, alt) => ({
+const Image = (source, alt) => ({
   type: 'image',
   image_url: source,
   alt_text: alt,
 });
 
-export const Text = (text) => ({
+const Text = (text) => ({
   type: 'mrkdwn',
   text: text
     // Convert markdown links to slack format.
@@ -111,11 +111,24 @@ export const Text = (text) => ({
     .replace(/#+\s(.+)(?:R(?!#(?!#)).*)*/g, '*$1*'),
 });
 
-export const Section = (text) => ({
+const Section = (text) => ({
   type: 'section',
   text: Text(text),
 });
 
-export const GetPrettyDate = (date) => {
+const GetPrettyDate = (date) => {
   return `<!date^${Math.floor(new Date(date).getTime() / 1000)}^{date_pretty} at {time}|${date}>`
+}
+
+exports = {
+  GetHeader,
+  GetFooter,
+  GetRepository,
+  GetPrettyDate,
+  GetBaseUrl,
+  Fail,
+  Request,
+  Image,
+  Text,
+  Section
 }

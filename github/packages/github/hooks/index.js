@@ -1,6 +1,4 @@
-// jshint esversion: 9
-
-import {
+const {
   GetHeader,
   GetFooter,
   GetRepository,
@@ -11,7 +9,7 @@ import {
   Image,
   Text,
   Section
-} from './common'
+} = require('./common')
 
 /**
  * @description 
