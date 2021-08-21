@@ -124,6 +124,7 @@ commands:
         value: host
   issues:
     description: Manage Issues
+    main: main
     parameters:
       - name: action
         optional: true
