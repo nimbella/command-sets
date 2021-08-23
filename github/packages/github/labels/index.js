@@ -1,38 +1,23 @@
-// jshint esversion: 9
-
-const axios = require('axios');
-
-const requestThreshold = 3
-const headers = {
-  'Content-Type': 'application/json',
-};
-
-
-async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
-  if (secrets.github_token) {
-    let token
-    [token,] = secrets.github_token.split('@')
-    headers.Authorization = `Bearer ${token}`;
-  }
-  return axios({
-    method: method,
-    url,
-    headers,
-    data
-  })
-}
-
+const {
+  GetHeader,
+  GetFooter,
+  GetRepository,
+  GetBaseUrl,
+  Fail,
+  Request,
+  Text,
+  Section
+} = require('./common')
 
 /**
  * @description 
  * @param {ParamsType} params list of command parameters
  * @param {?string} commandText text message
  * @param {!object} [secrets = {}] list of secrets
+ * @param {?string} token oauth token
  * @return {Promise<SlackBodyType>} Response body
  */
-async function command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
+async function command(params, commandText, secrets = {}, token = null) {
   let {
     action,
     repository,
@@ -42,7 +27,7 @@ async function command(params, commandText, secrets = {}) {
     color,
     description,
     labels = [],
-    list_option = 'repo',
+    list_option,
     milestone_number,
     since,
     sort = 'created',
@@ -51,14 +36,11 @@ async function command(params, commandText, secrets = {}) {
     page = 1,
     host
   } = params;
+  list_option = list_option || 'repo'
   let method = 'GET'
   let data = {}
   let list_path, listing = false
-  const { github_repos, github_host } = secrets;
-  const default_repos = repository ? repository : github_repos;
-  if (default_repos) {
-    repository = default_repos.split(',').map(repo => repo.trim())[0];
-  }
+  repository = GetRepository(secrets.github_repos, repository)
   if (!repository) return fail('*please specify repository*')
   switch (action) {
     case 'c':
@@ -155,69 +137,24 @@ async function command(params, commandText, secrets = {}) {
     default:
       return fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list', 'add', 'set', 'remove', 'removeall' *`)
   }
-  if (secrets.github_token) {
-    [, tokenHost] = secrets.github_token.split('@')
-  }
-  baseURL = host || tokenHost || github_host || baseURL
-  baseURL = updateURL(baseURL)
-  const url = `${baseURL}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host)}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
   console.log(url);
-  const res = await Request(url, action, method, data, secrets)
+  const res = await Request(url, action, method, data, token)
 
-  if (res) {
-    const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
-    const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nLabel *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (currReading < requestThreshold) {
-      header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
-    }
-    if (currReading === 0) {
-      header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
-      return fail(header);
-    }
-    return success(action, header, res.data, secrets);
+  const { header, currReading } = GetHeader(res, token)
+  if (currReading === 0) {
+    return Fail(header);
   }
-  return fail(undefined, res);
+  return success(action, header, res.data, secrets);
 }
-
-const mdText = (text) => ({
-  type: 'mrkdwn',
-  text: text
-});
-
-const section = (text) => ({
-  type: 'section',
-  text: mdText(text),
-});
-
-const fail = (msg, err) => {
-  let errMsg
-  if (err) errMsg = getErrorMessage(err)
-  const response = {
-    response_type: 'in_channel',
-    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
-  };
-  return response
-};
-
-const getErrorMessage = (error) => {
-  console.error(error)
-  if (error.response && error.response.status === 403) {
-    return `:warning: *The api rate limit has been exhausted.*`
-  } else if (error.response && error.response.status && error.response.data) {
-    return `Error: ${error.response.status} ${error.response.data.message}`
-  } else {
-    return error.message
-  }
-};
 
 const _get = (item, response) => {
   console.log(item)
   const block = {
     type: 'section',
     fields: [
-      mdText(`${item.name} \n ${item.description || ''}`),
-      mdText(`Color: ${item.color} ${item.default ? '| Default' : ''}`),
+      Text(`${item.name} \n ${item.description || ''}`),
+      Text(`Color: ${item.color} ${item.default ? '| Default' : ''}`),
     ],
   }
   response.blocks.push(block)
@@ -231,7 +168,7 @@ const _list = (items, response) => (items).forEach((item) => {
 const success = async (action, header, data) => {
   const response = {
     response_type: 'in_channel',
-    blocks: [section(header)],
+    blocks: [Section(header)],
   };
   switch (action) {
     case 'list':
@@ -241,35 +178,21 @@ const success = async (action, header, data) => {
       _list(data || [], response)
       break;
     case 'delete':
-      response.blocks.push(section(`Label Deleted.`))
+      response.blocks.push(Section(`Label Deleted.`))
       break
     case 'removeall':
-      response.blocks.push(section(`Label(s) Removed.`))
+      response.blocks.push(Section(`Label(s) Removed.`))
       break
     default:
       _get(data, response)
       break;
   }
-
-  response.blocks.push({
-    type: 'context',
-    elements: [
-      mdText('add _github command-set_ to your Slack with <https://nimbella.com/product/commander/ | Commander>'),
-    ],
-  });
+  response.blocks.push(GetFooter());
   return response
 };
 
-const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3'; }
-  return url
-}
-
 const main = async (args) => ({
-  body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
