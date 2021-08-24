@@ -8,9 +8,9 @@
  * @return {Promise<SlackBodyType>} Response body
  */
 
-async function _command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
-  let { github_token: githubToken, github_repos: githubRepos, github_host } = secrets;
+async function _command(params, commandText, secrets = {}, token = null) {
+  let baseURL = 'https://api.github.com'
+  let { github_repos: githubRepos, github_host } = secrets;
 
   githubRepos = params.repo ? params.repo : githubRepos;
 
@@ -22,21 +22,18 @@ async function _command(params, commandText, secrets = {}) {
         'Either pass a repo name or create a secret named `github_repos` to avoid passing the repository.'
     };
   }
-  if (secrets.github_token) {
-    [githubToken, tokenHost] = secrets.github_token.split('@')
-  }
   githubRepos = githubRepos.split(',').map(repo => repo.trim());
 
   const result = [];
   const host = params.host
-  const tokenMessage = githubToken
+  const tokenMessage = token
     ? ''
-    : 'For greater limits, create a secret named `github_token` with a <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line|GitHub token> using `/nc secret_create`.';
+    : 'For greater limits, please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>.';
 
   try {
     const axios = require('axios');
     const networkRequests = [];
-    baseURL = host || tokenHost || github_host || baseURL
+    baseURL = host || github_host || baseURL
     baseURL = updateURL(baseURL)
     for (const repo of githubRepos) {
       const url = `${baseURL}/repos/${repo}/pulls?state=${state}`;
@@ -45,9 +42,9 @@ async function _command(params, commandText, secrets = {}) {
         axios({
           method: 'GET',
           url: url,
-          headers: githubToken
+          headers: token
             ? {
-              Authorization: `Bearer ${githubToken}`,
+              Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
             : {}
@@ -142,7 +139,8 @@ const main = async args => ({
   body: await _command(
     args.params,
     args.commandText,
-    args.__secrets || {}
+    args.__secrets || {},
+    args.token || null
   ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error}`

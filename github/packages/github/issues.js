@@ -8,11 +8,11 @@ const headers = {
 };
 
 
-async function Request(url, action, method, data, secrets) {
-  if (!secrets.github_token && (action !== 'list' || action !== 'get')) { return fail('*please add github_token secret*') }
-  if (secrets.github_token) {
-    let token
-    [token,] = secrets.github_token.split('@')
+async function Request(url, action, method, data, token) {
+  if (!token && !['list', 'get'].includes(action)) {
+    return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*')
+  }
+  if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
   return axios({
@@ -30,8 +30,8 @@ async function Request(url, action, method, data, secrets) {
  * @param {!object} [secrets = {}] list of secrets
  * @return {Promise<SlackBodyType>} Response body
  */
-async function command(params, commandText, secrets = {}) {
-  let tokenHost, baseURL = 'https://api.github.com'
+async function command(params, commandText, secrets = {}, token = null) {
+  let baseURL = 'https://api.github.com'
   let {
     action,
     repository,
@@ -43,19 +43,23 @@ async function command(params, commandText, secrets = {}) {
     labels = '',
     state = '',
     reason = '',
-    list_option = 'repository',
+    list_option,
     org = '',
     since = '',
     per_page = 50,
     page = 1,
     host
   } = params;
+  list_option = list_option || 'repository'
   let method = 'GET'
   let data = {}
   let lock = false
   let listing = false
   let list_path = ''
-  const { github_repos, github_host } = secrets;
+  const {
+    github_repos,
+    github_host
+  } = secrets;
   const default_repos = repository ? repository : github_repos;
   if (default_repos) {
     repository = default_repos.split(',').map(repo => repo.trim())[0];
@@ -63,7 +67,7 @@ async function command(params, commandText, secrets = {}) {
   switch (action) {
     case 'c':
     case 'cr':
-    case 'add':      
+    case 'add':
     case 'create':
       action = 'create'
       method = 'POST'
@@ -141,26 +145,26 @@ async function command(params, commandText, secrets = {}) {
     default:
       return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
-  if (secrets.github_token) {
-    [, tokenHost] = secrets.github_token.split('@')
-  }
-  baseURL = host || tokenHost || github_host || baseURL
+  baseURL = host || github_host || baseURL
   baseURL = updateURL(baseURL)
   const url = `${baseURL}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
   console.log(url);
-  const res = await Request(url, action, method, data, secrets)
+  const res = await Request(url, action, method, data, token)
 
   if (res) {
-    const tokenMessage = secrets.github_token ? '' : '*For greater limits you can add <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line | secrets> using*\n `/nc secret_create`';
-    const currReading = parseInt(res.headers['x-ratelimit-remaining']);
+    const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
     let header = `\nIssue *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (currReading < requestThreshold) {
-      header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
+    if (res.headers) {
+      const currReading = parseInt(res.headers['x-ratelimit-remaining']);
+      if (currReading < requestThreshold) {
+        header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
+      }
+      if (currReading === 0) {
+        header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
+        return fail(header);
+      }
     }
-    if (currReading === 0) {
-      header = `:warning: *The api rate limit has been exhausted.* ${tokenMessage}`;
-      return fail(header);
-    }
+
     return success(action, header, res.data, secrets);
   }
   return fail(undefined, res);
@@ -255,17 +259,22 @@ const success = async (action, header, data, secrets) => {
 };
 
 const updateURL = (url) => {
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (url.includes('|')) { url = (url.split('|')[1] || '').replace('>', '') }
-  else { url = url.replace('<', '').replace('>', '') }
-  if (!url.startsWith('http')) { url = 'https://' + url; }
-  if (!url.includes('api')) { url += '/api/v3'; }
+  if (url.includes('|')) {
+    url = (url.split('|')[1] || '').replace('>', '')
+  } else {
+    url = url.replace('<', '').replace('>', '')
+  }
+  if (!url.startsWith('http')) {
+    url = 'https://' + url;
+  }
+  if (!url.includes('api')) {
+    url += '/api/v3';
+  }
   return url
 }
 
 const main = async (args) => ({
-  body: await command(args.params, args.commandText, args.__secrets || {}).catch((error) => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),

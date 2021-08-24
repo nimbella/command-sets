@@ -29,9 +29,7 @@ Please make sure Commander is installed in your [Slack workspace](https://slack.
 
 ## Requirements
 
-In order to use this command set, you need to set up a Personal Access Token on GitHub with repo access. And save the token as a secret with `github_token` as the key name. Use `/nc secret_create` to create secrets.
-
-Generate a token with `repo` access [here](https://github.com/settings/tokens) or click [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to learn how to create a Personal Access Token on GitHub.
+In order to use this command set, you need to add ![github as oauth provider](https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider).
 
 Create a secret named `github_repos` to avoid passing repository (`-r`) to commands.
 
@@ -43,7 +41,6 @@ For commands that only work with single repository the first repository in `gith
 
 Only for Github Enterprise version, you need to specify the host. Below are the ways to do it, you can follow any of them
 - Specify `--host` or `-h` while invoking the command.
-- Append the host name to your `github_token` following this format: `access_token@github_host`. For example `mysecret@example.com`.
 
 - Create a secret with key name `github_host` using `/nc secret_create`, and add the host as the value.
 

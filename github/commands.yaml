@@ -1,6 +1,7 @@
 commands:
   github_close_issue:
     description: Close an issue
+    oauth: github
     parameters:
       - name: issueNumber
         optional: false
@@ -11,6 +12,7 @@ commands:
         value: host
   github_create_issue:
     description: Create an issue
+    oauth: github
     parameters:
       - name: title
         optional: false
@@ -23,6 +25,7 @@ commands:
         value: host
   github_label:
     description: Label an issue/pull request
+    oauth: github
     parameters:
       - name: issueNumber
         optional: false
@@ -35,6 +38,7 @@ commands:
         value: host
   github_reopen_issue:
     description: Reopen an issue
+    oauth: github
     parameters:
       - name: issueNumber
         optional: false
@@ -45,6 +49,7 @@ commands:
         value: host
   github_request_review:
     description: Request someone to review a pull request
+    oauth: github
     parameters:
       - name: prNumber
         optional: false
@@ -57,6 +62,7 @@ commands:
         value: host
   github_stats:
     description: View repository community statistics
+    oauth: github
     parameters:
       - name: repo
         optional: true
@@ -65,6 +71,7 @@ commands:
         value: host
   github_view_pr:
     description: View recent pull requests
+    oauth: github
     parameters:
       - name: repo
         optional: true
@@ -75,13 +82,14 @@ commands:
         value: host
   github_search:
     description: Search repositories, commits, code, issues, pull requests, users and topics using keywords
+    oauth: github
     parameters:
       - name: entity
       - name: keywords
         optional: true
     options:
       - name: q
-        value: query        
+        value: query
       - name: r
         value: repositories
       - name: l
@@ -94,6 +102,7 @@ commands:
         value: host
   assignees:
     description: Manage Assignees
+    oauth: github
     parameters:
       - name: action
         optional: true
@@ -108,6 +117,7 @@ commands:
         value: host
   comments:
     description: Manage Comments
+    oauth: github
     parameters:
       - name: action
         optional: true
@@ -119,11 +129,12 @@ commands:
       - name: c
         value: comment_id
       - name: b
-        value: body        
+        value: body
       - name: h
         value: host
   issues:
-    description: Manage Issues and PRs
+    description: Manage Issues
+    oauth: github
     parameters:
       - name: action
         optional: true
@@ -154,6 +165,7 @@ commands:
         value: host
   labels:
     description: Manage Labels
+    oauth: github
     parameters:
       - name: action
         optional: true
@@ -180,6 +192,7 @@ commands:
         value: host
   milestones:
     description: Manage Milestones
+    oauth: github
     parameters:
       - name: action
         optional: true
@@ -198,6 +211,60 @@ commands:
         value: milestone_number
       - name: h
         value: host
+  billing:
+      description: See Billing Details
+      oauth: github
+      parameters:
+        - name: entity
+      options:
+        - name: t
+          value: type
+        - name: o
+          value: org
+        - name: u
+          value: user
+        - name: h
+          value: host
+  hooks:
+    description: Manage Hooks
+    oauth: github
+    parameters:
+      - name: action
+  pulls:
+    description: Manage Pulls
+    oauth: github
+    parameters:
+      - name: action
+    options:
+      - name: r
+        value: repository
+      - name: p
+        value: pr_number
+      - name: i
+        value: issue
+      - name: a
+        value: assignees
+      - name: t
+        value: title
+      - name: b
+        value: body
+      - name: head
+        value: head
+      - name: base
+        value: base
+      - name: l
+        value: labels
+      - name: s
+        value: state
+      - name: reason
+        value: reason
+      - name: list_option
+        value: list_option
+      - name: o
+        value: org
+      - name: h
+        value: host
+      - name: d        
   github:
     description: View GitHub command set documentation
     options:
