@@ -41,16 +41,16 @@ async function command(params, commandText, secrets = {}, token = null) {
   let data = {}
   let list_path, listing = false
   repository = GetRepository(secrets.github_repos, repository)
-  if (!repository) return fail('*please specify repository*')
+  if (!repository) return Fail('*please specify repository*')
   switch (action) {
     case 'c':
     case 'cr':
     case 'create':
       action = 'create'
       method = 'POST'
-      if (!name) return fail('*please enter name*')
-      if (issue_number) return fail('*can\'t specify issue_number while creating*')
-      if (!color) return fail('*please specify a hexadecimal color code for the label, without the leading #*')
+      if (!name) return Fail('*please enter name*')
+      if (issue_number) return Fail('*can\'t specify issue_number while creating*')
+      if (!color) return Fail('*please specify a hexadecimal color code for the label, without the leading #*')
       data = {
         name,
         color,
@@ -62,8 +62,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'update':
       action = 'update'
       method = 'PATCH'
-      if (!name) return fail('*please enter name*')
-      if (!new_name) return fail('*please enter new name*')
+      if (!name) return Fail('*please enter name*')
+      if (!new_name) return Fail('*please enter new name*')
       data = {
         new_name,
         color,
@@ -73,7 +73,7 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'g':
     case 'get':
       action = 'get';
-      if (!name) return fail('*please enter name*')
+      if (!name) return Fail('*please enter name*')
       break;
     case 'l':
     case 'ls':
@@ -81,13 +81,13 @@ async function command(params, commandText, secrets = {}, token = null) {
       action = 'list'
       listing = true
       if (!['repo', 'issue', 'milestone'].includes(list_option))
-        return fail(`*expected list_option to be one of 'repo', 'issue', 'milestone'*`)
+        return Fail(`*expected list_option to be one of 'repo', 'issue', 'milestone'*`)
       if (list_option === 'issue') {
-        if (!issue_number) return fail('*please specify issue_number*')
+        if (!issue_number) return Fail('*please specify issue_number*')
         list_path = `/issues/${issue_number}`
       }
       if (list_option === 'milestone')
-        if (!milestone_number) return fail('*please specify milestone_number*')
+        if (!milestone_number) return Fail('*please specify milestone_number*')
       list_path = `/milestones/${milestone_number}`
       if (list_option === 'repo')
         listing = false
@@ -96,15 +96,15 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'delete':
       action = 'delete'
       method = 'DELETE'
-      if (!name) return fail('*please enter name*')
+      if (!name) return Fail('*please enter name*')
       break;
     // Issue Labels
     case 'a':
     case 'add':
       action = 'add'
       method = 'POST'
-      if (!labels) return fail('*please enter labels to add*')
-      if (!issue_number) return fail('*please specify issue_number*')
+      if (!labels) return Fail('*please enter labels to add*')
+      if (!issue_number) return Fail('*please specify issue_number*')
       data = {
         labels: labels.split(',').map(l => l.trim())
       }
@@ -113,8 +113,8 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'set':
       action = 'set'
       method = 'PUT'
-      if (!labels) return fail('*please enter labels to add*')
-      if (!issue_number) return fail('*please specify issue_number*')
+      if (!labels) return Fail('*please enter labels to add*')
+      if (!issue_number) return Fail('*please specify issue_number*')
       data = {
         labels: labels.split(',').map(l => l.trim())
       }
@@ -124,24 +124,24 @@ async function command(params, commandText, secrets = {}, token = null) {
     case 'remove':
       action = 'remove'
       method = 'DELETE'
-      if (!name) return fail('*please enter label name to remove*')
-      if (!issue_number) return fail('*please specify issue_number*')
+      if (!name) return Fail('*please enter label name to remove*')
+      if (!issue_number) return Fail('*please specify issue_number*')
       break;
     case 'ra':
     case 'rma':
     case 'removeall':
       action = 'removeall'
       method = 'DELETE'
-      if (!issue_number) return fail('*please specify issue_number*')
+      if (!issue_number) return Fail('*please specify issue_number*')
       break;
     default:
-      return fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list', 'add', 'set', 'remove', 'removeall' *`)
+      return Fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list', 'add', 'set', 'remove', 'removeall' *`)
   }
-  const url = `${GetBaseUrl(host, secrets.github_host)}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host || '')}/repos/${repository}${issue_number ? `/issues/${issue_number}` : ''}/labels${(name && action !== 'create') ? `/${name}` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
-  const { header, currReading } = GetHeader(res, token)
+  const { header, currReading } = GetHeader(res, token, 'labels', action)
   if (currReading === 0) {
     return Fail(header);
   }
@@ -198,4 +198,4 @@ const main = async (args) => ({
   })),
 });
 
-module.exports = main;
+module.exports.main = main;

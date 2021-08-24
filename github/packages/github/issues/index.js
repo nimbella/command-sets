@@ -126,17 +126,17 @@ async function command(params, commandText, secrets = {}, token = null) {
     default:
       return Fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
-  const url = `${GetBaseUrl(host, secrets.github_host)}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host || '')}/${listing ? list_path : `repos/${repository}`}/issues${issue_number ? `/${issue_number}` : ''}${lock ? `/lock` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
-  const { header, currReading } = GetHeader(res, token)
+  const { header, currReading } = GetHeader(res, token, 'issues', action)
   if (currReading === 0) {
     return Fail(header);
   }
   return success(action, header, res.data, secrets);
 }
- 
+
 const _get = (item, response) => {
   console.log(item)
   const block = {
@@ -186,4 +186,4 @@ const main = async (args) => ({
   })),
 });
 
-module.exports = main;
+module.exports.main = main;

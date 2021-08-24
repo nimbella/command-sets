@@ -3,13 +3,13 @@ const axios = require('axios');
 const headers = {
   'Content-Type': 'application/json',
 };
-const RequestThreshold = 3
+const requestThreshold = 3
+const requestTimeout = 1000 * 5 // 5 seconds
 const baseURL = 'https://api.github.com'
-
 
 async function Request(url, action, method, data, token) {
   if (!token && !['list', 'get'].includes(action)) {
-    return fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*')
+    return Fail('*please run /nc oauth_create github. See <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>*')
   }
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -18,7 +18,8 @@ async function Request(url, action, method, data, token) {
     method: method,
     url,
     headers,
-    data
+    data,
+    timeout: requestTimeout
   })
 }
 
@@ -50,12 +51,12 @@ const GetErrorMessage = (error) => {
   }
 };
 
-const GetHeader = (res, token) => {
+const GetHeader = (res, token, topic, action) => {
   if (res && res.headers) {
     const tokenMessage = token ? '' : '*For greater limits you can add <https://nimbella.com/docs/commander/slack/oauth#adding-github-as-an-oauth-provider | github as oauth provider>';
     const currReading = parseInt(res.headers['x-ratelimit-remaining']);
-    let header = `\nAssignee *${action.charAt(0).toUpperCase() + action.substr(1)}* Request Result:`;
-    if (currReading < RequestThreshold) {
+    let header = `\n${Capitalize(topic)} *${Capitalize(action)}* Request Result:`;
+    if (currReading < requestThreshold) {
       header = `:warning: *You are about to reach the api rate limit.* ${tokenMessage}`;
     }
     if (currReading === 0) {
@@ -63,6 +64,7 @@ const GetHeader = (res, token) => {
     }
     return { header, currReading }
   }
+  return { header: '', currReading: 0 }
 }
 
 const GetFooter = () => {
@@ -79,7 +81,7 @@ const Fail = (msg, err) => {
   if (err) errMsg = GetErrorMessage(err)
   const response = {
     response_type: 'in_channel',
-    blocks: [section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
+    blocks: [Section(`${msg || errMsg || '*couldn\'t get action results*'}`)],
   };
   return response
 };
@@ -120,7 +122,9 @@ const GetPrettyDate = (date) => {
   return `<!date^${Math.floor(new Date(date).getTime() / 1000)}^{date_pretty} at {time}|${date}>`
 }
 
-exports = {
+const Capitalize = s => (s && s[0].toUpperCase() + s.slice(1)) || ""
+
+module.exports = {
   GetHeader,
   GetFooter,
   GetRepository,

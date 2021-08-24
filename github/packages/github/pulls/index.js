@@ -9,7 +9,7 @@ const {
     Image,
     Text,
     Section
-  } = require('./common')
+} = require('./common')
 
 /**
  * @description 
@@ -120,11 +120,11 @@ async function command(params, commandText, secrets = {}, token = null) {
         default:
             return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'check', 'merge' *`)
     }
-    const url = `${GetBaseUrl(host, secrets.github_host)}/${listing ? list_path : `repos/${repository}`}/pulls${pr_number ? `/${pr_number}` : ''}${merge ? `/merge` : ''}`
+    const url = `${GetBaseUrl(host, secrets.github_host || '')}/${listing ? list_path : `repos/${repository}`}/pulls${pr_number ? `/${pr_number}` : ''}${merge ? `/merge` : ''}`
     console.log(url);
     const res = await Request(url, action, method, data, token)
 
-    const { header, currReading } = GetHeader(res, token)
+    const { header, currReading } = GetHeader(res, token, 'pulls', action)
     if (currReading === 0) {
         return Fail(header);
     }
@@ -176,4 +176,4 @@ const main = async (args) => ({
     })),
 });
 
-module.exports = main;
+module.exports.main = main;

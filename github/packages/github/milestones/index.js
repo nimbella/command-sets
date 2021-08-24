@@ -86,11 +86,11 @@ async function command(params, commandText, secrets = {}, token = null) {
       return Fail(`*Invalid Action. Expected options: 'create', 'update', 'delete', 'get', 'list' *`)
   }
 
-  const url = `${GetBaseUrl(host, secrets.github_host)}/repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host || '')}/repos/${repository}/milestones${milestone_number ? `/${milestone_number}` : ''}${state ? `?state=${state}` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
-  const { header, currReading } = GetHeader(res, token)
+  const { header, currReading } = GetHeader(res, token, 'milestones', action)
   if (currReading === 0) {
     return Fail(header);
   }
@@ -142,4 +142,4 @@ const main = async (args) => ({
   })),
 });
 
-module.exports = main;
+module.exports.main = main;

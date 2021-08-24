@@ -81,10 +81,10 @@ async function command(params, commandText, secrets = {}, token = null) {
       return Fail(`*Invalid Action. Expected options: 'add', 'update', 'delete', 'get', 'list' *`)
   }
 
-  const url = `${GetBaseUrl(host, secrets.github_host)}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host || '')}/repos/${repository}/issues${issue_number ? `/${issue_number}` : ''}/comments${comment_id ? `/${comment_id}` : ''}`
   const res = await Request(url, action, method, data, token)
 
-  const { header, currReading } = GetHeader(res, token)
+  const { header, currReading } = GetHeader(res, token, 'comments', action)
   if (currReading === 0) {
     return Fail(header);
   }
@@ -133,4 +133,4 @@ const main = async (args) => ({
   })),
 });
 
-module.exports = main;
+module.exports.main = main;

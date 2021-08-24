@@ -6,7 +6,7 @@ const {
     Request,
     Text,
     Section
-  } = require('./common')
+} = require('./common')
 
 
 /**
@@ -56,11 +56,11 @@ async function command(params, commandText, secrets = {}, token = null) {
         default:
             return Fail(`*Invalid Entity. Expected options: 'action', 'package', 'storage' *`)
     }
-    const url = `${GetBaseUrl(host, secrets.github_host)}/${type}s/${type === 'org' ? org : user}/settings/billing/${list_path}`
+    const url = `${GetBaseUrl(host, secrets.github_host || '')}/${type}s/${type === 'org' ? org : user}/settings/billing/${list_path}`
     console.log(url);
     const res = await Request(url, entity, method, data, token)
 
-    const { header, currReading } = GetHeader(res, token)
+    const { header, currReading } = GetHeader(res, token, 'billing', action)
     if (currReading === 0) {
         return Fail(header);
     }
@@ -128,4 +128,4 @@ const main = async (args) => ({
     })),
 });
 
-module.exports = main;
+module.exports.main = main;

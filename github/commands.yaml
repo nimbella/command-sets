@@ -249,6 +249,8 @@ commands:
         value: org
       - name: h
         value: host
-      - name: d        
+      - name: d
+  deploy:
+    description: Deploys a compatible project from GitHub repo to Nimbella         
   github:
     description: View GitHub command set documentation

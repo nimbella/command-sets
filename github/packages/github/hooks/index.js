@@ -117,11 +117,11 @@ async function command(params, commandText, secrets = {}, token = null) {
       return fail(`*Invalid Action. Expected options: 'add', 'update', 'get', 'list', 'lock', 'unlock' *`)
   }
 
-  const url = `${GetBaseUrl(host, secrets.github_host)}/${type === 'repos' ? `repos/${repository}` : `orgs/${org}`}/hooks${id ? `/${id}` : ''}${ping ? `/ping` : ''}`
+  const url = `${GetBaseUrl(host, secrets.github_host || '')}/${type === 'repos' ? `repos/${repository}` : `orgs/${org}`}/hooks${id ? `/${id}` : ''}${ping ? `/ping` : ''}`
   console.log(url);
   const res = await Request(url, action, method, data, token)
 
-  const { header, currReading } = GetHeader(res, token)
+  const { header, currReading } = GetHeader(res, token, 'hooks', action)
   if (currReading === 0) {
     return Fail(header);
   }
@@ -176,4 +176,4 @@ const main = async (args) => ({
   })),
 });
 
-module.exports = main;
+module.exports.main = main;
