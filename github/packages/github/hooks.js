@@ -259,7 +259,7 @@ const updateURL = (url) => {
 }
 
 const main = async (args) => ({
-  body: await command(args.params, args.commandText, args.__secrets || {}, args.token || null).catch((error) => ({
+  body: await command(args.params, args.commandText, args.__secrets || {}, args._token || null).catch((error) => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`,
   })),
