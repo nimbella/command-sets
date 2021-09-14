@@ -132,7 +132,7 @@ const main = async args => ({
     args.params,
     args.commandText,
     args.__secrets || {},
-    args.token || null
+    args._token || null
   ).catch(error => ({
     response_type: 'ephemeral',
     text: `Error: ${error.message}`
