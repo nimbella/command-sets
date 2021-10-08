@@ -73,6 +73,7 @@ async function _command(params, commandText, secrets = {}, token = null) {
       // Show 5 recent PRs.
       for (let i = 0; i < (data.length > 5 ? 5 : data.length); i++) {
         const pr = data[i];
+        if (!pr.body) { pr.body = ''; }
         const body = html.test(pr.body)
           ? `_couldn't render body of pr_`
           : pr.body
